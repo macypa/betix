@@ -1,0 +1,123 @@
+import org.ho.yaml.Yaml;
+import org.jsoup.Connection;
+import org.jsoup.Connection.Method;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Account {
+    private static Logger logger = LoggerFactory.getLogger(Account.class);
+    private static File COOKIES_FILE = new File("cookies.yml");
+
+    private Map<String, String> cookies;
+    private String loginUrl = "https://identitysso.betfair.com/view/login";
+    private String loginFormId = "loginForm";
+    private String isLoggedInClass = "isLoggedIn";
+    private String user = "betUserfair";
+    private String pass = "z1x2c3v4b5n6";
+
+    public static void main(String[] args) {
+        Account account = new Account();
+        Document doc = account.loadPage("https://www.betfair.com/sport/football?id=57&selectedTabType=COMPETITION");
+        logger.debug("cookies = {}", account.getCookies());
+
+        for (Element event : doc.getElementsByClass("event-list")) {
+            logger.debug("document.body() = {}", event.text());
+        }
+    }
+
+    public Document loadPage(String uri) {
+        if (getCookies() == null) {
+            login();
+        }
+
+        Connection connection = Jsoup.connect(uri);
+        for (Map.Entry cookie : getCookies().entrySet()) {
+            connection.cookie(cookie.getKey() + "", cookie.getValue() + "");
+        }
+
+        try {
+            Response response = connection.execute();
+            Document doc = response.parse();
+            validatePage(doc);
+
+            return doc;
+        } catch (IOException e) {
+            logger.error("can't load page", e);
+            throw new RuntimeException("can't load page" + e.getMessage());
+        }
+    }
+
+    private void validatePage(Document doc) {
+        Elements isLoggedInTags = doc.getElementsByClass(isLoggedInClass);
+        if (isLoggedInTags == null || isLoggedInTags.isEmpty()) {
+            logger.warn("not logged in");
+            throw new RuntimeException("not logged in");
+        }
+    }
+
+    private void login() {
+        try {
+            Document loginPage = Jsoup.connect(loginUrl).execute().parse();
+            Element loginForm = loginPage.getElementById(loginFormId);
+            Elements inputs = loginForm.getElementsByTag("input");
+
+            Connection connection = Jsoup.connect("https://identitysso.betfair.com/api/login")
+                    .data("username", user)
+                    .data("password", pass)
+                    .method(Method.POST);
+
+            for (Element input : inputs) {
+                if (input.attr("value") != null && !input.attr("value").isEmpty()) {
+                    connection.data(input.attr("name"), input.attr("value"));
+                }
+            }
+
+
+            Response response = connection.execute();
+            Document doc = response.parse();
+            if (doc.title() == null || !doc.title().equals("Login")) {
+                logger.warn("not logged in");
+                throw new RuntimeException("Login failed");
+            }
+            setCookies(response.cookies());
+        } catch (IOException e) {
+            logger.error("can't log in", e);
+        }
+
+        throw new RuntimeException("Login failed");
+    }
+
+    public Map<String, String> getCookies() {
+        if (cookies == null){
+            try {
+                cookies = Yaml.loadType(COOKIES_FILE, LinkedHashMap.class);
+            } catch (Exception e) {
+                logger.error("can't load cookies", e);
+                return null;
+            }
+        }
+        return cookies;
+    }
+
+    public void setCookies(Map<String, String> cookies) {
+
+        this.cookies = cookies;
+
+        try {
+            Yaml.dump(cookies, COOKIES_FILE);
+        } catch (FileNotFoundException e) {
+            logger.warn("Error saving cookies", e);
+        }
+    }
+}
