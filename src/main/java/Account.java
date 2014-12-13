@@ -91,6 +91,7 @@ public class Account {
                 throw new RuntimeException("Login failed");
             }
             setCookies(response.cookies());
+            return;
         } catch (IOException e) {
             logger.error("can't log in", e);
         }
