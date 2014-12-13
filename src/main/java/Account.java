@@ -1,3 +1,8 @@
+import com.google.common.util.concurrent.ListenableFuture;
+import com.nurkiewicz.asyncretry.AsyncRetryExecutor;
+import com.nurkiewicz.asyncretry.RetryContext;
+import com.nurkiewicz.asyncretry.RetryExecutor;
+import com.nurkiewicz.asyncretry.function.RetryRunnable;
 import org.ho.yaml.Yaml;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
@@ -9,11 +14,15 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Account {
     private static Logger logger = LoggerFactory.getLogger(Account.class);
@@ -22,21 +31,28 @@ public class Account {
     private Map<String, String> cookies;
     private String loginUrl = "https://identitysso.betfair.com/view/login";
     private String loginFormId = "loginForm";
+    private String loggedExpectedTitle = "Login";
     private String isLoggedInClass = "isLoggedIn";
     private String user = "betUserfair";
     private String pass = "z1x2c3v4b5n6";
 
     public static void main(String[] args) {
         Account account = new Account();
-        Document doc = account.loadPage("https://www.betfair.com/sport/football?id=57&selectedTabType=COMPETITION");
-        logger.debug("cookies = {}", account.getCookies());
+        Document doc = null;
+        try {
+            doc = account.loadPage("https://www.betfair.com/sport/football?id=57&selectedTabType=COMPETITION");
 
-        for (Element event : doc.getElementsByClass("event-list")) {
-            logger.debug("document.body() = {}", event.text());
+            logger.debug("cookies = {}", account.getCookies());
+
+            for (Element event : doc.getElementsByClass("event-list")) {
+                logger.debug("document.body() = {}", event.text());
+            }
+        } catch (LoginException e) {
+            e.printStackTrace();
         }
     }
 
-    public Document loadPage(String uri) {
+    public Document loadPage(String uri) throws LoginException {
         if (getCookies() == null) {
             login();
         }
@@ -66,41 +82,58 @@ public class Account {
         }
     }
 
-    private void login() {
-        try {
-            Document loginPage = Jsoup.connect(loginUrl).execute().parse();
-            Element loginForm = loginPage.getElementById(loginFormId);
-            Elements inputs = loginForm.getElementsByTag("input");
+    private void login() throws LoginException {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        RetryExecutor executor = new AsyncRetryExecutor(scheduler).
+                retryOn(LoginException.class).
+                retryOn(IOException.class).
+                withExponentialBackoff(500, 2).     //500ms times 2 after each retry
+                withMaxDelay(10_000).               //10 seconds
+                withUniformJitter().                //add between +/- 100 ms randomly
+                withMaxRetries(2);
 
-            Connection connection = Jsoup.connect("https://identitysso.betfair.com/api/login")
-                    .data("username", user)
-                    .data("password", pass)
-                    .method(Method.POST);
+        ListenableFuture<Void> future = executor.doWithRetry(new RetryRunnable() {
+            @Override
+            public void run(RetryContext context) throws Exception {
 
-            for (Element input : inputs) {
-                if (input.attr("value") != null && !input.attr("value").isEmpty()) {
-                    connection.data(input.attr("name"), input.attr("value"));
+                Document loginPage = Jsoup.connect(loginUrl).execute().parse();
+                Element loginForm = loginPage.getElementById(loginFormId);
+                Elements inputs = loginForm.getElementsByTag("input");
+
+                Connection connection = Jsoup.connect("https://identitysso.betfair.com/api/login")
+                        .data("username", user)
+                        .data("password", pass)
+                        .method(Method.POST);
+
+                logger.debug("inputs = " + inputs);
+                for (Element input : inputs) {
+                    if (input.attr("value") != null && !input.attr("value").isEmpty()) {
+                        connection.data(input.attr("name"), input.attr("value"));
+                    }
                 }
-            }
 
+                Response response = connection.execute();
+                Document doc = response.parse();
+                if (doc.title() == null || !doc.title().equals(loggedExpectedTitle)) {
+                    logger.warn("not logged in.. unexpected Title");
+                    throw new LoginException("Login failed");
+                }
 
-            Response response = connection.execute();
-            Document doc = response.parse();
-            if (doc.title() == null || !doc.title().equals("Login")) {
-                logger.warn("not logged in");
-                throw new RuntimeException("Login failed");
+                setCookies(response.cookies());
             }
-            setCookies(response.cookies());
-            return;
-        } catch (IOException e) {
-            logger.error("can't log in", e);
+        });
+
+        try {
+            future.get();
+        } catch (InterruptedException e) {
+            throw new LoginException("Login failed");
+        } catch (ExecutionException e) {
+            throw new LoginException("Login failed");
         }
-
-        throw new RuntimeException("Login failed");
     }
 
     public Map<String, String> getCookies() {
-        if (cookies == null){
+        if (cookies == null) {
             try {
                 cookies = Yaml.loadType(COOKIES_FILE, LinkedHashMap.class);
             } catch (Exception e) {
