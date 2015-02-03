@@ -31,5 +31,13 @@
             <artifactId>asyncretry-jdk7</artifactId>
             <version>0.0.6</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.sikuli</groupId>
+            <artifactId>sikuli-api</artifactId>
+            <version>1.0.1</version>
+            <systemPath>${project.basedir}\lib\sikuli-java.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
     </dependencies>
 </project>
