@@ -1,32 +1,31 @@
 package com.bet365;
 
 
-import org.sikuli.basics.*;
-import org.sikuli.script.*;
+import betix.core.Configuration;
+import org.sikuli.basics.SikuliScript;
+import org.sikuli.script.App;
+import org.sikuli.script.FindFailed;
+import org.sikuli.script.Pattern;
+import org.sikuli.script.Screen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class Bet365 {
 
     private static Logger logger = LoggerFactory.getLogger(Bet365.class);
 
     public static void main(String[] args) {
-        App.focus("firefox");
-        Screen s = new Screen();
 
-        try{
-            s.find(new Pattern("img/logout.png"));
-            SikuliScript.popup("You're logged in.");
-            logger.info("You're logged in.");
-        } catch(FindFailed e){
-            SikuliScript.popup("You're NOT logged in.");
-            logger.error("Not logged in!");
-            System.exit(1);
-        }
-//
-//
-//
-//            s.click(new Pattern("img/eg.png"), 0);
+        Screen s = new Screen();
+        checkLogin(s);
+
+        try {
+            s.hover(new Pattern("img/logo.png"));
+            s.wheel(1, 1);
+            wait(1);
+            s.click(new Pattern("img/football.png"), 0);
 //            s.click(new Pattern("img/addNE.png"), 0);
 //            s.type(new Pattern("img/addNeIP.png"), args[0] + "\n", 0);
 //            s.click(new Pattern("img/cliUsername.png"), 0);
@@ -54,8 +53,29 @@ public class Bet365 {
 //              /*  s.type(new Pattern("img/cliPassword.png"), args[0]+"\n", 0);
 //                s.click(new Pattern("img/addNE.png"), 0);
 //                s.type(new Pattern("img/addNeIP.png"), args[0]+"\n", 0);*/
-//        }    catch(FindFailed e){
-//            e.printStackTrace();
-//        }
+        } catch (FindFailed e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void checkLogin(Screen s) {
+        App.focus(Configuration.getConfigAsString("browser"));
+
+        try {
+            s.find(new Pattern("img/logout.png"));
+            logger.info("You're logged in.");
+        } catch (FindFailed e) {
+            SikuliScript.popup("You're NOT logged in.");
+            logger.error("Not logged in!");
+            System.exit(1);
+        }
+    }
+
+    private static void wait(int sec) {
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(sec));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
