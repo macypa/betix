@@ -25,5 +25,8 @@
         <module name="betty" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="betty" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

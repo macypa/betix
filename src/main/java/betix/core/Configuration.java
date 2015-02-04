@@ -10,13 +10,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Created by shlyakls on 2/3/15.
- */
 public class Configuration {
 
-    private static Logger logger = LoggerFactory.getLogger(Configuration.class);
-    private static File CONFIG_FILE = new File("config.yml");
+    private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private final static File CONFIG_FILE = new File("config.yml");
 
     private final static Map<String, Object> config;
 
@@ -31,34 +28,34 @@ public class Configuration {
         config = configTemp;
     }
 
-    public static void addConfig(String key, Object value) {
+    public void addConfig(String key, Object value) {
         addConfig(key, value, false);
     }
 
-    public static void addConfig(String key, Object value, boolean persist) {
+    public void addConfig(String key, Object value, boolean persist) {
         config.put(key, value);
         if (persist) {
             saveConfig();
         }
     }
 
-    public static Object getConfig(String key) {
+    public Object getConfig(String key) {
         return config.get(key);
     }
 
-    public static String getConfigAsString(String key) {
+    public String getConfigAsString(String key) {
         return (String) config.get(key);
     }
 
-    public static Integer getConfigAsInteger(String key) {
+    public Integer getConfigAsInteger(String key) {
         return (Integer) config.get(key);
     }
 
-    public static Boolean getConfigAsBoolean(String key) {
+    public Boolean getConfigAsBoolean(String key) {
         return (Boolean) config.get(key);
     }
 
-    public static void saveConfig() {
+    public void saveConfig() {
         try {
             Yaml.dump(config, CONFIG_FILE);
         } catch (FileNotFoundException e) {

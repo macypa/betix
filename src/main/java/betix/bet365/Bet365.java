@@ -1,9 +1,8 @@
-package com.bet365;
+package betix.bet365;
 
 
 import betix.core.Configuration;
-import org.sikuli.basics.SikuliScript;
-import org.sikuli.script.App;
+import betix.scala.Login;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Screen;
@@ -15,8 +14,10 @@ import java.util.concurrent.TimeUnit;
 public class Bet365 {
 
     private static Logger logger = LoggerFactory.getLogger(Bet365.class);
+    private static final Configuration config = new Configuration();
 
     public static void main(String[] args) {
+
 
         Screen s = new Screen();
         checkLogin(s);
@@ -59,16 +60,7 @@ public class Bet365 {
     }
 
     private static void checkLogin(Screen s) {
-        App.focus(Configuration.getConfigAsString("browser"));
-
-        try {
-            s.find(new Pattern("img/logout.png"));
-            logger.info("You're logged in.");
-        } catch (FindFailed e) {
-            SikuliScript.popup("You're NOT logged in.");
-            logger.error("Not logged in!");
-            System.exit(1);
-        }
+        new Login().focusBrowser(config, s);
     }
 
     private static void wait(int sec) {
