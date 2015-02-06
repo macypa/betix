@@ -12,8 +12,24 @@ class Login {
     println("Hello, world!");
   }
 
-  def focusBrowser(config: Configuration, screen: Screen) {
+  def checkLogin(config: Configuration, screen: Screen) {
     App.focus(config.getConfigAsString("browser"))
+
+    try {
+      screen.find(new Pattern("img/logout.png"))
+      logger.info("You're logged in.")
+    }
+    catch {
+      case e: FindFailed => {
+        SikuliScript.popup("You're NOT logged in.")
+        logger.error("Not logged in!")
+        tryLogin(config, screen)
+      }
+    }
+  }
+
+  def tryLogin(config: Configuration, screen: Screen) {
+    App.focus(config.getConfigAsString(Configuration.Keys.browser.name))
 
     try {
       screen.find(new Pattern("img/logout.png"))

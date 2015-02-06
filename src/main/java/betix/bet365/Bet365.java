@@ -11,6 +11,20 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * login page https://members.788-sb.com/MEMBERS/Login/
+ * <p>
+ * https://members.788-sb.com/members/Authenticated/KYC/default.aspx?pageId=8936&prdid=1&ibpid=0&rUrl=&dlru=
+ * <p>
+ * settings (history page )
+ * https://members.788-sb.com/MEMBERS/Authenticated/History/Sports/Default.aspx
+ * <p>
+ * <p>
+ * to eval scala scripts may be used
+ * https://github.com/twitter/util/blob/master/util-eval/src/main/scala/com/twitter/util/Eval.scala
+ * or
+ * https://github.com/matthild/serverpages/blob/master/serverpages/source/scala/com/mh/serverpages/scala_/ScalaCompiler.scala#preparePage()
+ */
 public class Bet365 {
 
     private static Logger logger = LoggerFactory.getLogger(Bet365.class);
@@ -60,7 +74,7 @@ public class Bet365 {
     }
 
     private static void checkLogin(Screen s) {
-        new Login().focusBrowser(config, s);
+        new Login().checkLogin(config, s);
     }
 
     private static void wait(int sec) {

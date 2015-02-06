@@ -12,6 +12,11 @@ import java.util.Map;
 
 public class Configuration {
 
+    public enum Keys {
+        browser,
+        username;
+    }
+
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
     private final static File CONFIG_FILE = new File("config.yml");
 
