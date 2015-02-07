@@ -1,14 +1,17 @@
 package betix.bet365;
 
 
+import betix.core.ConfigKey;
 import betix.core.Configuration;
-import betix.scala.Login;
+import org.sikuli.basics.SikuliScript;
+import org.sikuli.script.App;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Screen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,51 +33,115 @@ public class Bet365 {
     private static Logger logger = LoggerFactory.getLogger(Bet365.class);
     private static final Configuration config = new Configuration();
 
+    static Screen screen = new Screen();
+    private static final String DIR_PATTERN = config.getConfigAsString(ConfigKey.imageDir) + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
+    private static final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png");
+    private static final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png").similar(0.5f);
+    private static final Pattern PATTERN_LOGOUT_LINK = new Pattern(DIR_PATTERN + "logoutLink.png");
+    private static final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png");
+    private static final Pattern PATTERN_LOGIN_OK_BUTTON = new Pattern(DIR_PATTERN + "loginOKbutton.png");
+
     public static void main(String[] args) {
 
+        openSite();
 
-        Screen s = new Screen();
-        checkLogin(s);
+        if (!login()) {
+            System.exit(1);
+        }
+
+        openFootbalPage();
+    }
+
+    private static void openSite() {
+        App.focus(config.getConfigAsString(ConfigKey.browser));
 
         try {
-            s.hover(new Pattern("img/logo.png"));
-            s.wheel(1, 1);
-            wait(1);
-            s.click(new Pattern("img/football.png"), 0);
-//            s.click(new Pattern("img/addNE.png"), 0);
-//            s.type(new Pattern("img/addNeIP.png"), args[0] + "\n", 0);
-//            s.click(new Pattern("img/cliUsername.png"), 0);
-//            s.type("a", KeyModifier.CTRL);
-//            s.type(args[1] +"\n");
-//            s.click(new Pattern("img/cliPassword.png"), 0);
-//            s.type("a", KeyModifier.CTRL);
-//            s.type(args[2] + "\n");
-//            s.click(new Pattern("img/readCommunity.png"), 0);
-//            s.type("a", KeyModifier.CTRL);
-//            s.type(args[3] + "\n");
-//            s.click(new Pattern("img/writeCommunity.png"), 0);
-//            s.type("a", KeyModifier.CTRL);
-//            s.type(args[4] + "\n");
-//            s.click(new Pattern("img/createNE.png"), 0);
-//            s.click(new Pattern("img/closeNePanel.png"), 0);
-//            s.hover(new Pattern("img/hoverInventory.png"));
-//            s.click(new Pattern("img/neInventory.png"));
-//            s.click(new Pattern("img/neFilter.png"));
-//            s.type(args[0] + "\n");
-//            if(s.hover(new Pattern("img/checkForAvailability.png"))==1){
-//                System.out.println("Wooooow");
-//
-//            }
-//              /*  s.type(new Pattern("img/cliPassword.png"), args[0]+"\n", 0);
-//                s.click(new Pattern("img/addNE.png"), 0);
-//                s.type(new Pattern("img/addNeIP.png"), args[0]+"\n", 0);*/
+            wait(3);
+            screen.wait(PATTERN_LOGO, 10);
+            logger.info("site already opened");
         } catch (FindFailed e) {
-            e.printStackTrace();
+            App.open(config.getConfigAsString(ConfigKey.browser) + " " + config.getConfigAsString(ConfigKey.siteUrl));
+
+            try {
+                wait(3);
+                screen.wait(PATTERN_LOGO, 10);
+            } catch (FindFailed ee) {
+                logger.error("can't find logo, probably site didn't open");
+            }
         }
     }
 
-    private static void checkLogin(Screen s) {
-        new Login().checkLogin(config, s);
+    private static boolean login() {
+        if (checkLogin()) {
+            return true;
+        }
+
+        try {
+            logger.info("Trying to log in ...");
+
+            String username = config.getConfigAsString(ConfigKey.username);
+            if (username == null || username.trim().isEmpty()) {
+                username = SikuliScript.input("Type your username");
+            }
+
+            screen.hover(PATTERN_LOGIN_FIELD);
+            screen.click();
+            screen.click();
+            screen.type(username);
+            screen.type("\t");
+
+            String pass = config.getConfigAsString(ConfigKey.password);
+            if (pass == null || pass.trim().isEmpty()) {
+                SikuliScript.popup("Click ok only when you've typed your password.");
+                App.focus(config.getConfigAsString(ConfigKey.browser));
+                wait(3);
+                try {
+                    screen.click(PATTERN_LOGIN_OK_BUTTON);
+                } catch (FindFailed e) {
+                    logger.error("can't find login ok button. but maybe user already clicked it...");
+                }
+
+            } else {
+                screen.type(pass);
+                screen.type("\n");
+            }
+
+            if (checkLogin()) {
+                config.addConfig(ConfigKey.username, username);
+                config.saveConfig();
+            }
+        } catch (FindFailed e) {
+            SikuliScript.popup("Could NOT log in.");
+            logger.error("Not logged in!");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkLogin() {
+        try {
+            App.focus(config.getConfigAsString(ConfigKey.browser));
+            wait(3);
+            screen.wait(PATTERN_LOGO, 10);
+            screen.hover(PATTERN_LOGOUT_LINK);
+            logger.info("You're logged in.");
+            return true;
+        } catch (FindFailed e) {
+            logger.error("Not logged in!");
+        }
+        return false;
+    }
+
+    private static void openFootbalPage() {
+
+        try {
+            screen.hover(PATTERN_LOGO);
+            screen.wheel(1, 1);
+            wait(1);
+            screen.click(PATTERN_FOOTBALL_LINK, 0);
+        } catch (FindFailed e) {
+            e.printStackTrace();
+        }
     }
 
     private static void wait(int sec) {

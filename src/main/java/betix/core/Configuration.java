@@ -12,11 +12,6 @@ import java.util.Map;
 
 public class Configuration {
 
-    public enum Keys {
-        browser,
-        username;
-    }
-
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
     private final static File CONFIG_FILE = new File("config.yml");
 
@@ -28,43 +23,55 @@ public class Configuration {
             configTemp = Yaml.loadType(CONFIG_FILE, LinkedHashMap.class);
         } catch (Exception e) {
             configTemp = new HashMap<>();
+            configTemp.put(ConfigKey.browser.name(), "firefox");
+            configTemp.put(ConfigKey.imageDir.name(), "img");
+            configTemp.put(ConfigKey.siteName.name(), "bet365.com");
+            configTemp.put(ConfigKey.siteUrl.name(), "http://www.bet365.com");
             logger.error("can't load config", e);
+
+            try {
+                logger.info("Creating default config");
+                Yaml.dump(configTemp, CONFIG_FILE);
+            } catch (FileNotFoundException ee) {
+                logger.warn("Error saving config", ee);
+            }
+
         }
         config = configTemp;
     }
 
-    public void addConfig(String key, Object value) {
+    public void addConfig(ConfigKey key, Object value) {
         addConfig(key, value, false);
     }
 
-    public void addConfig(String key, Object value, boolean persist) {
-        config.put(key, value);
+    public void addConfig(ConfigKey key, Object value, boolean persist) {
+        config.put(key.name(), value);
         if (persist) {
             saveConfig();
         }
     }
 
-    public Object getConfig(String key) {
-        return config.get(key);
+    public Object getConfig(ConfigKey key) {
+        return config.get(key.name());
     }
 
-    public String getConfigAsString(String key) {
-        return (String) config.get(key);
+    public String getConfigAsString(ConfigKey key) {
+        return (String) config.get(key.name());
     }
 
-    public Integer getConfigAsInteger(String key) {
-        return (Integer) config.get(key);
+    public Integer getConfigAsInteger(ConfigKey key) {
+        return (Integer) config.get(key.name());
     }
 
-    public Boolean getConfigAsBoolean(String key) {
-        return (Boolean) config.get(key);
+    public Boolean getConfigAsBoolean(ConfigKey key) {
+        return (Boolean) config.get(key.name());
     }
 
     public void saveConfig() {
         try {
             Yaml.dump(config, CONFIG_FILE);
         } catch (FileNotFoundException e) {
-            logger.warn("Error saving cookies", e);
+            logger.warn("Error saving config", e);
         }
     }
 }
