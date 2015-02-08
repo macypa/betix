@@ -36,6 +36,11 @@ public class Bet365 {
     static Screen screen = new Screen();
     private static final String DIR_PATTERN = config.getConfigAsString(ConfigKey.imageDir) + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
     private static final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png");
+    private static final Pattern PATTERN_HISTORY_LINK = new Pattern(DIR_PATTERN + "historyLink.png");
+    private static final Pattern PATTERN_HISTORY_DATE = new Pattern(DIR_PATTERN + "historyDate.png");
+    private static final Pattern PATTERN_RADIO_BUTTON = new Pattern(DIR_PATTERN + "radioButton.png");
+    private static final Pattern PATTERN_HISTORY_BUTTON_FIND = new Pattern(DIR_PATTERN + "historyButtonFind.png");
+    private static final Pattern PATTERN_VIEW_PAGE_SOURCE = new Pattern(DIR_PATTERN + "viewPageSource.png");
     private static final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png").similar(0.5f);
     private static final Pattern PATTERN_LOGOUT_LINK = new Pattern(DIR_PATTERN + "logoutLink.png");
     private static final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png");
@@ -48,6 +53,8 @@ public class Bet365 {
         if (!login()) {
             System.exit(1);
         }
+
+        cloectInfo();
 
         openFootbalPage();
     }
@@ -84,8 +91,7 @@ public class Bet365 {
                 username = SikuliScript.input("Type your username");
             }
 
-            screen.hover(PATTERN_LOGIN_FIELD);
-            screen.click();
+            screen.click(PATTERN_LOGIN_FIELD);
             screen.click();
             screen.type(username);
             screen.type("\t");
@@ -123,13 +129,62 @@ public class Bet365 {
             App.focus(config.getConfigAsString(ConfigKey.browser));
             wait(3);
             screen.wait(PATTERN_LOGO, 10);
-            screen.hover(PATTERN_LOGOUT_LINK);
+            screen.find(PATTERN_LOGOUT_LINK);
             logger.info("You're logged in.");
             return true;
         } catch (FindFailed e) {
             logger.error("Not logged in!");
         }
         return false;
+    }
+
+    private static void cloectInfo() {
+
+        try {
+            screen.click(PATTERN_HISTORY_LINK);
+            wait(1);
+            screen.find(PATTERN_HISTORY_DATE).click(PATTERN_RADIO_BUTTON);
+            wait(1);
+            screen.click(PATTERN_HISTORY_BUTTON_FIND);
+            wait(1);
+//            screen.rightClick();
+//            wait(1);
+//            screen.click(PATTERN_VIEW_PAGE_SOURCE);
+//            wait(1);
+//            screen.type("a", KeyModifier.CTRL);
+//            wait(1);
+//            screen.type("c", KeyModifier.CTRL);
+//            wait(1);
+//            String source = Env.getClipboard();
+//            System.out.println("source = " + source);
+
+            // click on all "Равен @" img in loop
+            // search for  "Равен" img as black text
+            // type shift+Dwon
+            // copy clipborad
+            // parse text
+            // save to config
+
+                    /*
+
+Равен 	Фулъм v Съндърланд
+(Краен Резултат) 	03/02/2015 	Никой 	3.40 	Загубен
+Залог:  0,50   Печалби:  0,00
+
+                     */
+
+
+                    /*
+
+Равен 	Клермон Фуут v Ниор
+(Краен Резултат) 	06/02/2015 	Никой 	3.10 	Печеливш
+Залог:  0,50   Печалби:  1,55
+
+                     */
+
+        } catch (FindFailed e) {
+            e.printStackTrace();
+        }
     }
 
     private static void openFootbalPage() {
