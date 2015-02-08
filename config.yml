@@ -1,6 +1,6 @@
---- !java.util.LinkedHashMap
-browser: firefox
-siteUrl: "http://www.bet365.com"
-siteName: bet365.com
+--- 
 imageDir: img
+siteUrl: "http://www.bet365.com"
+browser: firefox
+siteName: bet365.com
 username: shlyakls

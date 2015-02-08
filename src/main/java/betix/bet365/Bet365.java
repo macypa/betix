@@ -4,6 +4,8 @@ package betix.bet365;
 import betix.core.AccountInfo;
 import betix.core.ConfigKey;
 import betix.core.Configuration;
+import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
+import org.sikuli.basics.Settings;
 import org.sikuli.basics.SikuliScript;
 import org.sikuli.script.*;
 import org.slf4j.Logger;
@@ -30,44 +32,47 @@ import java.util.regex.Matcher;
  */
 public class Bet365 {
 
-    private static Logger logger = LoggerFactory.getLogger(Bet365.class);
-    private static final Configuration config = new Configuration();
+    private Logger logger = LoggerFactory.getLogger(Bet365.class);
+    private final Configuration config = new Configuration();
 
     static Screen screen = new Screen();
     static AccountInfo accountInfo = new AccountInfo();
-    private static final String DIR_PATTERN = config.getConfigAsString(ConfigKey.imageDir) + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
-    private static final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png");
-    private static final Pattern PATTERN_HISTORY_BALANCE = new Pattern(DIR_PATTERN + "historyBalance.png");
-    private static final Pattern PATTERN_HISTORY_LINK = new Pattern(DIR_PATTERN + "historyLink.png");
-    private static final Pattern PATTERN_HISTORY_DATE = new Pattern(DIR_PATTERN + "historyDate.png");
-    private static final Pattern PATTERN_RADIO_BUTTON = new Pattern(DIR_PATTERN + "radioButton.png");
-    private static final Pattern PATTERN_HISTORY_MATCH_LINK = new Pattern(DIR_PATTERN + "historyMatchLink.png");
-    private static final Pattern PATTERN_HISTORY_PENDING_DROPDOWN = new Pattern(DIR_PATTERN + "historyPendingDropdown.png");
-    private static final Pattern PATTERN_HISTORY_PENDING = new Pattern(DIR_PATTERN + "historyPending.png");
-    private static final Pattern PATTERN_HISTORY_FINISHED_DROPDOWN = new Pattern(DIR_PATTERN + "historyFinishedDropdown.png");
-    private static final Pattern PATTERN_HISTORY_FINISHED = new Pattern(DIR_PATTERN + "historyFinished.png");
-    private static final Pattern PATTERN_HISTORY_SELLECTION_TYPE_DRAW = new Pattern(DIR_PATTERN + "historySellectionTypeDraw.png");
-    private static final Pattern PATTERN_HISTORY_BUTTON_FIND = new Pattern(DIR_PATTERN + "historyButtonFind.png");
-    private static final Pattern PATTERN_VIEW_PAGE_SOURCE = new Pattern(DIR_PATTERN + "viewPageSource.png");
-    private static final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png").similar(0.5f);
-    private static final Pattern PATTERN_LOGOUT_LINK = new Pattern(DIR_PATTERN + "logoutLink.png");
-    private static final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png");
-    private static final Pattern PATTERN_LOGIN_OK_BUTTON = new Pattern(DIR_PATTERN + "loginOKbutton.png");
+    private final String DIR_PATTERN = config.getConfigAsString(ConfigKey.imageDir) + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
+    private final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png");
+    private final Pattern PATTERN_HISTORY_BALANCE = new Pattern(DIR_PATTERN + "historyBalance.png");
+    private final Pattern PATTERN_HISTORY_LINK = new Pattern(DIR_PATTERN + "historyLink.png");
+    private final Pattern PATTERN_HISTORY_DATE = new Pattern(DIR_PATTERN + "historyDate.png");
+    private final Pattern PATTERN_RADIO_BUTTON = new Pattern(DIR_PATTERN + "radioButton.png");
+    private final Pattern PATTERN_HISTORY_MATCH_LINK = new Pattern(DIR_PATTERN + "historyMatchLink.png");
+    private final Pattern PATTERN_HISTORY_PENDING_DROPDOWN = new Pattern(DIR_PATTERN + "historyPendingDropdown.png");
+    private final Pattern PATTERN_HISTORY_PENDING = new Pattern(DIR_PATTERN + "historyPending.png");
+    private final Pattern PATTERN_HISTORY_FINISHED_DROPDOWN = new Pattern(DIR_PATTERN + "historyFinishedDropdown.png");
+    private final Pattern PATTERN_HISTORY_FINISHED = new Pattern(DIR_PATTERN + "historyFinished.png");
+    private final Pattern PATTERN_HISTORY_SELLECTION_TYPE_DRAW = new Pattern(DIR_PATTERN + "historySellectionTypeDraw.png");
+    private final Pattern PATTERN_HISTORY_BUTTON_FIND = new Pattern(DIR_PATTERN + "historyButtonFind.png");
+    private final Pattern PATTERN_VIEW_PAGE_SOURCE = new Pattern(DIR_PATTERN + "viewPageSource.png");
+    private final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png").similar(0.5f);
+    private final Pattern PATTERN_LOGOUT_LINK = new Pattern(DIR_PATTERN + "logoutLink.png");
+    private final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png");
+    private final Pattern PATTERN_PASSWORD_FIELD = new Pattern(DIR_PATTERN + "passwordField.png");
+    private final Pattern PATTERN_LOGIN_OK_BUTTON = new Pattern(DIR_PATTERN + "loginOKbutton.png");
 
     public static void main(String[] args) {
+        Settings.ActionLogs = false;
 
-        openSite();
+        Bet365 betka = new Bet365();
+        betka.openSite();
 
-        if (!login()) {
+        if (!betka.login()) {
             System.exit(1);
         }
 
-        collectInfo();
+        betka.collectInfo();
 
-        //openFootbalPage();
+        //betka.openFootbalPage();
     }
 
-    private static void openSite() {
+    private void openSite() {
         App.focus(config.getConfigAsString(ConfigKey.browser));
 
         try {
@@ -86,7 +91,7 @@ public class Bet365 {
         }
     }
 
-    private static boolean login() {
+    private boolean login() {
         if (checkLogin()) {
             return true;
         }
@@ -104,25 +109,23 @@ public class Bet365 {
             screen.type(username);
             screen.type("\t");
 
-            String pass = config.getConfigAsString(ConfigKey.password);
-            if (pass == null || pass.trim().isEmpty()) {
-                SikuliScript.popup("Click ok only when you've typed your password.");
-                App.focus(config.getConfigAsString(ConfigKey.browser));
-                wait(3);
-                try {
-                    screen.click(PATTERN_LOGIN_OK_BUTTON);
-                } catch (FindFailed e) {
-                    logger.error("can't find login ok button. but maybe user already clicked it...");
-                }
+            String plainText = decodePass(config.getConfigAsString(ConfigKey.password, true));
+            if (plainText == null || plainText.trim().isEmpty()) {
+                plainText = SikuliScript.input("enter pass to encript and store");
 
-            } else {
-                screen.type(pass);
-                screen.type("\n");
+                screen.click(PATTERN_PASSWORD_FIELD);
+                screen.click();
             }
+
+            screen.type(plainText);
+            screen.type("\n");
 
             if (checkLogin()) {
                 config.addConfig(ConfigKey.username, username);
+                config.addConfig(ConfigKey.password, encodePass(plainText), false, true);
                 config.saveConfig();
+            } else {
+                return false;
             }
         } catch (FindFailed e) {
             SikuliScript.popup("Could NOT log in.");
@@ -132,7 +135,18 @@ public class Bet365 {
         return true;
     }
 
-    private static boolean checkLogin() {
+    private String encodePass(String clearText) {
+        if (clearText == null) return null;
+        return new String(Base64.encodeBase64(clearText.getBytes()));
+    }
+
+    private String decodePass(String encodedPass) {
+        if (encodedPass == null) return null;
+        return new String(Base64.decodeBase64(encodedPass.getBytes()));
+
+    }
+
+    private boolean checkLogin() {
         try {
             App.focus(config.getConfigAsString(ConfigKey.browser));
             wait(3);
@@ -146,18 +160,17 @@ public class Bet365 {
         return false;
     }
 
-    private static void collectInfo() {
+    private void collectInfo() {
 
         try {
 
             screen.click(PATTERN_HISTORY_LINK);
             wait(1);
+            maximisePage();
 
             getBalanceInfo();
 
             screen.find(PATTERN_HISTORY_DATE).click(PATTERN_RADIO_BUTTON);
-            wait(1);
-            screen.click(PATTERN_HISTORY_BUTTON_FIND);
             wait(1);
 
             collectPendingMatchesInfo();
@@ -204,7 +217,14 @@ public class Bet365 {
         }
     }
 
-    private static void getBalanceInfo() {
+    private void maximisePage() {
+        screen.type(Key.SPACE, KeyModifier.ALT);
+        wait(1);
+        screen.type("x");
+        wait(1);
+    }
+
+    private void getBalanceInfo() {
 
         // double click on Баланс img
             /*
@@ -256,37 +276,11 @@ public class Bet365 {
      *
      * @throws FindFailed
      */
-    private static void collectPendingMatchesInfo() throws FindFailed {
-        Iterator<Match> matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
-        while (matches.hasNext()) {
-            Match match = matches.next();
-            match.click();
-            wait(1);
+    private void collectPendingMatchesInfo() throws FindFailed {
 
-            screen.doubleClick(PATTERN_HISTORY_SELLECTION_TYPE_DRAW);
-
-            screen.type(Key.DOWN, KeyModifier.SHIFT);
-            wait(1);
-            screen.type("c", KeyModifier.CTRL);
-            wait(1);
-            String matchInfo = Env.getClipboard();
-            logger.info("found matchInfo = " + matchInfo);
-
-            //colapse match info
-            match.click();
-            wait(1);
-        }
-    }
-
-    private static void collectFinishedMatchesInfo() throws FindFailed {
-        Match pendingDropdown = screen.find(PATTERN_HISTORY_PENDING_DROPDOWN);
-        pendingDropdown.click();
+        screen.click(PATTERN_HISTORY_BUTTON_FIND);
         wait(1);
-        pendingDropdown.click();
-        wait(1);
-
-        screen.click(PATTERN_HISTORY_FINISHED);
-        wait(1);
+        maximisePage();
 
         Iterator<Match> matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
         while (matches.hasNext()) {
@@ -309,7 +303,39 @@ public class Bet365 {
         }
     }
 
-    private static void openFootbalPage() {
+    private void collectFinishedMatchesInfo() throws FindFailed {
+        screen.click(PATTERN_HISTORY_PENDING_DROPDOWN);
+        wait(1);
+        screen.type(Key.DOWN);
+        screen.type(Key.ENTER);
+        wait(1);
+
+        screen.click(PATTERN_HISTORY_BUTTON_FIND);
+        wait(1);
+        maximisePage();
+
+        Iterator<Match> matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
+        while (matches.hasNext()) {
+            Match match = matches.next();
+            match.click();
+            wait(1);
+
+            screen.doubleClick(PATTERN_HISTORY_SELLECTION_TYPE_DRAW);
+
+            screen.type(Key.DOWN, KeyModifier.SHIFT);
+            wait(1);
+            screen.type("c", KeyModifier.CTRL);
+            wait(1);
+            String matchInfo = Env.getClipboard();
+            logger.info("found matchInfo = " + matchInfo);
+
+            //colapse match info
+            match.click();
+            wait(1);
+        }
+    }
+
+    private void openFootbalPage() {
 
         try {
             screen.hover(PATTERN_LOGO);
@@ -321,7 +347,7 @@ public class Bet365 {
         }
     }
 
-    private static void wait(int sec) {
+    private void wait(int sec) {
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(sec));
         } catch (InterruptedException e) {

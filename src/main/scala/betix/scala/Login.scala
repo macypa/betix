@@ -1,6 +1,6 @@
 package betix.scala
 
-import betix.core.Configuration
+import betix.core.{ConfigKey, Configuration}
 import org.sikuli.basics.SikuliScript
 import org.sikuli.script.{App, FindFailed, Pattern, Screen}
 import org.slf4j.{Logger, LoggerFactory}
@@ -13,7 +13,7 @@ class Login {
   }
 
   def checkLogin(config: Configuration, screen: Screen) {
-    App.focus(config.getConfigAsString("browser"))
+    App.focus(config.getConfigAsString(ConfigKey.browser))
 
     try {
       screen.find(new Pattern("img/logout.png"))
@@ -29,7 +29,7 @@ class Login {
   }
 
   def tryLogin(config: Configuration, screen: Screen) {
-    App.focus(config.getConfigAsString(Configuration.Keys.browser.name))
+    App.focus(config.getConfigAsString(ConfigKey.browser))
 
     try {
       screen.find(new Pattern("img/logout.png"))
