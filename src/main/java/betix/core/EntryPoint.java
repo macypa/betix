@@ -16,14 +16,15 @@ public abstract class EntryPoint {
     protected static final Logger logger = LoggerFactory.getLogger(EntryPoint.class);
     public final Configuration config = new Configuration();
 
-    public Pattern PATTERN_UNMAXIMIZE = new Pattern("unmaximize.png");
+    protected float similarity = 0.5f;
+    public Pattern PATTERN_UNMAXIMIZE = new Pattern("unmaximize.png").similar(similarity);
 
     public Screen screen = new Screen();
     public MessageBoxFrame messageBox = new MessageBoxFrame();
 
     public static void main(String[] args) {
-
         Bet365 betka = new Bet365();
+        betka.setSikuliMinSimilarity(0.5);
 
         betka.exitListener();
 
@@ -34,7 +35,7 @@ public abstract class EntryPoint {
 
         betka.collectInfo();
 
-        betka.openFootbalPage();
+//        betka.openFootbalPage();
 
         System.exit(1);
     }
@@ -76,8 +77,12 @@ public abstract class EntryPoint {
         }
     }
 
-    public void setSikuliLog(boolean enableLogs) {
+    public void enableSikuliLog(boolean enableLogs) {
         Settings.ActionLogs = enableLogs;
+    }
+
+    public void setSikuliMinSimilarity(double minSimilarity) {
+        Settings.MinSimilarity = minSimilarity;
     }
 
     public void focusBrowser() {

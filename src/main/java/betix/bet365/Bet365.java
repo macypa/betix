@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 
 /**
@@ -38,18 +37,13 @@ public class Bet365 extends EntryPoint {
     private final String DIR_PATTERN = config.getConfigAsString(ConfigKey.imageDir)
             + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
 
-    public final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png");
+    public final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png").similar(similarity);
     public final Pattern PATTERN_HISTORY_BALANCE = new Pattern(DIR_PATTERN + "historyBalance.png");
-    public final Pattern PATTERN_HISTORY_BUTTON_FIND = new Pattern(DIR_PATTERN + "historyButtonFind.png");
-    public final Pattern PATTERN_HISTORY_DATE = new Pattern(DIR_PATTERN + "historyDate.png");
     public final Pattern PATTERN_HISTORY_LINK = new Pattern(DIR_PATTERN + "historyLink.png");
-    public final Pattern PATTERN_HISTORY_MATCH_LINK = new Pattern(DIR_PATTERN + "historyMatchLink.png");
-    public final Pattern PATTERN_HISTORY_PENDING_DROPDOWN = new Pattern(DIR_PATTERN + "historyPendingDropdown.png");
-    public final Pattern PATTERN_HISTORY_SELECTION_TYPE_DRAW = new Pattern(DIR_PATTERN + "historySelectionTypeDraw.png");
-    public final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png");
-    public final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png");
+    public final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png").similar(similarity);
+    public final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png").similar(similarity);
     public final Pattern PATTERN_LOGOUT_LINK = new Pattern(DIR_PATTERN + "logoutLink.png");
-    public final Pattern PATTERN_PASSWORD_FIELD = new Pattern(DIR_PATTERN + "passwordField.png");
+    public final Pattern PATTERN_PASSWORD_FIELD = new Pattern(DIR_PATTERN + "passwordField.png").similar(similarity);
 
     public boolean login() {
         if (checkLogin()) {
@@ -63,6 +57,7 @@ public class Bet365 extends EntryPoint {
             screen.click(PATTERN_LOGIN_FIELD);
             String username = accountConfig.getConfigAsString(ConfigKey.username);
             if (username == null || username.trim().isEmpty()) {
+                messageBox.setVisible(false);
                 username = SikuliScript.input("Type your username");
             }
 
@@ -72,17 +67,18 @@ public class Bet365 extends EntryPoint {
 
             String plainText = decodePass(accountConfig.getConfigAsString(ConfigKey.password));
             if (plainText == null || plainText.trim().isEmpty()) {
+                messageBox.setVisible(false);
                 plainText = SikuliScript.input("enter pass to encript and store");
 
                 screen.click(PATTERN_PASSWORD_FIELD);
                 screen.click();
             }
 
-            setSikuliLog(false);
+            enableSikuliLog(false);
             screen.type(plainText);
             screen.type("\n");
 
-            setSikuliLog(true);
+            enableSikuliLog(true);
 
             if (checkLogin()) {
                 accountConfig.addConfig(ConfigKey.username, username);
@@ -92,6 +88,7 @@ public class Bet365 extends EntryPoint {
                 return false;
             }
         } catch (FindFailed e) {
+            messageBox.setVisible(false);
             SikuliScript.popup("Could NOT log in.");
             logger.error("Not logged in!", e);
             return false;
@@ -133,15 +130,16 @@ public class Bet365 extends EntryPoint {
 
             getBalanceInfo();
 
-            screen.click(PATTERN_HISTORY_DATE);
-            wait(1);
-
             collectPendingMatchesInfo();
             collectFinishedMatchesInfo();
+            screen.doubleClick(PATTERN_HISTORY_BALANCE);
 
         } catch (FindFailed e) {
             e.printStackTrace();
         } finally {
+//            screen.type(Key.SPACE, KeyModifier.ALT);
+//            wait(1);
+//            screen.type("c");
             screen.type(Key.F4, KeyModifier.CTRL);
         }
     }
@@ -150,9 +148,7 @@ public class Bet365 extends EntryPoint {
         try {
             screen.doubleClick(PATTERN_HISTORY_BALANCE);
             screen.type(Key.UP, KeyModifier.SHIFT);
-            wait(1);
             screen.type("c", KeyModifier.CTRL);
-            wait(1);
             String balanceInfo = Env.getClipboard();
             logger.info("found balanceInfo = " + balanceInfo);
 
@@ -169,97 +165,70 @@ public class Bet365 extends EntryPoint {
         }
     }
 
-    /**
-     * // click on all "Равен @" img in loop
-     * // search for  "Равен" img as black text
-     * // type shift+Dwon
-     * // copy clipborad
-     * // parse text
-     * // save to config
-     * <p>
-     * <p>
-     * Равен 	Фулъм v Съндърланд
-     * (Краен Резултат) 	03/02/2015 	Никой 	3.40 	Загубен
-     * Залог:  0,50   Печалби:  0,00
-     * <p>
-     * <p>
-     * <p>
-     * Равен 	Клермон Фуут v Ниор
-     * (Краен Резултат) 	06/02/2015 	Никой 	3.10 	Печеливш
-     * Залог:  0,50   Печалби:  1,55
-     *
-     * @throws FindFailed
-     */
     private void collectPendingMatchesInfo() throws FindFailed {
-
-        screen.click(PATTERN_HISTORY_BUTTON_FIND);
+        messageBox.showMessage("searching balance pattern", screen.getCenter());
+        screen.doubleClick(PATTERN_HISTORY_BALANCE);
+        screen.type(Key.TAB);
+        screen.type(Key.UP);
+        screen.type(Key.TAB);
+        wait(1);
+        screen.type(Key.RIGHT);
+        wait(1);
+        screen.type(Key.ENTER);
         wait(2);
-        maximisePage();
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
 
-        Iterator<Match> matches;
-        try {
-            matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
-        } catch (FindFailed f) {
-            logger.info("no matches pending found.");
-            return;
-        }
-
-        while (matches.hasNext()) {
-            Match match = matches.next();
-            match.click();
-            wait(1);
-
-            screen.doubleClick(PATTERN_HISTORY_SELECTION_TYPE_DRAW);
-
-            screen.type(Key.DOWN, KeyModifier.SHIFT);
-            wait(1);
-            screen.type("c", KeyModifier.CTRL);
-            wait(1);
-            String matchInfo = Env.getClipboard();
-            logger.info("found matchInfo = " + matchInfo);
-
-            //colapse match info
-            match.click();
-            wait(1);
-        }
+        getMatchInfo();
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed {
-        screen.click(PATTERN_HISTORY_PENDING_DROPDOWN);
-        wait(1);
+        messageBox.showMessage("searching balance pattern", screen.getCenter());
+        screen.doubleClick(PATTERN_HISTORY_BALANCE);
+        screen.type(Key.TAB);
         screen.type(Key.DOWN);
+        screen.type(Key.TAB);
+        wait(1);
+        screen.type(Key.RIGHT);
+        wait(1);
         screen.type(Key.ENTER);
-        wait(1);
+        wait(2);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
 
-        screen.click(PATTERN_HISTORY_BUTTON_FIND);
-        wait(1);
-        maximisePage();
+        getMatchInfo();
+    }
 
-        Iterator<Match> matches;
-        try {
-            matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
-        } catch (FindFailed f) {
-            logger.info("no matches finished found.");
-            return;
-        }
+    private void getMatchInfo() {
+        while (true) {
+            screen.type(Key.TAB);
+            screen.type(Key.DOWN, KeyModifier.SHIFT);
+            screen.type("c", KeyModifier.CTRL);
 
-        while (matches.hasNext()) {
-            Match match = matches.next();
-            match.click();
+            String matchInfo = Env.getClipboard();
+            if (!matchInfo.contains("Равен ")) {
+                messageBox.showMessage("matchInfo : " + matchInfo, screen.getCenter());
+                screen.type(Key.TAB, KeyModifier.SHIFT);
+                screen.type(Key.TAB, KeyModifier.SHIFT);
+                screen.type(Key.TAB, KeyModifier.SHIFT);
+                wait(1);
+                return;
+            }
+
+            screen.type(Key.ENTER);
             wait(1);
-
-            screen.doubleClick(PATTERN_HISTORY_SELECTION_TYPE_DRAW);
 
             screen.type(Key.DOWN, KeyModifier.SHIFT);
-            wait(1);
+            screen.type(Key.UP, KeyModifier.SHIFT);
             screen.type("c", KeyModifier.CTRL);
-            wait(1);
-            String matchInfo = Env.getClipboard();
+            matchInfo = Env.getClipboard();
             logger.info("found matchInfo = " + matchInfo);
 
-            //colapse match info
-            match.click();
+            screen.type(Key.ENTER);
             wait(1);
+
         }
     }
 
