@@ -11,23 +11,23 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class EntryPoint {
+public abstract class EntryPoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(EntryPoint.class);
-    public static final Configuration config = new Configuration();
+    protected static final Logger logger = LoggerFactory.getLogger(EntryPoint.class);
+    public final Configuration config = new Configuration();
 
-    public static final Pattern PATTERN_UNMAXIMIZE = new Pattern("unmaximize.png");
+    public Pattern PATTERN_UNMAXIMIZE = new Pattern("unmaximize.png");
 
-    static Screen screen = new Screen();
+    public Screen screen = new Screen();
+    public MessageBoxFrame messageBox = new MessageBoxFrame();
 
     public static void main(String[] args) {
-        Settings.ActionLogs = false;
-
-        exitListener();
 
         Bet365 betka = new Bet365();
-        openSite(betka);
 
+        betka.exitListener();
+
+        betka.openSite(betka);
         if (!betka.login()) {
             System.exit(1);
         }
@@ -39,7 +39,7 @@ public class EntryPoint {
         System.exit(1);
     }
 
-    private static void exitListener() {
+    protected void exitListener() {
         String key = "c"; // take care: US-QWERTY keyboard layout based !!!
         int modifiers = KeyModifier.ALT + KeyModifier.CTRL;
 
@@ -54,44 +54,52 @@ public class EntryPoint {
         HotkeyManager.getInstance().addHotkey(key, modifiers, c_ALT_CTRL);
     }
 
-    public static void openSite(Bet365 betka) {
+    public void openSite(Bet365 betka) {
         focusBrowser();
 
         try {
             wait(3);
+            messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
             screen.wait(betka.PATTERN_LOGO, 10);
             logger.info("site already opened");
         } catch (FindFailed e) {
+            messageBox.showMessage("opening site ...", screen.getCenter());
             App.open(config.getConfigAsString(ConfigKey.browser) + " " + config.getConfigAsString(ConfigKey.siteUrl));
 
             try {
                 wait(3);
+                messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
                 screen.wait(betka.PATTERN_LOGO, 10);
             } catch (FindFailed ee) {
-                logger.error("can't find logo, probably site didn't open");
+                logger.error("can't find logo, probably site didn't open", ee);
             }
         }
     }
 
-    public static void focusBrowser() {
+    public void setSikuliLog(boolean enableLogs) {
+        Settings.ActionLogs = enableLogs;
+    }
+
+    public void focusBrowser() {
+        messageBox.showMessage("focusing Browser ...", screen.getCenter());
         App.focus(config.getConfigAsString(ConfigKey.browser));
     }
 
-    public static void maximisePage() {
+    public void maximisePage() {
         screen.type(Key.SPACE, KeyModifier.ALT);
-        EntryPoint.wait(1);
+        wait(1);
         try {
             screen.find(PATTERN_UNMAXIMIZE);
         } catch (FindFailed f) {
             screen.type("x");
-            EntryPoint.wait(1);
+            wait(1);
             return;
         }
 
         screen.type(Key.ESC);
     }
 
-    public static void wait(int sec) {
+    public void wait(int sec) {
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(sec));
         } catch (InterruptedException e) {

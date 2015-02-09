@@ -28,15 +28,15 @@ import java.util.regex.Matcher;
  * or
  * https://github.com/matthild/serverpages/blob/master/serverpages/source/scala/com/mh/serverpages/scala_/ScalaCompiler.scala#preparePage()
  */
-public class Bet365 {
+public class Bet365 extends EntryPoint {
 
     private final Logger logger = LoggerFactory.getLogger(Bet365.class);
     private final Configuration accountConfig = new Configuration(Configuration.CONFIG_ACCOUNT_SPECIFIC_FILE);
 
-    static Screen screen = new Screen();
-    static AccountInfo accountInfo = new AccountInfo();
-    private final String DIR_PATTERN = EntryPoint.config.getConfigAsString(ConfigKey.imageDir)
-            + File.separator + EntryPoint.config.getConfigAsString(ConfigKey.siteName) + File.separator;
+    AccountInfo accountInfo = new AccountInfo();
+
+    private final String DIR_PATTERN = config.getConfigAsString(ConfigKey.imageDir)
+            + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
 
     public final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png");
     public final Pattern PATTERN_HISTORY_BALANCE = new Pattern(DIR_PATTERN + "historyBalance.png");
@@ -57,14 +57,15 @@ public class Bet365 {
         }
 
         try {
+            messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
             logger.info("Trying to log in ...");
 
+            screen.click(PATTERN_LOGIN_FIELD);
             String username = accountConfig.getConfigAsString(ConfigKey.username);
             if (username == null || username.trim().isEmpty()) {
                 username = SikuliScript.input("Type your username");
             }
 
-            screen.click(PATTERN_LOGIN_FIELD);
             screen.click();
             screen.type(username);
             screen.type("\t");
@@ -77,8 +78,11 @@ public class Bet365 {
                 screen.click();
             }
 
+            setSikuliLog(false);
             screen.type(plainText);
             screen.type("\n");
+
+            setSikuliLog(true);
 
             if (checkLogin()) {
                 accountConfig.addConfig(ConfigKey.username, username);
@@ -108,8 +112,8 @@ public class Bet365 {
 
     private boolean checkLogin() {
         try {
-            EntryPoint.focusBrowser();
-            EntryPoint.wait(3);
+            focusBrowser();
+            wait(3);
             screen.wait(PATTERN_LOGO, 10);
             screen.find(PATTERN_LOGOUT_LINK);
             logger.info("You're logged in.");
@@ -125,12 +129,12 @@ public class Bet365 {
         try {
 
             screen.click(PATTERN_HISTORY_LINK);
-            EntryPoint.wait(1);
+            wait(1);
 
             getBalanceInfo();
 
             screen.click(PATTERN_HISTORY_DATE);
-            EntryPoint.wait(1);
+            wait(1);
 
             collectPendingMatchesInfo();
             collectFinishedMatchesInfo();
@@ -146,9 +150,9 @@ public class Bet365 {
         try {
             screen.doubleClick(PATTERN_HISTORY_BALANCE);
             screen.type(Key.UP, KeyModifier.SHIFT);
-            EntryPoint.wait(1);
+            wait(1);
             screen.type("c", KeyModifier.CTRL);
-            EntryPoint.wait(1);
+            wait(1);
             String balanceInfo = Env.getClipboard();
             logger.info("found balanceInfo = " + balanceInfo);
 
@@ -189,8 +193,8 @@ public class Bet365 {
     private void collectPendingMatchesInfo() throws FindFailed {
 
         screen.click(PATTERN_HISTORY_BUTTON_FIND);
-        EntryPoint.wait(2);
-        EntryPoint.maximisePage();
+        wait(2);
+        maximisePage();
 
         Iterator<Match> matches;
         try {
@@ -203,33 +207,33 @@ public class Bet365 {
         while (matches.hasNext()) {
             Match match = matches.next();
             match.click();
-            EntryPoint.wait(1);
+            wait(1);
 
             screen.doubleClick(PATTERN_HISTORY_SELECTION_TYPE_DRAW);
 
             screen.type(Key.DOWN, KeyModifier.SHIFT);
-            EntryPoint.wait(1);
+            wait(1);
             screen.type("c", KeyModifier.CTRL);
-            EntryPoint.wait(1);
+            wait(1);
             String matchInfo = Env.getClipboard();
             logger.info("found matchInfo = " + matchInfo);
 
             //colapse match info
             match.click();
-            EntryPoint.wait(1);
+            wait(1);
         }
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed {
         screen.click(PATTERN_HISTORY_PENDING_DROPDOWN);
-        EntryPoint.wait(1);
+        wait(1);
         screen.type(Key.DOWN);
         screen.type(Key.ENTER);
-        EntryPoint.wait(1);
+        wait(1);
 
         screen.click(PATTERN_HISTORY_BUTTON_FIND);
-        EntryPoint.wait(1);
-        EntryPoint.maximisePage();
+        wait(1);
+        maximisePage();
 
         Iterator<Match> matches;
         try {
@@ -242,20 +246,20 @@ public class Bet365 {
         while (matches.hasNext()) {
             Match match = matches.next();
             match.click();
-            EntryPoint.wait(1);
+            wait(1);
 
             screen.doubleClick(PATTERN_HISTORY_SELECTION_TYPE_DRAW);
 
             screen.type(Key.DOWN, KeyModifier.SHIFT);
-            EntryPoint.wait(1);
+            wait(1);
             screen.type("c", KeyModifier.CTRL);
-            EntryPoint.wait(1);
+            wait(1);
             String matchInfo = Env.getClipboard();
             logger.info("found matchInfo = " + matchInfo);
 
             //colapse match info
             match.click();
-            EntryPoint.wait(1);
+            wait(1);
         }
     }
 
@@ -264,7 +268,7 @@ public class Bet365 {
         try {
             screen.hover(PATTERN_LOGO);
             screen.wheel(1, 1);
-            EntryPoint.wait(1);
+            wait(1);
             screen.click(PATTERN_FOOTBALL_LINK, 0);
         } catch (FindFailed e) {
             e.printStackTrace();

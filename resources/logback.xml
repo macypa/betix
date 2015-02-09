@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="true">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
@@ -9,8 +9,9 @@
     </appender>
 
     <logger name="betix.bet365" level="debug"/>
+    <logger name="betix.core" level="debug"/>
 
-    <root level="OFF">
+    <root level="error">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
