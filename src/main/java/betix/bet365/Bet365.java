@@ -5,7 +5,6 @@ import betix.core.AccountInfo;
 import betix.core.ConfigKey;
 import betix.core.Configuration;
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
-import org.sikuli.basics.Settings;
 import org.sikuli.basics.SikuliScript;
 import org.sikuli.script.*;
 import org.slf4j.Logger;
@@ -58,7 +57,7 @@ public class Bet365 {
     private final Pattern PATTERN_LOGIN_OK_BUTTON = new Pattern(DIR_PATTERN + "loginOKbutton.png");
 
     public static void main(String[] args) {
-        Settings.ActionLogs = false;
+        //Settings.ActionLogs = false;
 
         Bet365 betka = new Bet365();
         betka.openSite();
@@ -99,7 +98,7 @@ public class Bet365 {
         try {
             logger.info("Trying to log in ...");
 
-            String username = config.getConfigAsString(ConfigKey.username);
+            String username = config.getConfigAsString(ConfigKey.username, true);
             if (username == null || username.trim().isEmpty()) {
                 username = SikuliScript.input("Type your username");
             }
@@ -121,7 +120,7 @@ public class Bet365 {
             screen.type("\n");
 
             if (checkLogin()) {
-                config.addConfig(ConfigKey.username, username);
+                config.addConfig(ConfigKey.username, username, false, true);
                 config.addConfig(ConfigKey.password, encodePass(plainText), false, true);
                 config.saveConfig();
             } else {
@@ -129,7 +128,7 @@ public class Bet365 {
             }
         } catch (FindFailed e) {
             SikuliScript.popup("Could NOT log in.");
-            logger.error("Not logged in!");
+            logger.error("Not logged in!", e);
             return false;
         }
         return true;
@@ -166,11 +165,10 @@ public class Bet365 {
 
             screen.click(PATTERN_HISTORY_LINK);
             wait(1);
-            maximisePage();
 
             getBalanceInfo();
 
-            screen.find(PATTERN_HISTORY_DATE).click(PATTERN_RADIO_BUTTON);
+            screen.click(PATTERN_HISTORY_DATE);
             wait(1);
 
             collectPendingMatchesInfo();
@@ -279,10 +277,17 @@ public class Bet365 {
     private void collectPendingMatchesInfo() throws FindFailed {
 
         screen.click(PATTERN_HISTORY_BUTTON_FIND);
-        wait(1);
+        wait(2);
         maximisePage();
 
-        Iterator<Match> matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
+        Iterator<Match> matches;
+        try {
+            matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
+        } catch (FindFailed f) {
+            logger.info("no matches pending found.");
+            return;
+        }
+
         while (matches.hasNext()) {
             Match match = matches.next();
             match.click();
@@ -314,7 +319,14 @@ public class Bet365 {
         wait(1);
         maximisePage();
 
-        Iterator<Match> matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
+        Iterator<Match> matches;
+        try {
+            matches = screen.findAll(PATTERN_HISTORY_MATCH_LINK);
+        } catch (FindFailed f) {
+            logger.info("no matches finished found.");
+            return;
+        }
+
         while (matches.hasNext()) {
             Match match = matches.next();
             match.click();
