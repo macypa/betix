@@ -14,36 +14,39 @@ public class Configuration {
 
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
     private final static File CONFIG_FILE = new File("config.yml");
-    private final static File CONFIG_SENSITIVE_FILE = new File("config_sensitive.yml");
+    public final static File CONFIG_ACCOUNT_SPECIFIC_FILE = new File("config_account_specific.yml");
 
-    private final static Map<String, Object> config;
-    private final static Map<String, Object> configSensitive;
+    private final Map<String, Object> config;
+    private File file;
 
-    static {
+    public Configuration() {
+        this(CONFIG_FILE);
+    }
+
+    public Configuration(File file) {
+        this.file = file;
+
         Map<String, Object> configTemp;
-        Map<String, Object> configSensitiveTemp;
         try {
-            configTemp = Yaml.loadType(CONFIG_FILE, LinkedHashMap.class);
-            configSensitiveTemp = Yaml.loadType(CONFIG_SENSITIVE_FILE, LinkedHashMap.class);
+            configTemp = Yaml.loadType(file, LinkedHashMap.class);
         } catch (Exception e) {
             configTemp = new HashMap<>();
-            configSensitiveTemp = new HashMap<>();
-            configTemp.put(ConfigKey.browser.name(), "firefox");
-            configTemp.put(ConfigKey.imageDir.name(), "img");
-            configTemp.put(ConfigKey.siteName.name(), "bet365.com");
-            configTemp.put(ConfigKey.siteUrl.name(), "http://www.bet365.com");
-            logger.error("can't load config", e);
+            if (file.equals(CONFIG_FILE)) {
+                configTemp.put(ConfigKey.browser.name(), "firefox");
+                configTemp.put(ConfigKey.imageDir.name(), "img");
+                configTemp.put(ConfigKey.siteName.name(), "bet365.com");
+                configTemp.put(ConfigKey.siteUrl.name(), "http://www.788-sb.com");
+                logger.error("can't load config", e);
 
-            try {
-                logger.info("Creating default config");
-                Yaml.dump(configTemp, CONFIG_FILE);
-            } catch (FileNotFoundException ee) {
-                logger.warn("Error saving config", ee);
+                try {
+                    logger.info("Creating default config");
+                    Yaml.dump(configTemp, file);
+                } catch (FileNotFoundException ee) {
+                    logger.warn("Error saving config", ee);
+                }
             }
-
         }
         config = configTemp;
-        configSensitive = configSensitiveTemp;
     }
 
     public void addConfig(ConfigKey key, Object value) {
@@ -51,15 +54,8 @@ public class Configuration {
     }
 
     public void addConfig(ConfigKey key, Object value, boolean persist) {
-        addConfig(key, value, persist, false);
-    }
+        config.put(key.name(), value);
 
-    public void addConfig(ConfigKey key, Object value, boolean persist, boolean sensitive) {
-        if (sensitive) {
-            configSensitive.put(key.name(), value);
-        } else {
-            config.put(key.name(), value);
-        }
         if (persist) {
             saveConfig();
         }
@@ -73,13 +69,6 @@ public class Configuration {
         return (String) config.get(key.name());
     }
 
-    public String getConfigAsString(ConfigKey key, boolean sensitive) {
-        if (sensitive) {
-            return (String) configSensitive.get(key.name());
-        }
-        return getConfigAsString(key);
-    }
-
     public Integer getConfigAsInteger(ConfigKey key) {
         return (Integer) config.get(key.name());
     }
@@ -90,12 +79,7 @@ public class Configuration {
 
     public void saveConfig() {
         try {
-            Yaml.dump(config, CONFIG_FILE);
-        } catch (FileNotFoundException e) {
-            logger.warn("Error saving config", e);
-        }
-        try {
-            Yaml.dump(configSensitive, CONFIG_SENSITIVE_FILE);
+            Yaml.dump(config, file);
         } catch (FileNotFoundException e) {
             logger.warn("Error saving config", e);
         }
