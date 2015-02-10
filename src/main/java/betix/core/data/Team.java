@@ -19,6 +19,9 @@ public class Team {
     private File image;
     private Pattern pattern;
 
+    public Team() {
+    }
+
     public Team(String name) {
         this.name = name;
         this.image = new File(TEAM_DIR_NAME, name + config.getConfigAsString(ConfigKey.imageExt));

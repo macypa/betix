@@ -1,7 +1,6 @@
 package betix.core;
 
 import betix.bet365.Bet365;
-import betix.core.data.AccountInfo;
 import betix.core.data.ImagePattern;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
@@ -18,7 +17,6 @@ public abstract class BettingMachine {
     protected static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     public final Configuration config = new Configuration();
 
-    AccountInfo accountInfo = new AccountInfo();
 
     public Screen screen = new Screen();
     public MessageBoxFrame messageBox = new MessageBoxFrame();
@@ -118,8 +116,9 @@ public abstract class BettingMachine {
         }
     }
 
-    public AccountInfo getAccountInfo() {
-        return accountInfo;
-    }
+    public abstract boolean login();
 
+    public abstract void collectInfo();
+
+    public abstract Configuration getAccountConfig();
 }

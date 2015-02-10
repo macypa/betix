@@ -8,6 +8,7 @@ public enum ConfigKey {
     siteName,
     siteUrl,
     username,
-    password
+    password,
+    accountInfo
 
 }

@@ -4,6 +4,5 @@ public enum MatchState {
 
     pending,
     losing,
-    winning,
-    finished
+    winning
 }
