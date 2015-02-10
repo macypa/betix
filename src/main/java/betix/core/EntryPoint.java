@@ -59,9 +59,9 @@ public abstract class EntryPoint {
         focusBrowser();
 
         try {
-            wait(3);
             messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
-            screen.wait(betka.PATTERN_LOGO, 10);
+            screen.wait(betka.PATTERN_LOGO_IN_TAB, 5);
+            screen.click(betka.PATTERN_LOGO_IN_TAB);
             logger.info("site already opened");
         } catch (FindFailed e) {
             messageBox.showMessage("opening site ...", screen.getCenter());
@@ -70,7 +70,8 @@ public abstract class EntryPoint {
             try {
                 wait(3);
                 messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
-                screen.wait(betka.PATTERN_LOGO, 10);
+                screen.wait(betka.PATTERN_LOGO_IN_TAB, 5);
+                screen.click(betka.PATTERN_LOGO_IN_TAB);
             } catch (FindFailed ee) {
                 logger.error("can't find logo, probably site didn't open", ee);
             }
@@ -105,8 +106,12 @@ public abstract class EntryPoint {
     }
 
     public void wait(int sec) {
+        waitMilisec(TimeUnit.SECONDS.toMillis(sec));
+    }
+
+    public void waitMilisec(long milisec) {
         try {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(sec));
+            Thread.sleep(milisec);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

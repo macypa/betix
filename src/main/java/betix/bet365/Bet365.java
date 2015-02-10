@@ -38,10 +38,11 @@ public class Bet365 extends EntryPoint {
             + File.separator + config.getConfigAsString(ConfigKey.siteName) + File.separator;
 
     public final Pattern PATTERN_FOOTBALL_LINK = new Pattern(DIR_PATTERN + "football.png").similar(similarity);
-    public final Pattern PATTERN_HISTORY_BALANCE = new Pattern(DIR_PATTERN + "historyBalance.png");
+    public final Pattern PATTERN_HISTORY_TITLE = new Pattern(DIR_PATTERN + "historyTitle.png");
     public final Pattern PATTERN_HISTORY_LINK = new Pattern(DIR_PATTERN + "historyLink.png");
     public final Pattern PATTERN_LOGIN_FIELD = new Pattern(DIR_PATTERN + "loginField.png").similar(similarity);
     public final Pattern PATTERN_LOGO = new Pattern(DIR_PATTERN + "logo.png").similar(similarity);
+    public final Pattern PATTERN_LOGO_IN_TAB = new Pattern(DIR_PATTERN + "logoInBrowserTab.png").similar(similarity);
     public final Pattern PATTERN_LOGOUT_LINK = new Pattern(DIR_PATTERN + "logoutLink.png");
     public final Pattern PATTERN_PASSWORD_FIELD = new Pattern(DIR_PATTERN + "passwordField.png").similar(similarity);
 
@@ -110,8 +111,9 @@ public class Bet365 extends EntryPoint {
     private boolean checkLogin() {
         try {
             focusBrowser();
-            wait(3);
-            screen.wait(PATTERN_LOGO, 10);
+            screen.wait(PATTERN_LOGO_IN_TAB, 5);
+            screen.click(PATTERN_LOGO_IN_TAB);
+            wait(1);
             screen.find(PATTERN_LOGOUT_LINK);
             logger.info("You're logged in.");
             return true;
@@ -126,52 +128,58 @@ public class Bet365 extends EntryPoint {
         try {
 
             screen.click(PATTERN_HISTORY_LINK);
-            wait(1);
+            wait(2);
+
+            screen.hover(PATTERN_HISTORY_TITLE);
 
             getBalanceInfo();
 
             collectPendingMatchesInfo();
             collectFinishedMatchesInfo();
-            screen.doubleClick(PATTERN_HISTORY_BALANCE);
 
         } catch (FindFailed e) {
             e.printStackTrace();
         } finally {
-//            screen.type(Key.SPACE, KeyModifier.ALT);
-//            wait(1);
-//            screen.type("c");
+            try {
+                screen.mouseMove(screen.getCenter());
+            } catch (FindFailed f) {
+                logger.error("can't move mouse to center of the screen...probably can't close the histor page");
+            }
+            messageBox.setVisible(false);
             screen.type(Key.F4, KeyModifier.CTRL);
         }
     }
 
     private void getBalanceInfo() {
-        try {
-            screen.doubleClick(PATTERN_HISTORY_BALANCE);
-            screen.type(Key.UP, KeyModifier.SHIFT);
-            screen.type("c", KeyModifier.CTRL);
-            String balanceInfo = Env.getClipboard();
-            logger.info("found balanceInfo = " + balanceInfo);
 
-            java.util.regex.Pattern MY_PATTERN = java.util.regex.Pattern.compile(".*?\\(BGN\\)\\s*(.*?)\\s*BGN");
-            Matcher m = MY_PATTERN.matcher(balanceInfo);
-            while (m.find()) {
-                String s = m.group(1);
-                Double balance = Double.valueOf(s.replaceAll(",", "."));
-                logger.info("found balance = " + balance);
-                accountInfo.setBalance(balance);
-            }
-        } catch (FindFailed findFailed) {
+        screen.type(Key.TAB, KeyModifier.SHIFT);
+
+        screen.type(Key.DOWN, KeyModifier.SHIFT);
+        screen.type("c", KeyModifier.CTRL);
+        String balanceInfo = Env.getClipboard();
+        logger.info("found balanceInfo = " + balanceInfo);
+
+        java.util.regex.Pattern MY_PATTERN = java.util.regex.Pattern.compile("(.*?)\\s*BGN");
+        Matcher m = MY_PATTERN.matcher(balanceInfo);
+        if (m.find()) {
+            String s = m.group(1);
+            Double balance = Double.valueOf(s.replaceAll(",", "."));
+            logger.info("found balance = " + balance);
+            accountInfo.setBalance(balance);
+        } else {
+            messageBox.showMessage("can't get balance .... no biggy.", screen.getCenter());
             logger.error("can't get balance .... no biggy.");
         }
     }
 
     private void collectPendingMatchesInfo() throws FindFailed {
-        messageBox.showMessage("searching balance pattern", screen.getCenter());
-        screen.doubleClick(PATTERN_HISTORY_BALANCE);
+
+        screen.doubleClick(PATTERN_HISTORY_TITLE);
         screen.type(Key.TAB);
+        screen.type(Key.TAB);
+
         screen.type(Key.UP);
         screen.type(Key.TAB);
-        wait(1);
         screen.type(Key.RIGHT);
         wait(1);
         screen.type(Key.ENTER);
@@ -180,15 +188,17 @@ public class Bet365 extends EntryPoint {
         screen.type(Key.TAB);
 
         getMatchInfo();
+        messageBox.setVisible(false);
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed {
-        messageBox.showMessage("searching balance pattern", screen.getCenter());
-        screen.doubleClick(PATTERN_HISTORY_BALANCE);
+
+        screen.doubleClick(PATTERN_HISTORY_TITLE);
         screen.type(Key.TAB);
+        screen.type(Key.TAB);
+
         screen.type(Key.DOWN);
         screen.type(Key.TAB);
-        wait(1);
         screen.type(Key.RIGHT);
         wait(1);
         screen.type(Key.ENTER);
@@ -199,6 +209,7 @@ public class Bet365 extends EntryPoint {
         screen.type(Key.TAB);
 
         getMatchInfo();
+        messageBox.setVisible(false);
     }
 
     private void getMatchInfo() {
@@ -208,17 +219,13 @@ public class Bet365 extends EntryPoint {
             screen.type("c", KeyModifier.CTRL);
 
             String matchInfo = Env.getClipboard();
-            if (!matchInfo.contains("Равен ")) {
-                messageBox.showMessage("matchInfo : " + matchInfo, screen.getCenter());
-                screen.type(Key.TAB, KeyModifier.SHIFT);
-                screen.type(Key.TAB, KeyModifier.SHIFT);
-                screen.type(Key.TAB, KeyModifier.SHIFT);
-                wait(1);
+            if (!matchInfo.contains("Равен @ ")) {
+                logger.info("end of matchInfo, last is : " + matchInfo, screen.getCenter());
                 return;
             }
 
             screen.type(Key.ENTER);
-            wait(1);
+            waitMilisec(500);
 
             screen.type(Key.DOWN, KeyModifier.SHIFT);
             screen.type(Key.UP, KeyModifier.SHIFT);
@@ -227,8 +234,6 @@ public class Bet365 extends EntryPoint {
             logger.info("found matchInfo = " + matchInfo);
 
             screen.type(Key.ENTER);
-            wait(1);
-
         }
     }
 
