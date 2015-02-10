@@ -35,13 +35,24 @@ public class Bet365 extends BettingMachine {
         new AccountInfoManager(this).collectInfo();
     }
 
-    public void openFootbalPage() {
-
+    public void openMyTeamsPage() {
         try {
-            screen.hover(ImagePattern.PATTERN_LOGO.pattern);
-            screen.wheel(1, 1);
-            wait(1);
-            screen.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern, 0);
+            screen.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+
+            screen.wait(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern, 5);
+            screen.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
+
+            screen.wait(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern, 5);
+            screen.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
+
+            screen.wait(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern, 5);
+            screen.click(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
+
+            screen.wait(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern, 5);
+            screen.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
+
+            screen.type("0.50");
+
         } catch (FindFailed e) {
             e.printStackTrace();
         }

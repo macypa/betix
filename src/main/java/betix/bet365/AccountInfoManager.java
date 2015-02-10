@@ -86,8 +86,10 @@ public class AccountInfoManager {
         screen.type(Key.TAB);
         screen.type(Key.RIGHT);
         betingMachine.wait(1);
+
         screen.type(Key.ENTER);
-        betingMachine.wait(2);
+        screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
+
         screen.type(Key.TAB);
         screen.type(Key.TAB);
 
@@ -105,8 +107,10 @@ public class AccountInfoManager {
         screen.type(Key.TAB);
         screen.type(Key.RIGHT);
         betingMachine.wait(1);
+
         screen.type(Key.ENTER);
-        betingMachine.wait(2);
+        screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
+
         screen.type(Key.TAB);
         screen.type(Key.TAB);
         screen.type(Key.TAB);

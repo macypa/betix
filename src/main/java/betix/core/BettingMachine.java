@@ -27,14 +27,14 @@ public abstract class BettingMachine {
 
         betka.exitListener();
 
-        betka.openSite(betka);
+        betka.openSite();
         if (!betka.login()) {
             System.exit(1);
         }
 
         betka.collectInfo();
 
-//        betka.openFootbalPage();
+        betka.openMyTeamsPage();
 
         System.exit(1);
     }
@@ -54,7 +54,7 @@ public abstract class BettingMachine {
         HotkeyManager.getInstance().addHotkey(key, modifiers, c_ALT_CTRL);
     }
 
-    public void openSite(Bet365 betka) {
+    public void openSite() {
         focusBrowser();
 
         try {
@@ -121,4 +121,6 @@ public abstract class BettingMachine {
     public abstract void collectInfo();
 
     public abstract Configuration getAccountConfig();
+
+    public abstract void openMyTeamsPage();
 }
