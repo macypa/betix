@@ -33,9 +33,11 @@ public class Configuration {
             configTemp = new HashMap<>();
             if (file.equals(CONFIG_FILE)) {
                 configTemp.put(ConfigKey.browser.name(), "firefox");
+                configTemp.put(ConfigKey.siteUrl.name(), "http://www.788-sb.com");
                 configTemp.put(ConfigKey.imageDir.name(), "img");
                 configTemp.put(ConfigKey.siteName.name(), "bet365.com");
-                configTemp.put(ConfigKey.siteUrl.name(), "http://www.788-sb.com");
+                configTemp.put(ConfigKey.teamImageDir.name(), "team");
+                configTemp.put(ConfigKey.imageExt.name(), ".png");
                 logger.error("can't load config", e);
 
                 try {

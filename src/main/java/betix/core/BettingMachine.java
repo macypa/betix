@@ -1,6 +1,8 @@
 package betix.core;
 
 import betix.bet365.Bet365;
+import betix.core.data.AccountInfo;
+import betix.core.data.ImagePattern;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
 import org.sikuli.basics.HotkeyManager;
@@ -11,13 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class EntryPoint {
+public abstract class BettingMachine {
 
-    protected static final Logger logger = LoggerFactory.getLogger(EntryPoint.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     public final Configuration config = new Configuration();
 
-    protected float similarity = 0.5f;
-    public Pattern PATTERN_UNMAXIMIZE = new Pattern("unmaximize.png").similar(similarity);
+    AccountInfo accountInfo = new AccountInfo();
 
     public Screen screen = new Screen();
     public MessageBoxFrame messageBox = new MessageBoxFrame();
@@ -60,8 +61,8 @@ public abstract class EntryPoint {
 
         try {
             messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
-            screen.wait(betka.PATTERN_LOGO_IN_TAB, 5);
-            screen.click(betka.PATTERN_LOGO_IN_TAB);
+            screen.wait(ImagePattern.PATTERN_LOGO_IN_TAB.pattern, 5);
+            screen.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             logger.info("site already opened");
         } catch (FindFailed e) {
             messageBox.showMessage("opening site ...", screen.getCenter());
@@ -70,8 +71,8 @@ public abstract class EntryPoint {
             try {
                 wait(3);
                 messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
-                screen.wait(betka.PATTERN_LOGO_IN_TAB, 5);
-                screen.click(betka.PATTERN_LOGO_IN_TAB);
+                screen.wait(ImagePattern.PATTERN_LOGO_IN_TAB.pattern, 5);
+                screen.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             } catch (FindFailed ee) {
                 logger.error("can't find logo, probably site didn't open", ee);
             }
@@ -95,7 +96,7 @@ public abstract class EntryPoint {
         screen.type(Key.SPACE, KeyModifier.ALT);
         wait(1);
         try {
-            screen.find(PATTERN_UNMAXIMIZE);
+            screen.find(ImagePattern.PATTERN_UNMAXIMIZE.pattern);
         } catch (FindFailed f) {
             screen.type("x");
             wait(1);
@@ -116,4 +117,9 @@ public abstract class EntryPoint {
             e.printStackTrace();
         }
     }
+
+    public AccountInfo getAccountInfo() {
+        return accountInfo;
+    }
+
 }

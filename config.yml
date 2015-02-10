@@ -1,5 +1,7 @@
 --- 
 imageDir: img
+teamImageDir: team
 siteUrl: "http://www.788-sb.com"
+imageExt: .png
 browser: firefox
 siteName: bet365.com

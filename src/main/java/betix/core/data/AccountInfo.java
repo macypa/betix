@@ -1,0 +1,14 @@
+package betix.core.data;
+
+import lombok.Data;
+
+import java.util.LinkedList;
+import java.util.List;
+
+@Data
+public class AccountInfo {
+
+    private double balance;
+    private List<MatchInfo> matchInfo = new LinkedList<>();
+
+}
