@@ -9,6 +9,7 @@ import java.util.List;
 public class AccountInfo {
 
     private double balance;
-    private List<MatchInfo> matchInfo = new LinkedList<>();
+    private List<MatchInfo> matchInfoPending = new LinkedList<>();
+    private List<MatchInfo> matchInfoFinished = new LinkedList<>();
 
 }

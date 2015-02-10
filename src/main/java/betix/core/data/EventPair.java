@@ -17,4 +17,5 @@ public class EventPair {
         this.firstTeam = new Team(name.substring(name.indexOf(" v ") + 3).trim());
         this.secondTeam = new Team(name.substring(0, name.indexOf(" v ")).trim());
     }
+
 }

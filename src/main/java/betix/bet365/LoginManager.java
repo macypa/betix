@@ -8,6 +8,7 @@ import betix.core.data.ImagePattern;
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 import org.sikuli.basics.SikuliScript;
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.Key;
 import org.sikuli.script.Screen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +39,12 @@ public class LoginManager {
             logger.info("Trying to log in ...");
 
             screen.click(ImagePattern.PATTERN_LOGIN_FIELD.pattern);
+            boolean updateUserPass = false;
             String username = accountConfig.getConfigAsString(ConfigKey.username);
             if (username == null || username.trim().isEmpty()) {
                 messageBox.setVisible(false);
                 username = SikuliScript.input("Type your username");
+                updateUserPass = true;
             }
 
             screen.click();
@@ -52,6 +55,7 @@ public class LoginManager {
             if (plainText == null || plainText.trim().isEmpty()) {
                 messageBox.setVisible(false);
                 plainText = SikuliScript.input("enter pass to encript and store");
+                updateUserPass = true;
 
                 screen.click(ImagePattern.PATTERN_PASSWORD_FIELD.pattern);
                 screen.click();
@@ -59,18 +63,19 @@ public class LoginManager {
 
             betingMachine.enableSikuliLog(false);
             screen.type(plainText);
-            screen.type("\n");
-
             betingMachine.enableSikuliLog(true);
+            screen.type(Key.ENTER);
 
             if (checkLogin()) {
-                accountConfig.addConfig(ConfigKey.username, username);
-                accountConfig.addConfig(ConfigKey.password, encodePass(plainText));
-                accountConfig.saveConfig();
-            } else {
-                return false;
+                if (updateUserPass) {
+                    accountConfig.addConfig(ConfigKey.username, username);
+                    accountConfig.addConfig(ConfigKey.password, encodePass(plainText));
+                    accountConfig.saveConfig();
+                }
+                return true;
             }
         } catch (FindFailed e) {
+
             messageBox.setVisible(false);
             SikuliScript.popup("Could NOT log in.");
             logger.error("Not logged in!", e);

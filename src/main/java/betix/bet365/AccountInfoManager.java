@@ -39,6 +39,7 @@ public class AccountInfoManager {
 
         try {
 
+            screen.wait(ImagePattern.PATTERN_HISTORY_LINK.pattern, 5);
             screen.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
             betingMachine.wait(2);
 
@@ -55,7 +56,7 @@ public class AccountInfoManager {
             try {
                 screen.mouseMove(screen.getCenter());
             } catch (FindFailed f) {
-                logger.error("can't move mouse to center of the screen...probably can't close the histor page");
+                logger.error("can't move mouse to center of the screen...probably can't close the history page");
             }
             messageBox.setVisible(false);
             screen.type(Key.F4, KeyModifier.CTRL);
@@ -71,7 +72,7 @@ public class AccountInfoManager {
         String balanceInfo = Env.getClipboard();
         logger.info("found balanceInfo = " + balanceInfo);
 
-        String price = searchRegEx(balanceInfo, "(.*?)\\s*BGN");
+        String price = searchRegEx(balanceInfo, "\\s*(.*?)\\s*BGN");
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
     }
 
@@ -124,6 +125,8 @@ public class AccountInfoManager {
             String matchInfo = Env.getClipboard();
             if (!matchInfo.contains("Равен @ ")) {
                 logger.info("end of matchInfo, last is : " + matchInfo, screen.getCenter());
+                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+                accountConfig.saveConfig();
                 return;
             }
 
@@ -134,15 +137,26 @@ public class AccountInfoManager {
             screen.type(Key.UP, KeyModifier.SHIFT);
             screen.type("c", KeyModifier.CTRL);
             matchInfo = Env.getClipboard();
-            logger.info("found matchInfo = " + matchInfo);
-
-            addToAccountInfo(matchInfo);
+            logger.trace("found matchInfo string = " + matchInfo);
 
             screen.type(Key.ENTER);
+
+            MatchInfo info = addToAccountInfo(matchInfo);
+            logger.info("found MatchInfo = " + info);
+            if (MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoPending().contains(info)) {
+                accountInfo.getMatchInfoPending().add(info);
+            } else if (!MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoFinished().contains(info)) {
+                accountInfo.getMatchInfoFinished().add(info);
+            } else {
+                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+                accountConfig.saveConfig();
+                return;
+            }
+
         }
     }
 
-    private void addToAccountInfo(String matchInfoString) {
+    private MatchInfo addToAccountInfo(String matchInfoString) {
         MatchInfo matchInfo = new MatchInfo();
 
         if (matchInfoString.contains("Текущ")) {
@@ -160,10 +174,7 @@ public class AccountInfoManager {
         matchInfo.setEvent(new EventPair(searchRegEx(matchInfoString, "Равен\\s*(.*?)\\s*\\(Краен Резултат")));
         matchInfo.setDate(new Date(searchRegEx(matchInfoString, "Краен Резултат\\)\\s*(.*?)\\s*Никой")));
 
-        accountInfo.getMatchInfo().add(matchInfo);
-        accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-        accountConfig.saveConfig();
-
+        return matchInfo;
     }
 
     private String searchRegEx(String balanceInfo, String regex) {

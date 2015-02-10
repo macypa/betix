@@ -9,7 +9,7 @@ import java.io.File;
 public enum ImagePattern {
     PATTERN_UNMAXIMIZE("unmaximise.png", ConfigKey.imageDir, 0.5f),
     PATTERN_FOOTBALL_LINK("football.png", 0.5f),
-    PATTERN_HISTORY_TITLE("historyTitle.png"),
+    PATTERN_HISTORY_TITLE("historyTitle.png", 0.5f),
     PATTERN_HISTORY_LINK("historyLink.png"),
     PATTERN_LOGIN_FIELD("loginField.png", 0.5f),
     PATTERN_LOGO("logo.png", 0.5f),

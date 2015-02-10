@@ -3,11 +3,13 @@ package betix.core.data;
 import betix.core.ConfigKey;
 import betix.core.Configuration;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.sikuli.script.Pattern;
 
 import java.io.File;
 
 @Data
+@EqualsAndHashCode(exclude = {"config", "TEAM_DIR_NAME", "image", "pattern"})
 public class Team {
 
     public final Configuration config = new Configuration();
