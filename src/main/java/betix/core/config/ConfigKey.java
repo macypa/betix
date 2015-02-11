@@ -2,6 +2,7 @@ package betix.core.config;
 
 public enum ConfigKey {
     browser,
+    placeBet,
     imageDir,
     teamImageDir,
     imageExt,

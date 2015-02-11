@@ -159,18 +159,21 @@ class AccountInfoManager {
 
             screen.type(Key.ENTER);
 
-            MatchInfo info = addToAccountInfo(matchInfo);
-            logger.info("found MatchInfo = " + info);
-            if (MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoPending().contains(info)) {
-                accountInfo.getMatchInfoPending().add(info);
-            } else if (!MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoFinished().contains(info)) {
-                accountInfo.getMatchInfoFinished().add(info);
-            } else {
-                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-                accountConfig.saveConfig();
-                return;
+            try {
+                MatchInfo info = addToAccountInfo(matchInfo);
+                logger.info("found MatchInfo = " + info);
+                if (MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoPending().contains(info)) {
+                    accountInfo.getMatchInfoPending().add(info);
+                } else if (!MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoFinished().contains(info)) {
+                    accountInfo.getMatchInfoFinished().add(info);
+                } else {
+                    accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+                    accountConfig.saveConfig();
+                    return;
+                }
+            } catch (Exception e) {
+                messageBox.showMessage("can't parse info: " + e.getLocalizedMessage(), logger);
             }
-
         }
     }
 

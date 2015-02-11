@@ -17,7 +17,8 @@ public enum ImagePattern {
     PATTERN_LOGIN_FIELD("loginField.png", 0.5f),
     PATTERN_LOGO("logo.png", 0.5f),
     PATTERN_LOGO_IN_TAB("logoInBrowserTab.png", 0.5f),
-    PATTERN_PASSWORD_FIELD("passwordField.png", 0.5f);
+    PATTERN_PASSWORD_FIELD("passwordField.png", 0.5f),
+    PATTERN_PLACE_BET_BUTTON("placeBetButton.png", 0.5f);
 
 
     private final File DEFAULT_DIR = new File(Configuration.getDefaultConfig().getConfigAsString(ConfigKey.imageDir),

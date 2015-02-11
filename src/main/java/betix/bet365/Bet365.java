@@ -72,20 +72,24 @@ public class Bet365 extends BettingMachine {
     }
 
     private void placeBet(Team team) throws FindFailed {
+        if (isAlreadyPlaced(team)) {
+            return;
+        }
+
         screen.wait(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern, 5);
         screen.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern).
                 below(50).click(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
 
         click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
-        if (isAlreadyPlaced(team)) {
-            return;
-        }
-
         screen.type(String.valueOf(calculateStake(team)));
 
         logger.info("placing the bet");
-//            screen.type(Key.ENTER);
+        if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
+            click(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
+        } else {
+
+        }
     }
 
     private Double calculateStake(Team team) {

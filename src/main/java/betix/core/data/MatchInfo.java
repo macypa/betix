@@ -35,7 +35,7 @@ import java.util.Date;
  * Залог:  0,50   Печалби:  1,65
  */
 @Data
-public class MatchInfo {
+public class MatchInfo implements Comparable {
 
     private MatchState state = MatchState.pending;
     private double coefficient;
@@ -44,4 +44,16 @@ public class MatchInfo {
     private Date date;
     private Event event;
 
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof MatchInfo)) return 1;
+        final MatchInfo other = (MatchInfo) o;
+
+        if (!this.getDate().equals(other.getDate())) {
+            return getDate().compareTo(other.getDate());
+        } else if (!getEvent().getName().equals(other.getEvent().getName())) {
+            return getEvent().getName().compareTo(other.getEvent().getName());
+        }
+        return 0;
+    }
 }
