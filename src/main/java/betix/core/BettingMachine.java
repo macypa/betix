@@ -1,6 +1,9 @@
 package betix.core;
 
 import betix.bet365.Bet365;
+import betix.core.config.ConfigKey;
+import betix.core.config.Configuration;
+import betix.core.config.ImagePattern;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
 import org.sikuli.basics.HotkeyManager;
@@ -14,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BettingMachine {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
-    protected final Configuration config = new Configuration();
+    protected static final Configuration config = Configuration.getDefaultConfig();
 
 
     public final Screen screen = new Screen();
@@ -114,6 +117,16 @@ public abstract class BettingMachine {
         } catch (InterruptedException e) {
             logger.error("error in waitMilisec() ", e);
         }
+    }
+
+    public void click(Pattern pattern) throws FindFailed {
+        screen.wait(pattern, 5);
+        screen.click(pattern);
+    }
+
+    public void doubleClick(Pattern pattern) throws FindFailed {
+        screen.wait(pattern, 5);
+        screen.doubleClick(pattern);
     }
 
     public abstract boolean login();

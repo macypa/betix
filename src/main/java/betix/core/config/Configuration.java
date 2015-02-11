@@ -1,5 +1,6 @@
-package betix.core;
+package betix.core.config;
 
+import betix.core.data.AccountInfo;
 import org.ho.yaml.Yaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,13 @@ public class Configuration {
     private final Map<String, Object> config;
     private final File file;
 
-    public Configuration() {
+    public static final Configuration configuration = new Configuration();
+
+    public static Configuration getDefaultConfig() {
+        return configuration;
+    }
+
+    private Configuration() {
         this(CONFIG_FILE);
     }
 
@@ -49,6 +56,15 @@ public class Configuration {
             }
         }
         config = configTemp;
+    }
+
+    public AccountInfo getAccountInfo() {
+        Object accInfo = getConfig(ConfigKey.accountInfo);
+        if (accInfo != null && accInfo instanceof AccountInfo) {
+            return (AccountInfo) accInfo;
+        } else {
+            return new AccountInfo();
+        }
     }
 
     public void addConfig(ConfigKey key, Object value) {

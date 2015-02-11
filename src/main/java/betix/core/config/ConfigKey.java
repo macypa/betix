@@ -1,4 +1,4 @@
-package betix.core;
+package betix.core.config;
 
 public enum ConfigKey {
     browser,

@@ -1,6 +1,6 @@
 package betix.scala
 
-import betix.core.{ConfigKey, Configuration}
+import betix.core.config.{ConfigKey, Configuration}
 import org.sikuli.basics.SikuliScript
 import org.sikuli.script.{App, FindFailed, Pattern, Screen}
 import org.slf4j.{Logger, LoggerFactory}

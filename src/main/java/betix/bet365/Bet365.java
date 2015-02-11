@@ -1,11 +1,15 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
-import betix.core.Configuration;
-import betix.core.ImagePattern;
+import betix.core.config.Configuration;
+import betix.core.config.ImagePattern;
+import betix.core.data.MatchInfo;
+import betix.core.data.Team;
 import org.sikuli.script.FindFailed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 /**
  * login page https://members.788-sb.com/MEMBERS/Login/
@@ -37,13 +41,11 @@ public class Bet365 extends BettingMachine {
 
     public void openMyTeamsPage() {
         try {
-            screen.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+            click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
 
-            screen.wait(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern, 5);
-            screen.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
+            click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
 
-            screen.wait(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern, 5);
-            screen.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
+            click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
 
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
@@ -51,27 +53,57 @@ public class Bet365 extends BettingMachine {
     }
 
     public void placeBets() {
-        try {
+        File teamDir = new File(ImagePattern.TEAM_DIR_NAME);
+        for (File file : teamDir.listFiles()) {
+            if (file.isDirectory())
+                continue;
 
-            placeBet();
+            Team team = new Team(file.getName());
+            try {
+                click(team.getPattern());
 
-        } catch (FindFailed e) {
-            logger.error("error in placeBets() ", e);
+                placeBet(team);
+
+            } catch (FindFailed e) {
+                logger.error("error selecting team {} in placeBets() for image {}", team.getName(), file.getName());
+            }
         }
     }
 
-    private void placeBet() throws FindFailed {
+    private void placeBet(Team team) throws FindFailed {
         screen.wait(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern, 5);
         screen.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern).
                 below(50).click(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
 
-        screen.wait(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern, 5);
-        screen.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
+        click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
-        screen.type("0.50");
+        if (isAlreadyPlaced(team)) {
+            return;
+        }
+
+        screen.type(calculateStake(team));
 
         logger.info("placing the bet");
 //            screen.type(Key.ENTER);
+    }
+
+    private String calculateStake(Team team) {
+        for (MatchInfo matchInfo : accountConfig.getAccountInfo().getMatchInfoFinished()) {
+            if (matchInfo.getEvent().isParticipant(team.getName())) {
+                return String.valueOf(matchInfo.getStake() * 2);
+            }
+        }
+
+        return "0.50";
+    }
+
+    private boolean isAlreadyPlaced(Team team) {
+        for (MatchInfo matchInfo : accountConfig.getAccountInfo().getMatchInfoPending()) {
+            if (matchInfo.getEvent().isParticipant(team.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Configuration getAccountConfig() {

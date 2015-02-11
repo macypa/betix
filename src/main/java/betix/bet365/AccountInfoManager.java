@@ -1,8 +1,12 @@
 package betix.bet365;
 
-import betix.core.*;
+import betix.core.BettingMachine;
+import betix.core.MessageBoxFrame;
+import betix.core.config.ConfigKey;
+import betix.core.config.Configuration;
+import betix.core.config.ImagePattern;
 import betix.core.data.AccountInfo;
-import betix.core.data.EventPair;
+import betix.core.data.Event;
 import betix.core.data.MatchInfo;
 import betix.core.data.MatchState;
 import org.sikuli.script.*;
@@ -26,12 +30,7 @@ class AccountInfoManager {
         betingMachine = bet365;
         screen = bet365.screen;
         accountConfig = bet365.getAccountConfig();
-        Object accInfo = accountConfig.getConfig(ConfigKey.accountInfo);
-        if (accInfo != null && accInfo instanceof AccountInfo) {
-            accountInfo = (AccountInfo) accInfo;
-        } else {
-            accountInfo = new AccountInfo();
-        }
+        accountInfo = accountConfig.getAccountInfo();
         messageBox = bet365.messageBox;
     }
 
@@ -39,8 +38,7 @@ class AccountInfoManager {
 
         try {
 
-            screen.wait(ImagePattern.PATTERN_HISTORY_LINK.pattern, 5);
-            screen.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
+            betingMachine.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
             betingMachine.wait(2);
 
             screen.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
@@ -78,7 +76,7 @@ class AccountInfoManager {
 
     private void collectPendingMatchesInfo() throws FindFailed {
 
-        screen.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         screen.type(Key.TAB);
         screen.type(Key.TAB);
 
@@ -88,8 +86,7 @@ class AccountInfoManager {
         betingMachine.wait(1);
 
         screen.type(Key.ENTER);
-        screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
-        screen.click(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         screen.type(Key.TAB);
         screen.type(Key.TAB);
 
@@ -102,7 +99,7 @@ class AccountInfoManager {
 
     private void collectFinishedMatchesInfo() throws FindFailed {
 
-        screen.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         screen.type(Key.TAB);
         screen.type(Key.TAB);
 
@@ -112,8 +109,7 @@ class AccountInfoManager {
         betingMachine.wait(1);
 
         screen.type(Key.ENTER);
-        screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
-        screen.click(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         screen.type(Key.TAB);
         screen.type(Key.TAB);
 
@@ -181,7 +177,7 @@ class AccountInfoManager {
         matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, "Никой\\s*(.*?)\\s").replaceAll(",", ".")));
         matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, "Залог:\\s*.*?\\sПеч.*?:\\s*(.*?)\\s").replaceAll(",", ".")));
 
-        matchInfo.setEvent(new EventPair(searchRegEx(matchInfoString, "Равен\\s*(.*?)\\s*\\(Краен Резултат")));
+        matchInfo.setEvent(new Event(searchRegEx(matchInfoString, "Равен\\s*(.*?)\\s*\\(Краен Резултат")));
         matchInfo.setDate(new Date(searchRegEx(matchInfoString, "Краен Резултат\\)\\s*(.*?)\\s*Никой")));
 
         return matchInfo;

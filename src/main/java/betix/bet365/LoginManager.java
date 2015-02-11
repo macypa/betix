@@ -1,6 +1,10 @@
 package betix.bet365;
 
-import betix.core.*;
+import betix.core.BettingMachine;
+import betix.core.MessageBoxFrame;
+import betix.core.config.ConfigKey;
+import betix.core.config.Configuration;
+import betix.core.config.ImagePattern;
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 import org.sikuli.basics.SikuliScript;
 import org.sikuli.script.FindFailed;
@@ -34,7 +38,7 @@ class LoginManager {
             messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
             logger.info("Trying to log in ...");
 
-            screen.click(ImagePattern.PATTERN_LOGIN_FIELD.pattern);
+            betingMachine.click(ImagePattern.PATTERN_LOGIN_FIELD.pattern);
             boolean updateUserPass = false;
             String username = accountConfig.getConfigAsString(ConfigKey.username);
             if (username == null || username.trim().isEmpty()) {
@@ -43,6 +47,7 @@ class LoginManager {
                 updateUserPass = true;
             }
 
+            screen.click();
             screen.click();
             screen.type(username);
             screen.type("\t");
@@ -53,7 +58,7 @@ class LoginManager {
                 plainText = SikuliScript.input("enter pass to encript and store");
                 updateUserPass = true;
 
-                screen.click(ImagePattern.PATTERN_PASSWORD_FIELD.pattern);
+                betingMachine.click(ImagePattern.PATTERN_PASSWORD_FIELD.pattern);
                 screen.click();
             }
 
@@ -94,8 +99,7 @@ class LoginManager {
     private boolean checkLogin() {
         try {
             betingMachine.focusBrowser();
-            screen.wait(ImagePattern.PATTERN_LOGO_IN_TAB.pattern, 5);
-            screen.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
+            betingMachine.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             betingMachine.wait(1);
             screen.find(ImagePattern.PATTERN_LOGOUT_LINK.pattern);
             logger.info("You're logged in.");

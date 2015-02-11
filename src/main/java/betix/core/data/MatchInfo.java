@@ -42,6 +42,6 @@ public class MatchInfo {
     private double stake;
     private double wining;
     private Date date;
-    private EventPair event;
+    private Event event;
 
 }
