@@ -91,6 +91,10 @@ public class Configuration {
         return (Integer) config.get(key.name());
     }
 
+    public Double getConfigAsDouble(ConfigKey key) {
+        return (Double) config.get(key.name());
+    }
+
     public Boolean getConfigAsBoolean(ConfigKey key) {
         return (Boolean) config.get(key.name());
     }

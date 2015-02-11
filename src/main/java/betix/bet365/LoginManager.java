@@ -35,7 +35,7 @@ class LoginManager {
         }
 
         try {
-            messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
+            messageBox.showMessage("searching for <br>site logo ...");
             logger.info("Trying to log in ...");
 
             betingMachine.click(ImagePattern.PATTERN_LOGIN_FIELD.pattern);
@@ -100,8 +100,7 @@ class LoginManager {
         try {
             betingMachine.focusBrowser();
             betingMachine.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
-            betingMachine.wait(1);
-            screen.find(ImagePattern.PATTERN_LOGOUT_LINK.pattern);
+            screen.wait(ImagePattern.PATTERN_HISTORY_LINK.pattern, 5);
             logger.info("You're logged in.");
             return true;
         } catch (FindFailed e) {

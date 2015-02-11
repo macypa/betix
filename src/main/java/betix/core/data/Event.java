@@ -1,5 +1,7 @@
 package betix.core.data;
 
+import betix.core.config.ConfigKey;
+import betix.core.config.Configuration;
 import lombok.Data;
 
 @Data
@@ -14,7 +16,8 @@ public class Event {
 
     public Event(String name) {
         this.name = name;
-        this.firstTeam = new Team(name.substring(name.indexOf(" v ") + 3).trim());
+        String teamNameSeparator = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.teamNameSeparator);
+        this.firstTeam = new Team(name.substring(name.indexOf(teamNameSeparator) + teamNameSeparator.length()).trim());
         this.secondTeam = new Team(name.substring(0, name.indexOf(" v ")).trim());
     }
 

@@ -19,6 +19,19 @@ import java.util.regex.Matcher;
 class AccountInfoManager {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
+
+
+    private static final String balanceRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.balanceRegEx);
+    private static final String historyMatchInfoLinkRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.historyMatchInfoLinkRegEx);
+    private static final String matchInfoPendingState = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoPendingState);
+    private static final String matchInfoLoseState = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoLoseState);
+    private static final String matchInfoWinState = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoWinState);
+    private static final String matchInfoStakeRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoStakeRegEx);
+    private static final String matchInfoCoefficientRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoCoefficientRegEx);
+    private static final String matchInfoWiningRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoWiningRegEx);
+    private static final String matchInfoEventRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoEventRegEx);
+    private static final String matchInfoDateRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateRegEx);
+
     private final AccountInfo accountInfo;
     private final Configuration accountConfig;
 
@@ -39,8 +52,7 @@ class AccountInfoManager {
         try {
 
             betingMachine.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
-            betingMachine.wait(2);
-
+            screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
             screen.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
 
             getBalanceInfo();
@@ -70,7 +82,7 @@ class AccountInfoManager {
         String balanceInfo = Env.getClipboard();
         logger.info("found balanceInfo = " + balanceInfo);
 
-        String price = searchRegEx(balanceInfo, "\\s*(.*?)\\s*BGN");
+        String price = searchRegEx(balanceInfo, balanceRegEx);
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
     }
 
@@ -129,7 +141,7 @@ class AccountInfoManager {
             screen.type("c", KeyModifier.CTRL);
 
             String matchInfo = Env.getClipboard();
-            if (!matchInfo.contains("Равен @ ")) {
+            if (!matchInfo.contains(historyMatchInfoLinkRegEx)) {
                 logger.info("end of matchInfo, last is : " + matchInfo, screen.getCenter());
                 accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                 accountConfig.saveConfig();
@@ -165,20 +177,20 @@ class AccountInfoManager {
     private MatchInfo addToAccountInfo(String matchInfoString) {
         MatchInfo matchInfo = new MatchInfo();
 
-        if (matchInfoString.contains("Текущ")) {
+        if (matchInfoString.contains(matchInfoPendingState)) {
             matchInfo.setState(MatchState.pending);
-        } else if (matchInfoString.contains("Загубен")) {
+        } else if (matchInfoString.contains(matchInfoLoseState)) {
             matchInfo.setState(MatchState.losing);
-        } else if (matchInfoString.contains("Печеливш")) {
+        } else if (matchInfoString.contains(matchInfoWinState)) {
             matchInfo.setState(MatchState.winning);
         }
 
-        matchInfo.setStake(Double.valueOf(searchRegEx(matchInfoString, "Залог:\\s*(.*?)\\s").replaceAll(",", ".")));
-        matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, "Никой\\s*(.*?)\\s").replaceAll(",", ".")));
-        matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, "Залог:\\s*.*?\\sПеч.*?:\\s*(.*?)\\s").replaceAll(",", ".")));
+        matchInfo.setStake(Double.valueOf(searchRegEx(matchInfoString, matchInfoStakeRegEx).replaceAll(",", ".")));
+        matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, matchInfoCoefficientRegEx).replaceAll(",", ".")));
+        matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, matchInfoWiningRegEx).replaceAll(",", ".")));
 
-        matchInfo.setEvent(new Event(searchRegEx(matchInfoString, "Равен\\s*(.*?)\\s*\\(Краен Резултат")));
-        matchInfo.setDate(new Date(searchRegEx(matchInfoString, "Краен Резултат\\)\\s*(.*?)\\s*Никой")));
+        matchInfo.setEvent(new Event(searchRegEx(matchInfoString, matchInfoEventRegEx)));
+        matchInfo.setDate(new Date(searchRegEx(matchInfoString, matchInfoDateRegEx)));
 
         return matchInfo;
     }

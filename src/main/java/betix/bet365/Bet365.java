@@ -1,6 +1,7 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
+import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.data.MatchInfo;
@@ -81,20 +82,20 @@ public class Bet365 extends BettingMachine {
             return;
         }
 
-        screen.type(calculateStake(team));
+        screen.type(String.valueOf(calculateStake(team)));
 
         logger.info("placing the bet");
 //            screen.type(Key.ENTER);
     }
 
-    private String calculateStake(Team team) {
+    private Double calculateStake(Team team) {
         for (MatchInfo matchInfo : accountConfig.getAccountInfo().getMatchInfoFinished()) {
             if (matchInfo.getEvent().isParticipant(team.getName())) {
-                return String.valueOf(matchInfo.getStake() * 2);
+                return matchInfo.getStake() * 2;
             }
         }
 
-        return "0.50";
+        return Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.minBetStake);
     }
 
     private boolean isAlreadyPlaced(Team team) {

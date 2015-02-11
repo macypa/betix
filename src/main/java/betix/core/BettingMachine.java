@@ -61,17 +61,17 @@ public abstract class BettingMachine {
         focusBrowser();
 
         try {
-            messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
+            messageBox.showMessage("searching for <br>site logo ...", logger);
             screen.wait(ImagePattern.PATTERN_LOGO_IN_TAB.pattern, 5);
             screen.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             logger.info("site already opened");
         } catch (FindFailed e) {
-            messageBox.showMessage("opening site ...", screen.getCenter());
+            messageBox.showMessage("opening site ...", logger);
             App.open(config.getConfigAsString(ConfigKey.browser) + " " + config.getConfigAsString(ConfigKey.siteUrl));
 
             try {
                 wait(3);
-                messageBox.showMessage("searching for <br>site logo ...", screen.getCenter());
+                messageBox.showMessage("searching for <br>site logo ...", logger);
                 screen.wait(ImagePattern.PATTERN_LOGO_IN_TAB.pattern, 5);
                 screen.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             } catch (FindFailed ee) {
@@ -89,7 +89,7 @@ public abstract class BettingMachine {
     }
 
     public void focusBrowser() {
-        messageBox.showMessage("focusing Browser ...", screen.getCenter());
+        messageBox.showMessage("focusing Browser ...", logger);
         App.focus(config.getConfigAsString(ConfigKey.browser));
     }
 

@@ -9,6 +9,20 @@ public enum ConfigKey {
     siteUrl,
     username,
     password,
+    teamNameSeparator,
+    messageBoxOpacity,
+    messageBoxColor,
+    minBetStake,
+    balanceRegEx,
+    historyMatchInfoLinkRegEx,
+    matchInfoPendingState,
+    matchInfoLoseState,
+    matchInfoWinState,
+    matchInfoStakeRegEx,
+    matchInfoCoefficientRegEx,
+    matchInfoWiningRegEx,
+    matchInfoEventRegEx,
+    matchInfoDateRegEx,
     accountInfo
 
 }
