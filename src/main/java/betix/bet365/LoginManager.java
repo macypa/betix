@@ -1,10 +1,6 @@
 package betix.bet365;
 
-import betix.core.BettingMachine;
-import betix.core.ConfigKey;
-import betix.core.Configuration;
-import betix.core.MessageBoxFrame;
-import betix.core.data.ImagePattern;
+import betix.core.*;
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 import org.sikuli.basics.SikuliScript;
 import org.sikuli.script.FindFailed;

@@ -2,7 +2,7 @@ package betix.bet365;
 
 import betix.core.BettingMachine;
 import betix.core.Configuration;
-import betix.core.data.ImagePattern;
+import betix.core.ImagePattern;
 import org.sikuli.script.FindFailed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +28,12 @@ public class Bet365 extends BettingMachine {
             accountConfig = new Configuration(Configuration.CONFIG_ACCOUNT_SPECIFIC_FILE);
 
     public boolean login() {
-        return new LoginManager(this).login();
+//        return new LoginManager(this).login();
+        return true;
     }
 
     public void collectInfo() {
-        new AccountInfoManager(this).collectInfo();
+//        new AccountInfoManager(this).collectInfo();
     }
 
     public void openMyTeamsPage() {
@@ -45,17 +46,33 @@ public class Bet365 extends BettingMachine {
             screen.wait(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern, 5);
             screen.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
 
-            screen.wait(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern, 5);
-            screen.click(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
+        } catch (FindFailed e) {
+            logger.error("error in openMyTeamsPage() ", e);
+        }
+    }
 
-            screen.wait(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern, 5);
-            screen.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
+    public void placeBets() {
+        try {
 
-            screen.type("0.50");
+            placeBet();
 
         } catch (FindFailed e) {
-            e.printStackTrace();
+            logger.error("error in placeBets() ", e);
         }
+    }
+
+    private void placeBet() throws FindFailed {
+        screen.wait(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern, 5);
+        screen.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern).
+                below(50).click(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
+
+        screen.wait(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern, 5);
+        screen.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
+
+        screen.type("0.50");
+
+        logger.info("placing the bet");
+//            screen.type(Key.ENTER);
     }
 
     public Configuration getAccountConfig() {

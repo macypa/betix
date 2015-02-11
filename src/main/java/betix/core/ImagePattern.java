@@ -1,7 +1,5 @@
-package betix.core.data;
+package betix.core;
 
-import betix.core.ConfigKey;
-import betix.core.Configuration;
 import org.sikuli.script.Pattern;
 
 import java.io.File;
@@ -10,9 +8,10 @@ public enum ImagePattern {
     PATTERN_UNMAXIMIZE("unmaximise.png", ConfigKey.imageDir, 0.5f),
     PATTERN_FOOTBALL_LINK("football.png", 0.5f),
     PATTERN_FOOTBALL_DRAW_BET_LINK("footballDrawBetLink.png"),
+    PATTERN_FOOTBALL_END_RESULT_COLUMN("footballEndResultColumn.png"),
     PATTERN_FOOTBALL_MY_TEAMS_LINK("footballMyTeams.png"),
-    PATTERN_FOOTBALL_STAKE_FIELD("footballStakeField.png"),
-    PATTERN_FOOTBALL_TEAM_LINK("footballTeamLink.png"),
+    PATTERN_FOOTBALL_STAKE_FIELD("footballStakeField.png", 0.6f),
+    PATTERN_FOOTBALL_TEAM_LINK("footballTeamLink.png", 0.5f),
     PATTERN_HISTORY_TITLE("historyTitle.png", 0.5f),
     PATTERN_HISTORY_LINK("historyLink.png"),
     PATTERN_LOGIN_FIELD("loginField.png", 0.5f),

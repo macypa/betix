@@ -1,7 +1,6 @@
 package betix.core;
 
 import betix.bet365.Bet365;
-import betix.core.data.ImagePattern;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
 import org.sikuli.basics.HotkeyManager;
@@ -35,6 +34,9 @@ public abstract class BettingMachine {
         betka.collectInfo();
 
         betka.openMyTeamsPage();
+
+
+        betka.placeBets();
 
         System.exit(1);
     }
@@ -112,7 +114,7 @@ public abstract class BettingMachine {
         try {
             Thread.sleep(milisec);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("error in waitMilisec() ", e);
         }
     }
 
@@ -123,4 +125,6 @@ public abstract class BettingMachine {
     public abstract Configuration getAccountConfig();
 
     public abstract void openMyTeamsPage();
+
+    public abstract void placeBets();
 }

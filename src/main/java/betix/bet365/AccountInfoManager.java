@@ -1,10 +1,10 @@
 package betix.bet365;
 
-import betix.core.BettingMachine;
-import betix.core.ConfigKey;
-import betix.core.Configuration;
-import betix.core.MessageBoxFrame;
-import betix.core.data.*;
+import betix.core.*;
+import betix.core.data.AccountInfo;
+import betix.core.data.EventPair;
+import betix.core.data.MatchInfo;
+import betix.core.data.MatchState;
 import org.sikuli.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +89,9 @@ public class AccountInfoManager {
 
         screen.type(Key.ENTER);
         screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
+        screen.click(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
 
         screen.type(Key.TAB);
         screen.type(Key.TAB);
@@ -110,6 +113,9 @@ public class AccountInfoManager {
 
         screen.type(Key.ENTER);
         screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
+        screen.click(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
 
         screen.type(Key.TAB);
         screen.type(Key.TAB);
