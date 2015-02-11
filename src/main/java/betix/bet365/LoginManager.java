@@ -9,14 +9,14 @@ import org.sikuli.script.Screen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginManager {
+class LoginManager {
 
-    protected static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
+    private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     private final Configuration accountConfig;
 
-    public BettingMachine betingMachine;
-    public Screen screen;
-    public MessageBoxFrame messageBox;
+    private final BettingMachine betingMachine;
+    private final Screen screen;
+    private final MessageBoxFrame messageBox;
 
     LoginManager(Bet365 bet365) {
         betingMachine = bet365;

@@ -21,12 +21,12 @@ public enum ImagePattern {
     PATTERN_PASSWORD_FIELD("passwordField.png", 0.5f);
 
 
-    public final Configuration config = new Configuration();
+    private final Configuration config = new Configuration();
     private final File DEFAULT_DIR = new File(config.getConfigAsString(ConfigKey.imageDir),
             config.getConfigAsString(ConfigKey.siteName));
 
     String imageName = "";
-    public Pattern pattern;
+    public final Pattern pattern;
 
     private ImagePattern(String imageName) {
         this(imageName, 0.7f);

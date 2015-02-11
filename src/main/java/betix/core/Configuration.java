@@ -17,7 +17,7 @@ public class Configuration {
     public final static File CONFIG_ACCOUNT_SPECIFIC_FILE = new File("config_account_specific.yml");
 
     private final Map<String, Object> config;
-    private File file;
+    private final File file;
 
     public Configuration() {
         this(CONFIG_FILE);

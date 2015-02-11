@@ -9,7 +9,7 @@ class Login {
   private val logger: Logger = LoggerFactory.getLogger(classOf[Login])
 
   def main(args: Array[String]) {
-    println("Hello, world!");
+    println("Hello, world!")
   }
 
   def checkLogin(config: Configuration, screen: Screen) {
@@ -20,11 +20,10 @@ class Login {
       logger.info("You're logged in.")
     }
     catch {
-      case e: FindFailed => {
+      case e: FindFailed =>
         SikuliScript.popup("You're NOT logged in.")
         logger.error("Not logged in!")
         tryLogin(config, screen)
-      }
     }
   }
 
@@ -36,11 +35,10 @@ class Login {
       logger.info("You're logged in.")
     }
     catch {
-      case e: FindFailed => {
+      case e: FindFailed =>
         SikuliScript.popup("You're NOT logged in.")
         logger.error("Not logged in!")
         System.exit(1)
-      }
     }
   }
 }

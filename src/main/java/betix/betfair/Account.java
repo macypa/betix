@@ -26,9 +26,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class Account {
-    private static Logger logger = LoggerFactory.getLogger(Account.class);
-    private static File COOKIES_FILE = new File("cookies.yml");
+class Account {
+    private static final Logger logger = LoggerFactory.getLogger(Account.class);
+    private static final File COOKIES_FILE = new File("cookies.yml");
 
     private Map<String, String> cookies;
     private String loginUrl = "https://identitysso.betfair.com/view/login";
@@ -40,7 +40,7 @@ public class Account {
 
     public static void main(String[] args) {
         Account account = new Account();
-        Document doc = null;
+        Document doc;
         try {
             doc = account.loadPage("https://www.betfair.com/sport/football?id=57&selectedTabType=COMPETITION");
 
@@ -54,7 +54,7 @@ public class Account {
         }
     }
 
-    public Document loadPage(String uri) throws LoginException {
+    Document loadPage(String uri) throws LoginException {
         if (getCookies() == null) {
             login();
         }
@@ -107,12 +107,17 @@ public class Account {
                         .data("password", pass)
                         .method(Method.POST);
 
+//                logger.debug("inputs = " + inputs);
+//                for (Element input : inputs) {
+//                    if (input.attr("value") != null && !input.attr("value").isEmpty()) {
+//                        connection.data(input.attr("name"), input.attr("value"));
+//                    }
+//                }
+
                 logger.debug("inputs = " + inputs);
-                for (Element input : inputs) {
-                    if (input.attr("value") != null && !input.attr("value").isEmpty()) {
-                        connection.data(input.attr("name"), input.attr("value"));
-                    }
-                }
+                inputs.stream().filter(input -> input.attr("value") != null
+                        && !input.attr("value").isEmpty())
+                        .forEach(input -> connection.data(input.attr("name"), input.attr("value")));
 
                 Response response = connection.execute();
                 Document doc = response.parse();
@@ -127,14 +132,12 @@ public class Account {
 
         try {
             future.get();
-        } catch (InterruptedException e) {
-            throw new LoginException("Login failed");
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new LoginException("Login failed");
         }
     }
 
-    public Map<String, String> getCookies() {
+    Map<String, String> getCookies() {
         if (cookies == null) {
             try {
                 cookies = Yaml.loadType(COOKIES_FILE, LinkedHashMap.class);
@@ -146,7 +149,7 @@ public class Account {
         return cookies;
     }
 
-    public void setCookies(Map<String, String> cookies) {
+    void setCookies(Map<String, String> cookies) {
 
         this.cookies = cookies;
 

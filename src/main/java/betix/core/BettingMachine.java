@@ -13,12 +13,12 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class BettingMachine {
 
-    protected static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
-    public final Configuration config = new Configuration();
+    private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
+    protected final Configuration config = new Configuration();
 
 
-    public Screen screen = new Screen();
-    public MessageBoxFrame messageBox = new MessageBoxFrame();
+    public final Screen screen = new Screen();
+    public final MessageBoxFrame messageBox = new MessageBoxFrame();
 
     public static void main(String[] args) {
         Bet365 betka = new Bet365();
@@ -34,14 +34,12 @@ public abstract class BettingMachine {
         betka.collectInfo();
 
         betka.openMyTeamsPage();
-
-
         betka.placeBets();
 
         System.exit(1);
     }
 
-    protected void exitListener() {
+    public void exitListener() {
         String key = "c"; // take care: US-QWERTY keyboard layout based !!!
         int modifiers = KeyModifier.ALT + KeyModifier.CTRL;
 

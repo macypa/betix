@@ -28,12 +28,11 @@ public class Bet365 extends BettingMachine {
             accountConfig = new Configuration(Configuration.CONFIG_ACCOUNT_SPECIFIC_FILE);
 
     public boolean login() {
-//        return new LoginManager(this).login();
-        return true;
+        return new LoginManager(this).login();
     }
 
     public void collectInfo() {
-//        new AccountInfoManager(this).collectInfo();
+        new AccountInfoManager(this).collectInfo();
     }
 
     public void openMyTeamsPage() {

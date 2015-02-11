@@ -12,15 +12,15 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.regex.Matcher;
 
-public class AccountInfoManager {
+class AccountInfoManager {
 
-    protected static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
+    private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     private final AccountInfo accountInfo;
     private final Configuration accountConfig;
 
-    public BettingMachine betingMachine;
-    public Screen screen;
-    public MessageBoxFrame messageBox;
+    private final BettingMachine betingMachine;
+    private final Screen screen;
+    private final MessageBoxFrame messageBox;
 
     AccountInfoManager(Bet365 bet365) {
         betingMachine = bet365;

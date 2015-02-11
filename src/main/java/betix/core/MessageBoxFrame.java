@@ -10,7 +10,7 @@ import java.awt.event.MouseListener;
 
 public class MessageBoxFrame extends JFrame implements MouseListener {
 
-    JPanel panel = new JPanel();
+    private final JPanel panel = new JPanel();
 
     public MessageBoxFrame() {
         if (AWTUtilities.isTranslucencySupported(AWTUtilities.Translucency.TRANSLUCENT)) {
@@ -19,7 +19,7 @@ public class MessageBoxFrame extends JFrame implements MouseListener {
 
         setUndecorated(true);
         setAlwaysOnTop(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         panel.add(new JLabel("Starting..."));
         panel.addMouseListener(this);
