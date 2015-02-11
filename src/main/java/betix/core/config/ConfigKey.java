@@ -3,6 +3,7 @@ package betix.core.config;
 public enum ConfigKey {
     browser,
     placeBet,
+    sikuliMinSimilarity,
     imageDir,
     teamImageDir,
     imageExt,

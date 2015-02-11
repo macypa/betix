@@ -8,6 +8,7 @@ browser: firefox
 siteName: bet365.com
 teamNameSeparator: " v "
 messageBoxOpacity: 0.3
+sikuliMinSimilarity: 0.5
 messageBoxColor: Color.ORANGE
 minBetStake: 0.5
 balanceRegEx: "\\s*(.*?)\\s*BGN"

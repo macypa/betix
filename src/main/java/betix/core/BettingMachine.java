@@ -25,7 +25,8 @@ public abstract class BettingMachine {
 
     public static void main(String[] args) {
         Bet365 betka = new Bet365();
-        betka.setSikuliMinSimilarity(0.5);
+        Double sikuliMinSimilarity = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.sikuliMinSimilarity);
+        betka.setSikuliMinSimilarity(sikuliMinSimilarity.floatValue());
 
         betka.exitListener();
 
@@ -91,20 +92,6 @@ public abstract class BettingMachine {
     public void focusBrowser() {
         messageBox.showMessage("focusing Browser ...", logger);
         App.focus(config.getConfigAsString(ConfigKey.browser));
-    }
-
-    public void maximisePage() {
-        screen.type(Key.SPACE, KeyModifier.ALT);
-        wait(1);
-        try {
-            screen.find(ImagePattern.PATTERN_UNMAXIMIZE.pattern);
-        } catch (FindFailed f) {
-            screen.type("x");
-            wait(1);
-            return;
-        }
-
-        screen.type(Key.ESC);
     }
 
     public void wait(int sec) {
