@@ -88,18 +88,34 @@ public class Bet365 extends BettingMachine {
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
             click(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
         } else {
-
+            messageBox.showMessage("click", logger, screen.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget());
         }
     }
 
     private Double calculateStake(Team team) {
         for (MatchInfo matchInfo : accountConfig.getAccountInfo().getMatchInfoFinished()) {
             if (matchInfo.getEvent().isParticipant(team.getName())) {
-                return matchInfo.getStake() * 2;
+                return getNextStake(matchInfo.getStake());
             }
         }
 
         return Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.minBetStake);
+    }
+
+    private Double getNextStake(double stake) {
+        if (!Configuration.getDefaultConfig().getConfigAsBoolean(ConfigKey.useFibonacciForStakes)) {
+            return stake * 2;
+        }
+
+        if (stake == 0.5) return 1.0;
+
+        double fibo1 = 0.5, fibo2 = 1, nextStake = 1;
+        while (stake >= nextStake) {
+            nextStake = fibo1 + fibo2;
+            fibo1 = fibo2;
+            fibo2 = nextStake;
+        }
+        return nextStake;
     }
 
     private boolean isAlreadyPlaced(Team team) {

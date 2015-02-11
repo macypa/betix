@@ -35,14 +35,18 @@ public class MessageBoxFrame extends JFrame implements MouseListener {
     }
 
     public void showMessage(String string) {
-        showMessage(string, null);
+        showMessage(string, null, new Location(0, 0));
     }
 
     public void showMessage(String string, Logger logger) {
         showMessage(string, logger, new Location(0, 0));
     }
 
-    private void showMessage(String string, Logger logger, Location location) {
+    public void showMessage(String string, Location location) {
+        showMessage(string, null, location);
+    }
+
+    public void showMessage(String string, Logger logger, Location location) {
         if (logger != null) {
             logger.info(string);
         }

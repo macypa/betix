@@ -1,5 +1,6 @@
 ---
 placeBet: false
+useFibonacciForStakes: true
 imageDir: img
 teamImageDir: team
 siteUrl: "http://www.788-sb.com"
