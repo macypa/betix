@@ -86,29 +86,6 @@ class AccountInfoManager {
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
     }
 
-    private void collectPendingMatchesInfo() throws FindFailed {
-
-        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
-
-        screen.type(Key.UP);
-        screen.type(Key.TAB);
-        screen.type(Key.RIGHT);
-        betingMachine.wait(1);
-
-        screen.type(Key.ENTER);
-        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
-
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
-
-        getMatchInfo();
-        messageBox.setVisible(false);
-    }
-
     private void collectFinishedMatchesInfo() throws FindFailed {
 
         betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
@@ -118,6 +95,7 @@ class AccountInfoManager {
         screen.type(Key.DOWN);
         screen.type(Key.TAB);
         screen.type(Key.RIGHT);
+        screen.type(Key.RIGHT);
         betingMachine.wait(1);
 
         screen.type(Key.ENTER);
@@ -127,6 +105,32 @@ class AccountInfoManager {
 
         screen.type(Key.TAB);
         screen.type(Key.TAB);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
+
+        getMatchInfo();
+        messageBox.setVisible(false);
+    }
+
+    private void collectPendingMatchesInfo() throws FindFailed {
+
+        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
+
+        screen.type(Key.UP);
+        screen.type(Key.TAB);
+        //screen.type(Key.RIGHT);
+        //betingMachine.wait(1);
+
+        screen.type(Key.ENTER);
+        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
+
+        screen.type(Key.TAB);
+        screen.type(Key.TAB);
+
         screen.type(Key.TAB);
         screen.type(Key.TAB);
 

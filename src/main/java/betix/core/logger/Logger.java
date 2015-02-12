@@ -23,6 +23,12 @@ public class Logger
 
     ch.qos.logback.classic.Logger wrappedLogger = null;
 
+    private static final File logDir = new File("./log/");
+
+    static {
+        logDir.mkdirs();
+    }
+
     public Logger(org.slf4j.Logger wrappedLogger) {
         this.wrappedLogger = (ch.qos.logback.classic.Logger) wrappedLogger;
     }
@@ -438,7 +444,7 @@ public class Logger
         try {
             Robot robot = new Robot();
             BufferedImage image = robot.createScreenCapture(screenRect);
-            ImageIO.write(image, "png", new File("./log/" + name + ".png"));
+            ImageIO.write(image, "png", new File(logDir, name + ".png"));
         } catch (AWTException e) {
             e.printStackTrace();
         } catch (IOException e) {
