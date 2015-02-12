@@ -107,9 +107,11 @@ public class Bet365 extends BettingMachine {
             return stake * 2;
         }
 
-        if (stake == 0.5) return 1.0;
+        double minBetStake = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.minBetStake);
+        double secondBetStake = minBetStake * 2;
+        if (stake == minBetStake) return secondBetStake;
 
-        double fibo1 = 0.5, fibo2 = 1, nextStake = 1;
+        double fibo1 = minBetStake, fibo2 = secondBetStake, nextStake = secondBetStake;
         while (stake >= nextStake) {
             nextStake = fibo1 + fibo2;
             fibo1 = fibo2;
