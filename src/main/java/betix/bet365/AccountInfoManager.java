@@ -57,8 +57,8 @@ class AccountInfoManager {
 
             getBalanceInfo();
 
-            collectPendingMatchesInfo();
             collectFinishedMatchesInfo();
+            collectPendingMatchesInfo();
 
         } catch (FindFailed e) {
             e.printStackTrace();
@@ -160,10 +160,11 @@ class AccountInfoManager {
             screen.type(Key.ENTER);
 
             try {
-                MatchInfo info = addToAccountInfo(matchInfo);
+                MatchInfo info = parseMatchInfo(matchInfo);
                 logger.info("found MatchInfo = " + info);
                 if (MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoPending().contains(info)) {
                     accountInfo.getMatchInfoPending().add(info);
+                    accountInfo.getMatchInfoFinished().remove(info);
                 } else if (!MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoFinished().contains(info)) {
                     accountInfo.getMatchInfoFinished().add(info);
                 } else {
@@ -177,7 +178,7 @@ class AccountInfoManager {
         }
     }
 
-    private MatchInfo addToAccountInfo(String matchInfoString) {
+    private MatchInfo parseMatchInfo(String matchInfoString) {
         MatchInfo matchInfo = new MatchInfo();
 
         if (matchInfoString.contains(matchInfoPendingState)) {
