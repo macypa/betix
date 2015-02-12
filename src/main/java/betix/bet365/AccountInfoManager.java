@@ -9,9 +9,9 @@ import betix.core.data.AccountInfo;
 import betix.core.data.Event;
 import betix.core.data.MatchInfo;
 import betix.core.data.MatchState;
+import betix.core.logger.Logger;
+import betix.core.logger.LoggerFactory;
 import org.sikuli.script.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.regex.Matcher;

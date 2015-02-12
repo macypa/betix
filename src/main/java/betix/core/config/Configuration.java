@@ -1,9 +1,9 @@
 package betix.core.config;
 
 import betix.core.data.AccountInfo;
+import betix.core.logger.Logger;
+import betix.core.logger.LoggerFactory;
 import org.ho.yaml.Yaml;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;

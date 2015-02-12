@@ -6,9 +6,9 @@ import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.data.MatchInfo;
 import betix.core.data.Team;
+import betix.core.logger.Logger;
+import betix.core.logger.LoggerFactory;
 import org.sikuli.script.FindFailed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 

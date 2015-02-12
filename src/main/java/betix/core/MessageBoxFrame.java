@@ -2,9 +2,9 @@ package betix.core;
 
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
+import betix.core.logger.Logger;
 import com.sun.awt.AWTUtilities;
 import org.sikuli.script.Location;
-import org.slf4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;

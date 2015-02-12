@@ -1,5 +1,7 @@
 <configuration scan="true">
 
+    <property name="patternString" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread][%logger{0}] - %m%n"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
@@ -8,10 +10,29 @@
         </encoder>
     </appender>
 
-    <logger name="betix.bet365" level="debug"/>
-    <logger name="betix.core" level="debug"/>
+    <appender name="betix" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./log/betix.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>./log/betix.%i.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>${patternString}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="betix.bet365" additivity="true" level="debug"/>
+
+    <logger name="betix.core" additivity="true" level="debug"/>
 
     <root level="error">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="betix"/>
     </root>
 </configuration>

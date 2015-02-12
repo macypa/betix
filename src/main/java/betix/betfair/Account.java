@@ -1,5 +1,7 @@
 package betix.betfair;
 
+import betix.core.logger.Logger;
+import betix.core.logger.LoggerFactory;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.nurkiewicz.asyncretry.AsyncRetryExecutor;
 import com.nurkiewicz.asyncretry.RetryContext;
@@ -13,8 +15,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;

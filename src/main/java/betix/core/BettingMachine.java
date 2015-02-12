@@ -4,13 +4,13 @@ import betix.bet365.Bet365;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
+import betix.core.logger.Logger;
+import betix.core.logger.LoggerFactory;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
 import org.sikuli.basics.HotkeyManager;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
