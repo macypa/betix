@@ -7,7 +7,10 @@
     <groupId>betfair</groupId>
     <artifactId>betty</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -46,16 +49,6 @@
             <artifactId>lombok</artifactId>
             <version>1.16.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok-maven</artifactId>
-            <version>1.16.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok-maven-plugin</artifactId>
-            <version>1.16.0.0</version>
-        </dependency>
 
         <dependency>
             <groupId>org.sikuli</groupId>
@@ -66,8 +59,22 @@
         </dependency>
     </dependencies>
 
-    <!--build>
+    <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>betix.core.BettingMachine</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -97,14 +104,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
         </plugins>
-    </build-->
+    </build>
 </project>
