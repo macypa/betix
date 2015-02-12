@@ -54,6 +54,7 @@ class AccountInfoManager {
             betingMachine.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
             screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
             screen.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+            screen.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
 
             getBalanceInfo();
 

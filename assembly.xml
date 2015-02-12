@@ -10,9 +10,6 @@
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <scope>runtime</scope>
-            <includes>
-                <include>*:jar</include>
-            </includes>
             <excludes>
                 <exclude>*:sources</exclude>
                 <exclude>*:betty</exclude>
