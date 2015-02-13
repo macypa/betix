@@ -11,7 +11,11 @@ import betix.core.data.MatchInfo;
 import betix.core.data.MatchState;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
-import org.sikuli.script.*;
+import betix.core.sikuli.SikuliRobot;
+import org.sikuli.script.Env;
+import org.sikuli.script.FindFailed;
+import org.sikuli.script.Key;
+import org.sikuli.script.KeyModifier;
 
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -36,25 +40,24 @@ class AccountInfoManager {
     private final Configuration accountConfig;
 
     private final BettingMachine betingMachine;
-    private final Screen screen;
+    private final SikuliRobot sikuli;
     private final MessageBoxFrame messageBox;
 
     AccountInfoManager(Bet365 bet365) {
         betingMachine = bet365;
-        screen = bet365.screen;
+        sikuli = bet365.sikuli;
         accountConfig = bet365.getAccountConfig();
         accountInfo = accountConfig.getAccountInfo();
-        messageBox = bet365.messageBox;
+        messageBox = bet365.sikuli.messageBox;
     }
 
     public void collectInfo() {
 
         try {
 
-            betingMachine.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
-            screen.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern, 5);
-            screen.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-            screen.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+            sikuli.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
+            sikuli.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+            sikuli.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
 
             getBalanceInfo();
 
@@ -65,21 +68,21 @@ class AccountInfoManager {
             e.printStackTrace();
         } finally {
             try {
-                screen.mouseMove(screen.getCenter());
+                sikuli.mouseMove(sikuli.getCenter());
             } catch (FindFailed f) {
                 logger.error("can't move mouse to center of the screen...probably can't close the history page");
             }
             messageBox.setVisible(false);
-            screen.type(Key.F4, KeyModifier.CTRL);
+            sikuli.type(Key.F4, KeyModifier.CTRL);
         }
     }
 
     private void getBalanceInfo() {
 
-        screen.type(Key.TAB, KeyModifier.SHIFT);
+        sikuli.type(Key.TAB, KeyModifier.SHIFT);
 
-        screen.type(Key.DOWN, KeyModifier.SHIFT);
-        screen.type("c", KeyModifier.CTRL);
+        sikuli.type(Key.DOWN, KeyModifier.SHIFT);
+        sikuli.type("c", KeyModifier.CTRL);
         String balanceInfo = Env.getClipboard();
         logger.info("found balanceInfo = " + balanceInfo);
 
@@ -89,25 +92,25 @@ class AccountInfoManager {
 
     private void collectFinishedMatchesInfo() throws FindFailed {
 
-        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
-        screen.type(Key.DOWN);
-        screen.type(Key.TAB);
-        screen.type(Key.RIGHT);
-        screen.type(Key.RIGHT);
-        betingMachine.wait(1);
+        sikuli.type(Key.DOWN);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.RIGHT);
+        sikuli.type(Key.RIGHT);
+        sikuli.wait(1);
 
-        screen.type(Key.ENTER);
-        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.type(Key.ENTER);
+        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
         getMatchInfo();
         messageBox.setVisible(false);
@@ -115,25 +118,25 @@ class AccountInfoManager {
 
     private void collectPendingMatchesInfo() throws FindFailed {
 
-        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
-        screen.type(Key.UP);
-        screen.type(Key.TAB);
-        //screen.type(Key.RIGHT);
-        //betingMachine.wait(1);
+        sikuli.type(Key.UP);
+        sikuli.type(Key.TAB);
+        //sikuli.type(Key.RIGHT);
+        //sikuli.wait(1);
 
-        screen.type(Key.ENTER);
-        betingMachine.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.type(Key.ENTER);
+        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
-        screen.type(Key.TAB);
-        screen.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
         getMatchInfo();
         messageBox.setVisible(false);
@@ -141,28 +144,28 @@ class AccountInfoManager {
 
     private void getMatchInfo() {
         while (true) {
-            screen.type(Key.TAB);
-            screen.type(Key.DOWN, KeyModifier.SHIFT);
-            screen.type("c", KeyModifier.CTRL);
+            sikuli.type(Key.TAB);
+            sikuli.type(Key.DOWN, KeyModifier.SHIFT);
+            sikuli.type("c", KeyModifier.CTRL);
 
             String matchInfo = Env.getClipboard();
             if (!matchInfo.contains(historyMatchInfoLinkRegEx)) {
-                logger.info("end of matchInfo, last is : " + matchInfo, screen.getCenter());
+                logger.info("end of matchInfo, last is : " + matchInfo, sikuli.getCenter());
                 accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                 accountConfig.saveConfig();
                 return;
             }
 
-            screen.type(Key.ENTER);
-            betingMachine.waitMilisec(500);
+            sikuli.type(Key.ENTER);
+            sikuli.waitMilisec(500);
 
-            screen.type(Key.DOWN, KeyModifier.SHIFT);
-            screen.type(Key.UP, KeyModifier.SHIFT);
-            screen.type("c", KeyModifier.CTRL);
+            sikuli.type(Key.DOWN, KeyModifier.SHIFT);
+            sikuli.type(Key.UP, KeyModifier.SHIFT);
+            sikuli.type("c", KeyModifier.CTRL);
             matchInfo = Env.getClipboard();
             logger.trace("found matchInfo string = " + matchInfo);
 
-            screen.type(Key.ENTER);
+            sikuli.type(Key.ENTER);
 
             try {
                 MatchInfo info = parseMatchInfo(matchInfo);

@@ -9,6 +9,7 @@ import betix.core.data.Team;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.Screen;
 
 import java.io.File;
 
@@ -42,11 +43,11 @@ public class Bet365 extends BettingMachine {
 
     public void openMyTeamsPage() {
         try {
-            click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
 
-            click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
 
-            click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
 
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
@@ -60,8 +61,12 @@ public class Bet365 extends BettingMachine {
                 continue;
 
             Team team = new Team(file.getName());
+            if (isAlreadyPlaced(team)) {
+                logger.info("bet already placed for {}", team);
+                continue;
+            }
             try {
-                click(team.getPattern());
+                sikuli.click(team.getPattern());
 
                 placeBet(team);
 
@@ -72,23 +77,18 @@ public class Bet365 extends BettingMachine {
     }
 
     private void placeBet(Team team) throws FindFailed {
-        if (isAlreadyPlaced(team)) {
-            return;
-        }
+        sikuli.click(sikuli.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern).
+                below(50), ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
 
-        screen.wait(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern, 5);
-        screen.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern).
-                below(50).click(ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
+        sikuli.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
-        click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
-
-        screen.type(String.valueOf(calculateStake(team)));
+        new Screen().type(String.valueOf(calculateStake(team)));
 
         logger.info("placing the bet");
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
-            click(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
+            sikuli.click(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
         } else {
-            messageBox.showMessage("click", logger, screen.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget());
+            sikuli.messageBox.showMessage("click", logger, sikuli.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget());
         }
     }
 
