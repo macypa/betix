@@ -63,10 +63,12 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
+                    <finalName>betix</finalName>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
