@@ -9,6 +9,7 @@ import betix.core.data.Team;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 
 import java.io.File;
@@ -43,14 +44,32 @@ public class Bet365 extends BettingMachine {
 
     public void openMyTeamsPage() {
         try {
+//            if (!sikuli.isPresent(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern)
+//                    || !sikuli.isPresent(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern)) {
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+//            }
 
+//            if (!sikuli.isPresent(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern)) {
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
+//            }
 
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
 
+            stopTV();
+
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
+        }
+    }
+
+    public void stopTV() {
+        try {
+            Region region = sikuli.find(ImagePattern.PATTERN_LIVE_TV_TITLE.pattern).below(200);
+            region.hover();
+            sikuli.click(region, ImagePattern.PATTERN_LIVE_TV_STOP_BUTTON.pattern);
+
+        } catch (FindFailed e) {
+            logger.error("error in stopTV() ", e);
         }
     }
 

@@ -12,7 +12,6 @@ import betix.core.data.MatchState;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
 import betix.core.sikuli.SikuliRobot;
-import org.sikuli.script.Env;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
@@ -65,7 +64,7 @@ class AccountInfoManager {
             collectPendingMatchesInfo();
 
         } catch (FindFailed e) {
-            e.printStackTrace();
+            logger.error("can't open history page");
         } finally {
             try {
                 sikuli.mouseMove(sikuli.getCenter());
@@ -83,7 +82,7 @@ class AccountInfoManager {
 
         sikuli.type(Key.DOWN, KeyModifier.SHIFT);
         sikuli.type("c", KeyModifier.CTRL);
-        String balanceInfo = Env.getClipboard();
+        String balanceInfo = sikuli.getClipboard();
         logger.info("found balanceInfo = " + balanceInfo);
 
         String price = searchRegEx(balanceInfo, balanceRegEx);
@@ -142,18 +141,18 @@ class AccountInfoManager {
         messageBox.setVisible(false);
     }
 
-    private void getMatchInfo() {
+    private boolean getMatchInfo() {
         while (true) {
             sikuli.type(Key.TAB);
             sikuli.type(Key.DOWN, KeyModifier.SHIFT);
             sikuli.type("c", KeyModifier.CTRL);
 
-            String matchInfo = Env.getClipboard();
+            String matchInfo = sikuli.getClipboard();
             if (!matchInfo.contains(historyMatchInfoLinkRegEx)) {
                 logger.info("end of matchInfo, last is : " + matchInfo, sikuli.getCenter());
                 accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                 accountConfig.saveConfig();
-                return;
+                return true;
             }
 
             sikuli.type(Key.ENTER);
@@ -162,7 +161,8 @@ class AccountInfoManager {
             sikuli.type(Key.DOWN, KeyModifier.SHIFT);
             sikuli.type(Key.UP, KeyModifier.SHIFT);
             sikuli.type("c", KeyModifier.CTRL);
-            matchInfo = Env.getClipboard();
+
+            matchInfo = sikuli.getClipboard();
             logger.trace("found matchInfo string = " + matchInfo);
 
             sikuli.type(Key.ENTER);
@@ -178,10 +178,11 @@ class AccountInfoManager {
                 } else {
                     accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                     accountConfig.saveConfig();
-                    return;
+                    return true;
                 }
             } catch (Exception e) {
                 messageBox.showMessage("can't parse info: " + e.getLocalizedMessage(), logger);
+                return false;
             }
         }
     }

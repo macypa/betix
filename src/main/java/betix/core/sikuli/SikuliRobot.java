@@ -107,10 +107,30 @@ public class SikuliRobot {
         }
     }
 
+    public <PatternOrString> boolean isPresent(PatternOrString target) throws FindFailed {
+        try {
+            screen.wait(target, 5);
+            screen.find(target);
+            return true;
+        } catch (FindFailed findFailed) {
+            return false;
+        }
+    }
+
     public <PatternFilenameRegionMatchLocation> int hover(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
             screen.wait(target, 5);
             return screen.hover(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in hover on target {} ", target, findFailed);
+            throw findFailed;
+        }
+    }
+
+    public <PatternFilenameRegionMatchLocation> int hover(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
+        try {
+            region.wait(target, 5);
+            return region.hover(target);
         } catch (FindFailed findFailed) {
             logger.error("error in hover on target {} ", target, findFailed);
             throw findFailed;
@@ -177,5 +197,9 @@ public class SikuliRobot {
         } catch (InterruptedException e) {
             logger.error("error in waitMilisec() ", e);
         }
+    }
+
+    public String getClipboard() {
+        return Env.getClipboard();
     }
 }
