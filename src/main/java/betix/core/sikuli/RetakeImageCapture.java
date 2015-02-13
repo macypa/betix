@@ -12,10 +12,12 @@ public class RetakeImageCapture {
     public static void main(String[] args) {
         String imgName;
         if (args.length > 0) {
-            imgName = args[1];
+            imgName = args[0];
         } else {
             imgName = SikuliScript.input("Enter relative Image filename");
         }
+
+        SikuliScript.popup("prepare the screen and click OK when ready");
 
         File imageFile = new File(imgName);
         try {

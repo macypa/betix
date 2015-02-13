@@ -5,6 +5,7 @@ import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
+import betix.core.sikuli.RetakeImageCapture;
 import betix.core.sikuli.SikuliRobot;
 import org.sikuli.script.FindFailed;
 
@@ -16,21 +17,26 @@ public abstract class BettingMachine {
     public final SikuliRobot sikuli = new SikuliRobot();
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            RetakeImageCapture.main(args);
+            System.exit(0);
+        }
+
         Bet365 betka = new Bet365();
 
         betka.openSite();
         betka.stopTV();
 
-//        if (!betka.login()) {
-//            System.exit(1);
-//        }
-//
-//        betka.collectInfo();
-//
-//        betka.openMyTeamsPage();
-//        betka.placeBets();
+        if (!betka.login()) {
+            System.exit(1);
+        }
 
-        System.exit(1);
+        betka.collectInfo();
+
+        betka.openMyTeamsPage();
+        betka.placeBets();
+
+        System.exit(0);
     }
 
     public void openSite() {

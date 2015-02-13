@@ -22,7 +22,7 @@
             <directory>target</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>betty*.jar</include>
+                <include>betix.jar</include>
             </includes>
         </fileSet>
 
@@ -35,7 +35,7 @@
         </fileSet>
 
         <fileSet>
-            <directory>resources</directory>
+            <directory>src/main/resources</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
 
