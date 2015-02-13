@@ -8,11 +8,7 @@ import ch.qos.logback.core.spi.AppenderAttachable;
 import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,10 +19,10 @@ public class Logger
 
     ch.qos.logback.classic.Logger wrappedLogger = null;
 
-    private static final File logDir = new File("./log/");
+    public static final File LOG_DIR = new File("./log/");
 
     static {
-        logDir.mkdirs();
+        LOG_DIR.mkdirs();
     }
 
     public Logger(org.slf4j.Logger wrappedLogger) {
@@ -217,7 +213,6 @@ public class Logger
     }
 
     public void error(String msg) {
-        msg = String.format("%s Screenshot filename %s", msg, takePicture());
         wrappedLogger.error(msg);
     }
 
@@ -226,7 +221,6 @@ public class Logger
             error(format, (Throwable) arg);
         }
 
-        format = String.format("%s Screenshot filename %s", format, takePicture());
         wrappedLogger.error(format, arg);
     }
 
@@ -236,17 +230,14 @@ public class Logger
             error(msg, (Throwable) arg2);
         }
 
-        format = String.format("%s Screenshot filename %s", format, takePicture());
         wrappedLogger.error(format, arg1, arg2);
     }
 
     public void error(String format, Object... argArray) {
-        format = String.format("%s Screenshot filename %s", format, takePicture());
         wrappedLogger.error(format, argArray);
     }
 
     public void error(String msg, Throwable t) {
-        msg = String.format("%s Screenshot filename %s", msg, takePicture());
         wrappedLogger.error(msg, t);
     }
 
@@ -272,7 +263,6 @@ public class Logger
 
     public void error(String format, Throwable t, Object... argArray) {
         if (wrappedLogger.isErrorEnabled()) {
-            format = String.format("%s Screenshot filename %s", format, takePicture());
             List arr = Arrays.asList(argArray);
             arr.add(t.getClass());
             arr.add(t.getLocalizedMessage());
@@ -443,22 +433,5 @@ public class Logger
 
     public void log(Marker marker, String fqcn, int levelInt, String message, Throwable t, Object... argArray) {
         wrappedLogger.log(marker, fqcn, levelInt, message, argArray, t);
-    }
-
-    public String takePicture() {
-        String name = String.valueOf(System.currentTimeMillis());
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenSize = toolkit.getScreenSize();
-        Rectangle screenRect = new Rectangle(screenSize);
-        try {
-            Robot robot = new Robot();
-            BufferedImage image = robot.createScreenCapture(screenRect);
-            ImageIO.write(image, "png", new File(logDir, name + ".png"));
-        } catch (AWTException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return name;
     }
 }

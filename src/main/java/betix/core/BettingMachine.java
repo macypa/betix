@@ -19,14 +19,16 @@ public abstract class BettingMachine {
         Bet365 betka = new Bet365();
 
         betka.openSite();
-        if (!betka.login()) {
-            System.exit(1);
-        }
+        betka.stopTV();
 
-        betka.collectInfo();
-
-        betka.openMyTeamsPage();
-        betka.placeBets();
+//        if (!betka.login()) {
+//            System.exit(1);
+//        }
+//
+//        betka.collectInfo();
+//
+//        betka.openMyTeamsPage();
+//        betka.placeBets();
 
         System.exit(1);
     }
