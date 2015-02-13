@@ -71,44 +71,84 @@ public class SikuliRobot {
     }
 
     public <PatternFilenameRegionMatchLocation> int mouseMove(PatternFilenameRegionMatchLocation target) throws FindFailed {
-        return screen.mouseMove(target);
+        try {
+            return screen.mouseMove(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in mouseMove on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
-    public <PatternOrString> Match wait(PatternOrString pattern) throws FindFailed {
-        return screen.wait(pattern, screen.getAutoWaitTimeout());
+    public <PatternOrString> Match wait(PatternOrString target) throws FindFailed {
+        try {
+            return screen.wait(target, screen.getAutoWaitTimeout());
+        } catch (FindFailed findFailed) {
+            logger.error("error in wait on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
-    public <PatternOrString> Match wait(PatternOrString pattern, double timeout) throws FindFailed {
-        return screen.wait(pattern, 5);
+    public <PatternOrString> Match wait(PatternOrString target, double timeout) throws FindFailed {
+        try {
+            return screen.wait(target, 5);
+        } catch (FindFailed findFailed) {
+            logger.error("error in wait on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
     public <PatternOrString> Match find(PatternOrString target) throws FindFailed {
-        screen.wait(target, 5);
-        return screen.find(target);
+        try {
+            screen.wait(target, 5);
+            return screen.find(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in find on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
-    public <PatternFilenameRegionMatchLocation> int hover(PatternFilenameRegionMatchLocation pattern) throws FindFailed {
-        screen.wait(pattern, 5);
-        return screen.hover(pattern);
+    public <PatternFilenameRegionMatchLocation> int hover(PatternFilenameRegionMatchLocation target) throws FindFailed {
+        try {
+            screen.wait(target, 5);
+            return screen.hover(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in hover on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
-    public int click() throws FindFailed {
+    public int click() {
         return screen.click();
     }
 
-    public <PatternFilenameRegionMatchLocation> int click(PatternFilenameRegionMatchLocation pattern) throws FindFailed {
-        screen.wait(pattern, 5);
-        return screen.click(pattern);
+    public <PatternFilenameRegionMatchLocation> int click(PatternFilenameRegionMatchLocation target) throws FindFailed {
+        try {
+            screen.wait(target, 5);
+            return screen.click(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in click on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
-    public <PatternFilenameRegionMatchLocation> int click(Region region, PatternFilenameRegionMatchLocation pattern) throws FindFailed {
-        region.wait(pattern, 5);
-        return region.click(pattern);
+    public <PatternFilenameRegionMatchLocation> int click(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
+        try {
+            region.wait(target, 5);
+            return region.click(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in click on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
-    public int doubleClick(Pattern pattern) throws FindFailed {
-        screen.wait(pattern, 5);
-        return screen.doubleClick(pattern);
+    public int doubleClick(Pattern target) throws FindFailed {
+        try {
+            screen.wait(target, 5);
+            return screen.doubleClick(target);
+        } catch (FindFailed findFailed) {
+            logger.error("error in doubleClick on target {} ", target, findFailed);
+            throw findFailed;
+        }
     }
 
     public int type(String text) {

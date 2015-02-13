@@ -222,11 +222,20 @@ public class Logger
     }
 
     public void error(String format, Object arg) {
+        if (arg instanceof Throwable) {
+            error(format, (Throwable) arg);
+        }
+
         format = String.format("%s Screenshot filename %s", format, takePicture());
         wrappedLogger.error(format, arg);
     }
 
     public void error(String format, Object arg1, Object arg2) {
+        if (arg2 instanceof Throwable) {
+            String msg = format.replace("{}", arg1.toString());
+            error(msg, (Throwable) arg2);
+        }
+
         format = String.format("%s Screenshot filename %s", format, takePicture());
         wrappedLogger.error(format, arg1, arg2);
     }
