@@ -5,6 +5,7 @@ import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
+import org.quartz.SchedulerException;
 import org.sikuli.basics.*;
 import org.sikuli.script.*;
 
@@ -21,7 +22,6 @@ public class SikuliRobot extends Screen {
     public final MessageBoxFrame messageBox = new MessageBoxFrame();
 
     public SikuliRobot() {
-
         Double sikuliMinSimilarity = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.sikuliMinSimilarity);
         setSikuliMinSimilarity(sikuliMinSimilarity.floatValue());
 
@@ -40,7 +40,12 @@ public class SikuliRobot extends Screen {
             @Override
             public void hotkeyPressed(HotkeyEvent e) {
                 System.out.println("c_ALT_CTRL detected! exiting...");
-                System.exit(1);
+                try {
+                    betix.core.schedule.Scheduler.stopSchedule();
+                } catch (SchedulerException e1) {
+                    logger.error("can't stop cron scheduled job", e);
+                }
+                System.exit(0);
             }
         };
 

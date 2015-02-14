@@ -21,6 +21,9 @@
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.5" level="project" />
     <orderEntry type="library" name="Maven: org.jasypt:jasypt:1.9.2" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.0" level="project" />
+    <orderEntry type="library" name="Maven: org.quartz-scheduler:quartz:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: c3p0:c3p0:0.9.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.quartz-scheduler:quartz-jobs:2.2.1" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: org.sikuli:sikuli-api:1.0.1">
         <CLASSES>

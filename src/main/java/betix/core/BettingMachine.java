@@ -5,8 +5,10 @@ import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
+import betix.core.schedule.Scheduler;
 import betix.core.sikuli.RetakeImageCapture;
 import betix.core.sikuli.SikuliRobot;
+import org.quartz.SchedulerException;
 import org.sikuli.script.FindFailed;
 
 public abstract class BettingMachine {
@@ -19,24 +21,31 @@ public abstract class BettingMachine {
     public static void main(String[] args) {
         if (args.length > 0) {
             RetakeImageCapture.main(args);
-            System.exit(0);
         }
 
+        try {
+            Scheduler.startSchedule();
+        } catch (SchedulerException e) {
+            logger.error("Scheduler not started!");
+        }
+
+        startBetProcess();
+    }
+
+    public static void startBetProcess() {
         Bet365 betka = new Bet365();
 
         betka.openSite();
         betka.stopTV();
 
         if (!betka.login()) {
-            System.exit(1);
+            return;
         }
 
         betka.collectInfo();
 
         betka.openMyTeamsPage();
         betka.placeBets();
-
-        System.exit(0);
     }
 
     public void openSite() {

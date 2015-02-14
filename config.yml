@@ -1,5 +1,6 @@
 ---
 placeBet: true
+cronExpression: 0 0 19 * * ?
 useFibonacciForStakes: true
 imageDir: img
 teamImageDir: team
