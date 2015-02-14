@@ -32,7 +32,7 @@ public abstract class BettingMachine {
         startBetProcess();
     }
 
-    public static void startBetProcess() {
+    public static synchronized void startBetProcess() {
         Bet365 betka = new Bet365();
 
         betka.openSite();
