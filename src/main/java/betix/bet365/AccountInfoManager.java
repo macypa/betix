@@ -175,6 +175,7 @@ class AccountInfoManager {
                     accountInfo.getMatchInfoFinished().remove(info);
                 } else if (!MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoFinished().contains(info)) {
                     accountInfo.getMatchInfoFinished().add(info);
+                    accountInfo.getMatchInfoPending().remove(info);
                 } else {
                     accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                     accountConfig.saveConfig();

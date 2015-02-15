@@ -36,7 +36,7 @@ import java.util.Date;
  * Залог:  0,50   Печалби:  1,65
  */
 @Data
-@EqualsAndHashCode(exclude = {"state", "coefficient", "stake", "wining"})
+@EqualsAndHashCode(exclude = {"date", "state", "coefficient", "stake", "wining"})
 public class MatchInfo implements Comparable {
 
     private MatchState state = MatchState.pending;
