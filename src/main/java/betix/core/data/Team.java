@@ -36,6 +36,6 @@ public class Team {
 
     public boolean isParticipant(String participant) {
         if (participant == null || participant.isEmpty() || name == null || name.isEmpty()) return false;
-        return name.toLowerCase().equals(participant.toLowerCase());
+        return name.toLowerCase().replaceAll("_| ", "").equals(participant.toLowerCase().replaceAll("_| ", ""));
     }
 }

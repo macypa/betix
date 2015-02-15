@@ -44,19 +44,11 @@ public class Bet365 extends BettingMachine {
 
     public void openMyTeamsPage() {
         try {
-//            if (!sikuli.isPresent(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern)
-//                    || !sikuli.isPresent(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern)) {
-            sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
-//            }
-
-//            if (!sikuli.isPresent(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern)) {
-            sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
-//            }
-
-            sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
-
             stopTV();
 
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
         }
@@ -85,6 +77,7 @@ public class Bet365 extends BettingMachine {
                 continue;
             }
             try {
+                sikuli.messageBox.setVisible(false);
                 sikuli.click(team.getPattern());
 
                 placeBet(team);
