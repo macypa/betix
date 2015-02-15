@@ -47,7 +47,7 @@ public abstract class BettingMachine {
         sikuli.focusBrowser();
 
         try {
-            sikuli.messageBox.showMessage("searching for <br>site logo ...", logger);
+            logger.info("searching for <br>site logo ...");
             sikuli.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             logger.info("site already opened");
 
@@ -55,7 +55,7 @@ public abstract class BettingMachine {
             sikuli.openBrowser();
 
             try {
-                sikuli.messageBox.showMessage("searching for <br>site logo ...", logger);
+                logger.info("searching for <br>site logo ...");
                 sikuli.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             } catch (FindFailed ee) {
                 logger.error("can't find logo, probably site didn't open", ee);

@@ -1,6 +1,7 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
+import betix.core.MessageBoxFrame;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
@@ -12,6 +13,7 @@ import org.sikuli.script.FindFailed;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -87,7 +89,7 @@ public class Bet365 extends BettingMachine {
                 continue;
             }
             try {
-                sikuli.messageBox.setVisible(false);
+                MessageBoxFrame.getMessageBox().setVisible(false);
                 sikuli.click(team.getPattern());
 
                 placeBet(team);
@@ -110,7 +112,7 @@ public class Bet365 extends BettingMachine {
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
             sikuli.click(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
         } else {
-            sikuli.messageBox.showMessage("click", logger, sikuli.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget());
+            MessageBoxFrame.getMessageBox().showMessage("click", sikuli.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget(), Color.green);
         }
     }
 

@@ -1,6 +1,5 @@
 package betix.core.sikuli;
 
-import betix.core.MessageBoxFrame;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.logger.Logger;
@@ -19,17 +18,12 @@ public class SikuliRobot extends Screen {
 
     protected static final Configuration config = Configuration.getDefaultConfig();
     private static final Logger logger = LoggerFactory.getLogger(SikuliRobot.class);
-    public final MessageBoxFrame messageBox = new MessageBoxFrame();
 
     public SikuliRobot() {
         Double sikuliMinSimilarity = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.sikuliMinSimilarity);
         setSikuliMinSimilarity(sikuliMinSimilarity.floatValue());
 
         exitListener();
-    }
-
-    public MessageBoxFrame getMessageBox() {
-        return messageBox;
     }
 
     public void exitListener() {
@@ -54,12 +48,12 @@ public class SikuliRobot extends Screen {
     }
 
     public App focusBrowser() {
-        messageBox.showMessage("focusing Browser ...", logger);
+        logger.info("focusing Browser ...");
         return App.focus(config.getConfigAsString(ConfigKey.browser));
     }
 
     public App openBrowser() {
-        messageBox.showMessage("opening site ...", logger);
+        logger.info("opening site ...");
         return App.open(config.getConfigAsString(ConfigKey.browser) + " " + config.getConfigAsString(ConfigKey.siteUrl));
     }
 

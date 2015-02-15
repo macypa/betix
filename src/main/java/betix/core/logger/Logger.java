@@ -1,5 +1,6 @@
 package betix.core.logger;
 
+import betix.core.MessageBoxFrame;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -20,6 +21,7 @@ public class Logger
     ch.qos.logback.classic.Logger wrappedLogger = null;
 
     public static final File LOG_DIR = new File("./log/");
+    public final MessageBoxFrame messageBox = MessageBoxFrame.getMessageBox();
 
     static {
         LOG_DIR.mkdirs();
@@ -105,6 +107,7 @@ public class Logger
     }
 
     public void trace(String msg) {
+        messageBox.showMessage(msg);
         wrappedLogger.trace(msg);
     }
 
@@ -121,6 +124,7 @@ public class Logger
     }
 
     public void trace(String msg, Throwable t) {
+        messageBox.showMessage(msg);
         wrappedLogger.trace(msg, t);
     }
 
@@ -163,6 +167,7 @@ public class Logger
     }
 
     public void debug(String msg) {
+        messageBox.showMessage(msg);
         wrappedLogger.debug(msg);
     }
 
@@ -179,6 +184,7 @@ public class Logger
     }
 
     public void debug(String msg, Throwable t) {
+        messageBox.showMessage(msg);
         wrappedLogger.debug(msg, t);
     }
 
@@ -213,21 +219,26 @@ public class Logger
     }
 
     public void error(String msg) {
+        messageBox.showErrorMessage(msg);
         wrappedLogger.error(msg);
     }
 
     public void error(String format, Object arg) {
         if (arg instanceof Throwable) {
             error(format, (Throwable) arg);
+            return;
         }
 
+        messageBox.showMessage(format.replace("{}", arg.toString()));
         wrappedLogger.error(format, arg);
     }
 
     public void error(String format, Object arg1, Object arg2) {
         if (arg2 instanceof Throwable) {
             String msg = format.replace("{}", arg1.toString());
+            messageBox.showErrorMessage(msg);
             error(msg, (Throwable) arg2);
+            return;
         }
 
         wrappedLogger.error(format, arg1, arg2);
@@ -238,6 +249,7 @@ public class Logger
     }
 
     public void error(String msg, Throwable t) {
+        messageBox.showErrorMessage(msg);
         wrappedLogger.error(msg, t);
     }
 
@@ -280,6 +292,7 @@ public class Logger
     }
 
     public void info(String msg) {
+        messageBox.showMessage(msg);
         wrappedLogger.info(msg);
     }
 
@@ -296,6 +309,7 @@ public class Logger
     }
 
     public void info(String msg, Throwable t) {
+        messageBox.showMessage(msg);
         wrappedLogger.info(msg, t);
     }
 
@@ -362,10 +376,12 @@ public class Logger
     }
 
     public void warn(String msg) {
+        messageBox.showMessage(msg);
         wrappedLogger.warn(msg);
     }
 
     public void warn(String msg, Throwable t) {
+        messageBox.showMessage(msg);
         wrappedLogger.warn(msg, t);
     }
 
@@ -392,6 +408,7 @@ public class Logger
     }
 
     public void warn(Marker marker, String msg) {
+        messageBox.showMessage(msg);
         wrappedLogger.warn(marker, msg);
     }
 
@@ -408,6 +425,7 @@ public class Logger
     }
 
     public void warn(Marker marker, String msg, Throwable t) {
+        messageBox.showMessage(msg);
         wrappedLogger.warn(marker, msg, t);
     }
 

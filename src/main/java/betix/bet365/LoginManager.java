@@ -1,16 +1,15 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
-import betix.core.MessageBoxFrame;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
+import betix.core.logger.Logger;
+import betix.core.logger.LoggerFactory;
 import betix.core.sikuli.SikuliRobot;
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class LoginManager {
 
@@ -19,13 +18,11 @@ class LoginManager {
 
     private final BettingMachine betingMachine;
     private final SikuliRobot sikuli;
-    private final MessageBoxFrame messageBox;
 
     LoginManager(Bet365 bet365) {
         betingMachine = bet365;
         sikuli = bet365.sikuli;
         accountConfig = bet365.getAccountConfig();
-        messageBox = bet365.sikuli.messageBox;
     }
 
     public boolean login() {
@@ -34,14 +31,13 @@ class LoginManager {
         }
 
         try {
-            messageBox.showMessage("searching for <br>site logo ...");
+            logger.info("searching for <br>site logo ...");
             logger.info("Trying to log in ...");
 
             sikuli.click(ImagePattern.PATTERN_LOGIN_FIELD.pattern);
             boolean updateUserPass = false;
             String username = accountConfig.getConfigAsString(ConfigKey.username);
             if (username == null || username.trim().isEmpty()) {
-                messageBox.setVisible(false);
                 username = sikuli.input("Type your username");
                 updateUserPass = true;
             }
@@ -53,7 +49,6 @@ class LoginManager {
 
             String plainText = decodePass(accountConfig.getConfigAsString(ConfigKey.password));
             if (plainText == null || plainText.trim().isEmpty()) {
-                messageBox.setVisible(false);
                 plainText = sikuli.input("enter pass to encript and store");
                 updateUserPass = true;
 
@@ -75,8 +70,6 @@ class LoginManager {
                 return true;
             }
         } catch (FindFailed e) {
-
-            messageBox.setVisible(false);
             sikuli.popup("Could NOT log in.");
             logger.error("Not logged in!", e);
             return false;

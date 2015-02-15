@@ -40,14 +40,12 @@ class AccountInfoManager {
 
     private final BettingMachine betingMachine;
     private final SikuliRobot sikuli;
-    private final MessageBoxFrame messageBox;
 
     AccountInfoManager(Bet365 bet365) {
         betingMachine = bet365;
         sikuli = bet365.sikuli;
         accountConfig = bet365.getAccountConfig();
         accountInfo = accountConfig.getAccountInfo();
-        messageBox = bet365.sikuli.messageBox;
     }
 
     public void collectInfo() {
@@ -66,12 +64,13 @@ class AccountInfoManager {
         } catch (FindFailed e) {
             logger.error("can't open history page");
         } finally {
+            MessageBoxFrame.getMessageBox().setVisible(false);
             try {
                 sikuli.mouseMove(sikuli.getCenter());
+                sikuli.click();
             } catch (FindFailed f) {
                 logger.error("can't move mouse to center of the screen...probably can't close the history page");
             }
-            messageBox.setVisible(false);
             sikuli.type(Key.F4, KeyModifier.CTRL);
         }
     }
@@ -113,7 +112,6 @@ class AccountInfoManager {
         sikuli.type(Key.TAB);
 
         getMatchInfo();
-        messageBox.setVisible(false);
     }
 
     private void collectPendingMatchesInfo() throws FindFailed {
@@ -139,7 +137,6 @@ class AccountInfoManager {
         sikuli.type(Key.TAB);
 
         getMatchInfo();
-        messageBox.setVisible(false);
     }
 
     private boolean getMatchInfo() {
@@ -183,7 +180,7 @@ class AccountInfoManager {
                     return true;
                 }
             } catch (Exception e) {
-                messageBox.showMessage("can't parse info: " + e.getLocalizedMessage(), logger);
+                logger.info("can't parse info: " + e.getLocalizedMessage(), logger);
                 return false;
             }
         }
