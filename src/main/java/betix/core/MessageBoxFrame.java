@@ -3,7 +3,6 @@ package betix.core;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.logger.Logger;
-import com.sun.awt.AWTUtilities;
 import org.sikuli.script.Location;
 
 import javax.swing.*;
@@ -11,14 +10,18 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import static java.awt.GraphicsDevice.WindowTranslucency.TRANSLUCENT;
+
 public class MessageBoxFrame extends JFrame implements MouseListener {
 
     private final JPanel panel = new JPanel();
 
     public MessageBoxFrame() {
-        if (AWTUtilities.isTranslucencySupported(AWTUtilities.Translucency.TRANSLUCENT)) {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+        if (ge.getDefaultScreenDevice().isWindowTranslucencySupported(TRANSLUCENT)) {
             Double messageBoxOpacity = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.messageBoxOpacity);
-            AWTUtilities.setWindowOpacity(this, messageBoxOpacity.floatValue());
+            setOpacity(messageBoxOpacity.floatValue());
         }
 
         setUndecorated(true);
