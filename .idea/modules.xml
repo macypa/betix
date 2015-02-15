@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/betty.iml" filepath="$PROJECT_DIR$/betty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/betix.iml" filepath="$PROJECT_DIR$/betix.iml" />
     </modules>
   </component>
 </project>

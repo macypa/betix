@@ -43,10 +43,15 @@ public class Bet365 extends BettingMachine {
     }
 
     public void openMyTeamsPage() {
+
+        if (!login()) {
+            return;
+        }
+
         try {
+            sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
             stopTV();
 
-            sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
         } catch (FindFailed e) {
@@ -66,6 +71,11 @@ public class Bet365 extends BettingMachine {
     }
 
     public void placeBets() {
+
+        openMyTeamsPage();
+
+        collectInfo();
+
         File teamDir = new File(ImagePattern.TEAM_DIR_NAME);
         for (File file : teamDir.listFiles()) {
             if (file.isDirectory())

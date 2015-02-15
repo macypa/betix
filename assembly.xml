@@ -12,7 +12,7 @@
             <scope>runtime</scope>
             <excludes>
                 <exclude>*:sources</exclude>
-                <exclude>*:betty</exclude>
+                <exclude>*:betix</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

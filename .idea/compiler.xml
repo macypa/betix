@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="betty" />
+        <module name="betix" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="betty" target="1.8" />
+      <module name="betix" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

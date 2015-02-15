@@ -46,6 +46,7 @@ public class SikuliRobot extends Screen {
                     logger.error("can't stop cron scheduled job", e);
                 }
                 System.exit(0);
+                Runtime.getRuntime().halt(0);
             }
         };
 

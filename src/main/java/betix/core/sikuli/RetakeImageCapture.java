@@ -27,6 +27,7 @@ public class RetakeImageCapture {
         }
 
         System.exit(0);
+        Runtime.getRuntime().halt(0);
     }
 
 }

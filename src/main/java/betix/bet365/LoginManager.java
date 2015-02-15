@@ -97,8 +97,7 @@ class LoginManager {
 
     private boolean checkLogin() {
         try {
-            sikuli.focusBrowser();
-            sikuli.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
+            betingMachine.openSite();
             sikuli.wait(ImagePattern.PATTERN_HISTORY_LINK.pattern, 5);
             logger.info("You're logged in.");
             return true;

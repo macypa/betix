@@ -1,6 +1,7 @@
 package betix.core.config;
 
 public enum ConfigKey {
+    lockFile,
     browser,
     placeBet,
     sikuliMinSimilarity,

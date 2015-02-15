@@ -39,6 +39,7 @@ class Login {
         SikuliScript.popup("You're NOT logged in.")
         logger.error("Not logged in!")
         System.exit(1)
+        Runtime.getRuntime.halt(1)
     }
   }
 }

@@ -98,7 +98,7 @@ class AccountInfoManager {
         sikuli.type(Key.DOWN);
         sikuli.type(Key.TAB);
         sikuli.type(Key.RIGHT);
-        sikuli.type(Key.RIGHT);
+//        sikuli.type(Key.RIGHT);
         sikuli.wait(1);
 
         sikuli.type(Key.ENTER);
@@ -106,8 +106,9 @@ class AccountInfoManager {
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
 
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
+//        sikuli.type(Key.TAB);
+//        sikuli.type(Key.TAB);
+
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
 
@@ -131,8 +132,8 @@ class AccountInfoManager {
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
 
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
+//        sikuli.type(Key.TAB);
+//        sikuli.type(Key.TAB);
 
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);

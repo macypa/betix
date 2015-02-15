@@ -1,6 +1,7 @@
 package betix.core;
 
 import betix.bet365.Bet365;
+import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
@@ -10,6 +11,10 @@ import betix.core.sikuli.RetakeImageCapture;
 import betix.core.sikuli.SikuliRobot;
 import org.quartz.SchedulerException;
 import org.sikuli.script.FindFailed;
+
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 
 public abstract class BettingMachine {
 
@@ -23,6 +28,8 @@ public abstract class BettingMachine {
             RetakeImageCapture.main(args);
         }
 
+        lockInstance(config.getConfigAsString(ConfigKey.lockFile));
+
         try {
             Scheduler.startSchedule();
         } catch (SchedulerException e) {
@@ -33,19 +40,7 @@ public abstract class BettingMachine {
     }
 
     public static synchronized void startBetProcess() {
-        Bet365 betka = new Bet365();
-
-        betka.openSite();
-        betka.stopTV();
-
-        if (!betka.login()) {
-            return;
-        }
-
-        betka.collectInfo();
-
-        betka.openMyTeamsPage();
-        betka.placeBets();
+        new Bet365().placeBets();
     }
 
     public void openSite() {
@@ -66,6 +61,36 @@ public abstract class BettingMachine {
                 logger.error("can't find logo, probably site didn't open", ee);
             }
         }
+    }
+
+    private static boolean lockInstance(final String lockFile) {
+        try {
+            final File file = new File(lockFile);
+            if (file.exists()) {
+                logger.error("Lock file exists: " + lockFile + " Other instance is running or program was shutdown without deleting file.");
+                Runtime.getRuntime().halt(1);
+                return false;
+            }
+            final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+            if (fileLock != null) {
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+                    public void run() {
+                        try {
+                            fileLock.release();
+                            randomAccessFile.close();
+                            file.delete();
+                        } catch (Exception e) {
+                            logger.error("Unable to remove lock file: " + lockFile, e);
+                        }
+                    }
+                });
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Unable to create and/or lock file: " + lockFile, e);
+        }
+        return false;
     }
 
     public abstract boolean login();
