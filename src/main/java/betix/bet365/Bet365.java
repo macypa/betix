@@ -96,8 +96,8 @@ public class Bet365 extends BettingMachine {
     }
 
     private void placeBet(Team team) throws FindFailed {
-        sikuli.click(sikuli.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern).
-                below(50), ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
+        sikuli.click(sikuli.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern),
+                ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
 
         sikuli.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
