@@ -19,42 +19,52 @@
             <!-- jsoup HTML parser library @ http://jsoup.org/ -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.jyaml</groupId>
             <artifactId>jyaml</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.nurkiewicz.asyncretry</groupId>
             <artifactId>asyncretry-jdk7</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.sikuli</groupId>
             <artifactId>sikuli-api</artifactId>
+            <version>RELEASE</version>
             <systemPath>${project.basedir}/lib/sikuli-java.jar</systemPath>
             <scope>system</scope>
         </dependency>
