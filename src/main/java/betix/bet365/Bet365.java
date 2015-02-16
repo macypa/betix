@@ -48,7 +48,7 @@ public class Bet365 extends BettingMachine {
     public void openMyTeamsPage() {
 
         if (!login()) {
-            throw new RuntimeException("isnt' logged in");
+            throw new RuntimeException("not logged in");
         }
 
         try {
@@ -83,7 +83,7 @@ public class Bet365 extends BettingMachine {
         openMyTeamsPage();
 
         if (!collectInfo()) {
-            throw new RuntimeException("can't get info");
+            throw new RuntimeException("can't get history info");
         }
 
         File teamDir = new File(ImagePattern.TEAM_DIR_NAME);
@@ -104,8 +104,6 @@ public class Bet365 extends BettingMachine {
 
             } catch (FindFailed e) {
                 logger.error("error selecting team {} in placeBets() for image {}", team.getName(), file.getName());
-                logger.info("trying open again the my teams page");
-                openMyTeamsPage();
             }
         }
         betPlaced = true;

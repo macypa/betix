@@ -16,6 +16,7 @@ minBetStake: 0.5
 sikuliMinSimilarity: 0.5
 messageBoxColor: Color.ORANGE
 dateFormat: dd/MM/yyyy
+dateTimeFormat: "dd/MM/yyyy HH:mm:ss"
 teamNameSeparator: " v "
 balanceRegEx: "\\s*(.*?)\\s*BGN"
 historyMatchInfoLinkRegEx: "Равен @ "
@@ -27,4 +28,4 @@ matchInfoCoefficientRegEx: "Никой\\s*(.*?)\\s"
 matchInfoWiningRegEx: "Залог:\\s*.*?\\sПеч.*?:\\s*(.*?)\\s"
 matchInfoEventRegEx: "Равен\\s*(.*?)\\s*\\(Краен Резултат"
 matchInfoDateRegEx: "Краен Резултат\\)\\s*(.*?)\\s*Никой"
-
+matchInfoDateTimeRegEx: "Час на залога:\\s*(.*?)\\s*Принтирай"

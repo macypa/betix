@@ -26,6 +26,7 @@ public abstract class RetryTask {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         RetryExecutor executor = new AsyncRetryExecutor(scheduler).
                 retryOn(Exception.class).
+                retryOn(RuntimeException.class).
                 withExponentialBackoff(5000, 2).     //500ms times 2 after each retry
                 withMaxDelay(10_000).               //10 seconds
                 withUniformJitter().                //add between +/- 100 ms randomly
@@ -41,7 +42,7 @@ public abstract class RetryTask {
         try {
             future.get();
         } catch (Exception e) {
-            logger.error("error in task", e);
+            logger.error("error in retry task: " + e.getMessage(), e);
         }
         return task.isFinishedWithoutErrors();
     }

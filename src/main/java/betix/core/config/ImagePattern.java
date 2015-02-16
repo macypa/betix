@@ -19,6 +19,7 @@ public enum ImagePattern {
     PATTERN_LOGIN_FIELD("loginField"),
     PATTERN_LOGO("logo"),
     PATTERN_LOGO_IN_TAB("logoInBrowserTab"),
+    PATTERN_NEW_MESSAGE_CLOSE_BUTTON("newMessageCloseButton"),
     PATTERN_PASSWORD_FIELD("passwordField"),
     PATTERN_PLACE_BET_BUTTON("placeBetButton");
 

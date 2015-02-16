@@ -54,6 +54,8 @@ class LoginManager extends RetryTask {
             String username = typeInUsername();
             String plainText = typeInPassword();
 
+            sikuli.type(Key.ENTER);
+
             if (checkLogin()) {
                 if (username != null && !username.isEmpty()) {
                     accountConfig.addConfig(ConfigKey.username, username);
@@ -64,13 +66,13 @@ class LoginManager extends RetryTask {
                     accountConfig.saveConfig();
                 }
                 return true;
+            } else {
+                return false;
             }
         } catch (FindFailed e) {
-            sikuli.popup("Could NOT log in.");
             logger.error("Not logged in!", e);
-            throw new RuntimeException("could not log in.");
+            return false;
         }
-        return true;
     }
 
     private String typeInUsername() {
@@ -103,7 +105,6 @@ class LoginManager extends RetryTask {
         sikuli.enableSikuliLog(false);
         sikuli.type(plainText);
         sikuli.enableSikuliLog(true);
-        sikuli.type(Key.ENTER);
 
         return updatePass;
     }
@@ -123,6 +124,9 @@ class LoginManager extends RetryTask {
         try {
             logger.info("checking login");
             betingMachine.openSite();
+
+            checkNewMessages();
+
             sikuli.wait(ImagePattern.PATTERN_HISTORY_LINK.pattern, 5);
             logger.info("You're logged in.");
             return true;
@@ -130,6 +134,14 @@ class LoginManager extends RetryTask {
             logger.error("Not logged in!");
         }
         return false;
+    }
+
+    private void checkNewMessages() {
+        try {
+            sikuli.click(ImagePattern.PATTERN_NEW_MESSAGE_CLOSE_BUTTON.pattern);
+        } catch (FindFailed findFailed) {
+            logger.info("new message... closing message window.");
+        }
     }
 
     @Override

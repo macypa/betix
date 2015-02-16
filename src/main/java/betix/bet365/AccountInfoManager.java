@@ -38,6 +38,7 @@ class AccountInfoManager extends RetryTask {
     private static final String matchInfoWiningRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoWiningRegEx);
     private static final String matchInfoEventRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoEventRegEx);
     private static final String matchInfoDateRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateRegEx);
+    private static final String matchInfoDateTimeRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateTimeRegEx);
 
     private final AccountInfo accountInfo;
     private final Configuration accountConfig;
@@ -137,7 +138,6 @@ class AccountInfoManager extends RetryTask {
 
     public String getToDate(SimpleDateFormat format) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
         return format.format(calendar.getTime());
     }
 
@@ -257,6 +257,10 @@ class AccountInfoManager extends RetryTask {
         String dateString = searchRegEx(matchInfoString, matchInfoDateRegEx);
         logger.debug("found date {}", dateString);
         matchInfo.setDate(dateString);
+
+        String dateTimeString = searchRegEx(matchInfoString, matchInfoDateTimeRegEx);
+        logger.debug("found date of bet {}", dateTimeString);
+        matchInfo.setDateOfBet(dateTimeString);
 
         return matchInfo;
     }

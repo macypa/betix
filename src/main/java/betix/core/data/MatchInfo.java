@@ -12,6 +12,7 @@ public class MatchInfo implements Comparable {
     private double stake;
     private double wining;
     private String date;
+    private String dateOfBet;
     private Event event;
 
     @Override
@@ -19,8 +20,8 @@ public class MatchInfo implements Comparable {
         if (!(o instanceof MatchInfo)) return 1;
         final MatchInfo other = (MatchInfo) o;
 
-        if (!this.getDate().equals(other.getDate())) {
-            return getDate().compareTo(other.getDate());
+        if (!this.getDateOfBet().equals(other.getDateOfBet())) {
+            return getDateOfBet().compareTo(other.getDateOfBet());
         } else if (!getEvent().getName().equals(other.getEvent().getName())) {
             return getEvent().getName().compareTo(other.getEvent().getName());
         }
