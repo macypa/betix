@@ -6,12 +6,14 @@ import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
+import betix.core.schedule.RetryTask;
 import betix.core.sikuli.SikuliRobot;
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
+import org.sikuli.script.KeyModifier;
 
-class LoginManager {
+class LoginManager extends RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     private final Configuration accountConfig;
@@ -19,13 +21,28 @@ class LoginManager {
     private final BettingMachine betingMachine;
     private final SikuliRobot sikuli;
 
+    private boolean loggedIn = false;
+
     LoginManager(Bet365 bet365) {
         betingMachine = bet365;
         sikuli = bet365.sikuli;
         accountConfig = bet365.getAccountConfig();
     }
 
-    public boolean login() {
+    public boolean login() throws Exception {
+
+        loggedIn = false;
+        if (doLogin()) {
+            loggedIn = true;
+            return true;
+        }
+
+        logger.info("closing tab with failed login attempt ...");
+        sikuli.type(Key.F4, KeyModifier.CTRL);
+        throw new RuntimeException("can't login");
+    }
+
+    private boolean doLogin() {
         if (checkLogin()) {
             return true;
         }
@@ -51,7 +68,7 @@ class LoginManager {
         } catch (FindFailed e) {
             sikuli.popup("Could NOT log in.");
             logger.error("Not logged in!", e);
-            return false;
+            throw new RuntimeException("could not log in.");
         }
         return true;
     }
@@ -115,4 +132,13 @@ class LoginManager {
         return false;
     }
 
+    @Override
+    public void exeuteTask() throws Exception {
+        login();
+    }
+
+    @Override
+    public boolean isFinishedWithoutErrors() {
+        return loggedIn;
+    }
 }

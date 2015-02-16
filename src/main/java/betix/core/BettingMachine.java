@@ -6,6 +6,7 @@ import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
+import betix.core.schedule.RetryTask;
 import betix.core.schedule.Scheduler;
 import betix.core.sikuli.RetakeImageCapture;
 import betix.core.sikuli.SikuliRobot;
@@ -16,7 +17,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
 
-public abstract class BettingMachine {
+public abstract class BettingMachine extends RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     protected static final Configuration config = Configuration.getDefaultConfig();
@@ -98,7 +99,7 @@ public abstract class BettingMachine {
 
     public abstract boolean login();
 
-    public abstract void collectInfo();
+    public abstract boolean collectInfo();
 
     public abstract Configuration getAccountConfig();
 

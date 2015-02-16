@@ -35,18 +35,20 @@ public class Bet365 extends BettingMachine {
     private final Configuration
             accountConfig = new Configuration(Configuration.CONFIG_ACCOUNT_SPECIFIC_FILE);
 
+    private boolean betPlaced;
+
     public boolean login() {
-        return new LoginManager(this).login();
+        return new LoginManager(this).exeuteWithRetry();
     }
 
-    public void collectInfo() {
-        new AccountInfoManager(this).collectInfo();
+    public boolean collectInfo() {
+        return new AccountInfoManager(this).exeuteWithRetry();
     }
 
     public void openMyTeamsPage() {
 
         if (!login()) {
-            return;
+            throw new RuntimeException("isnt' logged in");
         }
 
         try {
@@ -77,10 +79,12 @@ public class Bet365 extends BettingMachine {
     }
 
     public void placeBets() {
-
+        betPlaced = false;
         openMyTeamsPage();
 
-        collectInfo();
+        if (!collectInfo()) {
+            throw new RuntimeException("can't get info");
+        }
 
         File teamDir = new File(ImagePattern.TEAM_DIR_NAME);
         for (File file : teamDir.listFiles()) {
@@ -104,7 +108,7 @@ public class Bet365 extends BettingMachine {
                 openMyTeamsPage();
             }
         }
-
+        betPlaced = true;
         logger.hideMessageBox();
     }
 
@@ -166,5 +170,15 @@ public class Bet365 extends BettingMachine {
 
     public Configuration getAccountConfig() {
         return accountConfig;
+    }
+
+    @Override
+    public void exeuteTask() {
+        placeBets();
+    }
+
+    @Override
+    public boolean isFinishedWithoutErrors() {
+        return betPlaced;
     }
 }

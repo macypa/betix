@@ -10,6 +10,7 @@ import betix.core.data.MatchInfo;
 import betix.core.data.MatchState;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
+import betix.core.schedule.RetryTask;
 import betix.core.sikuli.SikuliRobot;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
@@ -21,7 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 
-class AccountInfoManager {
+class AccountInfoManager extends RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
 
@@ -44,6 +45,8 @@ class AccountInfoManager {
     private final BettingMachine betingMachine;
     private final SikuliRobot sikuli;
 
+    private boolean dataIsCollected;
+
     AccountInfoManager(Bet365 bet365) {
         betingMachine = bet365;
         sikuli = bet365.sikuli;
@@ -52,7 +55,7 @@ class AccountInfoManager {
     }
 
     public void collectInfo() {
-
+        dataIsCollected = false;
         try {
             sikuli.openHistoryPage();
             sikuli.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
@@ -63,8 +66,10 @@ class AccountInfoManager {
             collectFinishedMatchesInfo();
             collectPendingMatchesInfo();
 
-        } catch (FindFailed e) {
-            logger.error("can't open history page");
+            dataIsCollected = true;
+        } catch (Exception e) {
+            logger.error("can't parse info ", e);
+            throw new RuntimeException(e);
         } finally {
             logger.hideMessageBox();
             sikuli.type(Key.F4, KeyModifier.CTRL);
@@ -136,7 +141,7 @@ class AccountInfoManager {
         return format.format(calendar.getTime());
     }
 
-    private void collectFinishedMatchesInfo() throws FindFailed {
+    private void collectFinishedMatchesInfo() throws FindFailed, ParseException {
 
         sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         sikuli.type(Key.TAB);
@@ -159,7 +164,7 @@ class AccountInfoManager {
         getMatchInfo();
     }
 
-    private void collectPendingMatchesInfo() throws FindFailed {
+    private void collectPendingMatchesInfo() throws FindFailed, ParseException {
 
         sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         sikuli.type(Key.TAB);
@@ -182,7 +187,7 @@ class AccountInfoManager {
         getMatchInfo();
     }
 
-    private boolean getMatchInfo() {
+    private boolean getMatchInfo() throws ParseException {
         while (true) {
             sikuli.type(Key.TAB);
             sikuli.type(Key.DOWN, KeyModifier.SHIFT);
@@ -208,31 +213,26 @@ class AccountInfoManager {
 
             sikuli.type(Key.ENTER);
 
-            try {
-                MatchInfo info = parseMatchInfo(matchInfo);
-                logger.info("found MatchInfo = {} ", info);
-                logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
-                logger.info("matchInfo contains in pending matches {} ", accountInfo.getMatchInfoPending().contains(info));
-                if (MatchState.pending.equals(info.getState())
-                        && !accountInfo.getMatchInfoPending().contains(info)) {
+            MatchInfo info = parseMatchInfo(matchInfo);
+            logger.info("found MatchInfo = {} ", info);
+            logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
+            logger.info("matchInfo contains in pending matches {} ", accountInfo.getMatchInfoPending().contains(info));
+            if (MatchState.pending.equals(info.getState())
+                    && !accountInfo.getMatchInfoPending().contains(info)) {
 
-                    logger.info("adding info to pending and removing it from finished");
-                    accountInfo.getMatchInfoPending().add(info);
-                    accountInfo.getMatchInfoFinished().remove(info);
-                } else if (!MatchState.pending.equals(info.getState())
-                        && !accountInfo.getMatchInfoFinished().contains(info)) {
+                logger.info("adding info to pending and removing it from finished");
+                accountInfo.getMatchInfoPending().add(info);
+                accountInfo.getMatchInfoFinished().remove(info);
+            } else if (!MatchState.pending.equals(info.getState())
+                    && !accountInfo.getMatchInfoFinished().contains(info)) {
 
-                    logger.info("adding info to finished and removing it from pending");
-                    accountInfo.getMatchInfoFinished().add(info);
-                    accountInfo.getMatchInfoPending().remove(info);
-                } else {
-                    accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-                    accountConfig.saveConfig();
-                    return true;
-                }
-            } catch (Exception e) {
-                logger.info("can't parse info: {}", e.getLocalizedMessage());
-                return false;
+                logger.info("adding info to finished and removing it from pending");
+                accountInfo.getMatchInfoFinished().add(info);
+                accountInfo.getMatchInfoPending().remove(info);
+            } else {
+                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+                accountConfig.saveConfig();
+                return true;
             }
         }
     }
@@ -276,4 +276,13 @@ class AccountInfoManager {
         return "";
     }
 
+    @Override
+    public void exeuteTask() {
+        collectInfo();
+    }
+
+    @Override
+    public boolean isFinishedWithoutErrors() {
+        return dataIsCollected;
+    }
 }
