@@ -1,15 +1,11 @@
 package betix.core.logger;
 
-import betix.core.config.ConfigKey;
-import betix.core.config.Configuration;
 import org.sikuli.script.Location;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import static java.awt.GraphicsDevice.WindowTranslucency.TRANSLUCENT;
 
 class MessageBoxFrame extends JFrame implements MouseListener {
 
@@ -22,13 +18,6 @@ class MessageBoxFrame extends JFrame implements MouseListener {
     }
 
     private MessageBoxFrame() {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-
-        if (ge.getDefaultScreenDevice().isWindowTranslucencySupported(TRANSLUCENT)) {
-            Double messageBoxOpacity = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.messageBoxOpacity);
-            setOpacity(messageBoxOpacity.floatValue());
-        }
-
         setUndecorated(true);
         setAlwaysOnTop(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

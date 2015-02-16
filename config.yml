@@ -4,17 +4,19 @@ placeBet: false
 cronExpression: 0 0 19 * * ?
 useFibonacciForStakes: true
 imageDir: img
+imgTimeout: 5
+waitTimeBeforeAction: 500
 teamImageDir: team
 siteUrl: "http://www.788-sb.com"
+siteHistoryUrl: "https://members.788-sb.com/MEMBERS/Authenticated/History/Sports/Default.aspx"
 imageExt: .png
 browser: firefox
 siteName: bet365.com
-teamNameSeparator: " v "
-messageBoxOpacity: 0.3
+minBetStake: 0.5
 sikuliMinSimilarity: 0.5
 messageBoxColor: Color.ORANGE
-minBetStake: 0.5
 dateFormat: dd/MM/yyyy
+teamNameSeparator: " v "
 balanceRegEx: "\\s*(.*?)\\s*BGN"
 historyMatchInfoLinkRegEx: "Равен @ "
 matchInfoPendingState: "Текущ"

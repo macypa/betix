@@ -18,6 +18,8 @@ public class SikuliRobot extends Screen {
 
     protected static final Configuration config = Configuration.getDefaultConfig();
     private static final Logger logger = LoggerFactory.getLogger(SikuliRobot.class);
+    private static final int imageTimeout = config.getConfigAsInteger(ConfigKey.imgTimeout);
+    private static final int waitTimeBeforeAction = config.getConfigAsInteger(ConfigKey.waitTimeBeforeAction);
 
     public SikuliRobot() {
         Double sikuliMinSimilarity = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.sikuliMinSimilarity);
@@ -57,6 +59,11 @@ public class SikuliRobot extends Screen {
         return App.open(config.getConfigAsString(ConfigKey.browser) + " " + config.getConfigAsString(ConfigKey.siteUrl));
     }
 
+    public App openHistoryPage() {
+        logger.info("opening history page ...");
+        return App.open(config.getConfigAsString(ConfigKey.browser) + " " + config.getConfigAsString(ConfigKey.siteHistoryUrl));
+    }
+
     public void enableSikuliLog(boolean enableLogs) {
         Settings.ActionLogs = enableLogs;
     }
@@ -67,6 +74,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int mouseMove(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            waitMilisec(waitTimeBeforeAction);
             logger.debug("mouseMove on target {}", target);
             return super.mouseMove(target);
         } catch (FindFailed findFailed) {
@@ -78,17 +86,7 @@ public class SikuliRobot extends Screen {
     public <PatternOrString> Match wait(PatternOrString target) throws FindFailed {
         try {
             logger.debug("waiting target {}", target);
-            return super.wait(target, getAutoWaitTimeout());
-        } catch (FindFailed findFailed) {
-            logger.error("error in wait on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
-            throw findFailed;
-        }
-    }
-
-    public <PatternOrString> Match wait(PatternOrString target, double timeout) throws FindFailed {
-        try {
-            logger.debug("waitng target {} with timeout 5", target);
-            return super.wait(target, 5);
+            return super.wait(target, imageTimeout);
         } catch (FindFailed findFailed) {
             logger.error("error in wait on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
             throw findFailed;
@@ -98,7 +96,7 @@ public class SikuliRobot extends Screen {
     public <PatternOrString> Match find(PatternOrString target) throws FindFailed {
         try {
             logger.debug("find target {}", target);
-            super.wait(target, 5);
+            super.wait(target, imageTimeout);
             return super.find(target);
         } catch (FindFailed findFailed) {
             logger.error("error in find on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
@@ -109,7 +107,7 @@ public class SikuliRobot extends Screen {
     public <PatternOrString> boolean isPresent(PatternOrString target) throws FindFailed {
         try {
             logger.debug("isPresent target {}", target);
-            super.wait(target, 5);
+            super.wait(target, imageTimeout);
             super.find(target);
             return true;
         } catch (FindFailed findFailed) {
@@ -119,8 +117,9 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int hover(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            waitMilisec(waitTimeBeforeAction);
             logger.debug("hover target {}", target);
-            super.wait(target, 5);
+            super.wait(target, imageTimeout);
             return super.hover(target);
         } catch (FindFailed findFailed) {
             logger.error("error in hover on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
@@ -130,8 +129,9 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int hover(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            waitMilisec(waitTimeBeforeAction);
             logger.debug("hover target {} on region {}", target, region);
-            region.wait(target, 5);
+            region.wait(target, imageTimeout);
             return region.hover(target);
         } catch (FindFailed findFailed) {
             logger.error("error in hover on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), findFailed);
@@ -141,8 +141,9 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int click(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            waitMilisec(waitTimeBeforeAction);
             logger.debug("click target {}", target);
-            super.wait(target, 5);
+            super.wait(target, imageTimeout);
             return super.click(target);
         } catch (FindFailed findFailed) {
             logger.error("error in click on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
@@ -152,8 +153,9 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int click(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            waitMilisec(waitTimeBeforeAction);
             logger.debug("click target {} on region {}", target, region);
-            region.wait(target, 5);
+            region.wait(target, imageTimeout);
             return region.click(target);
         } catch (FindFailed findFailed) {
             logger.error("error in click on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), findFailed);
@@ -163,13 +165,24 @@ public class SikuliRobot extends Screen {
 
     public int doubleClick(Pattern target) throws FindFailed {
         try {
+            waitMilisec(waitTimeBeforeAction);
             logger.debug("doubleClick target {}", target);
-            super.wait(target, 5);
+            super.wait(target, imageTimeout);
             return super.doubleClick(target);
         } catch (FindFailed findFailed) {
             logger.error("error in doubleClick on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
             throw findFailed;
         }
+    }
+
+    public int type(String text) {
+        waitMilisec(waitTimeBeforeAction);
+        return super.type(text);
+    }
+
+    public int type(String text, int modifiers) {
+        waitMilisec(waitTimeBeforeAction);
+        return super.type(text, modifiers);
     }
 
     public void wait(int sec) {
@@ -193,7 +206,8 @@ public class SikuliRobot extends Screen {
     }
 
     public String getClipboard() {
-        return Env.getClipboard();
+        waitMilisec(waitTimeBeforeAction);
+        return App.getClipboard();
     }
 
     public String takeSnapshot() {

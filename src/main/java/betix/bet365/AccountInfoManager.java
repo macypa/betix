@@ -54,10 +54,8 @@ class AccountInfoManager {
     public void collectInfo() {
 
         try {
-
-            sikuli.click(ImagePattern.PATTERN_HISTORY_LINK.pattern);
-            sikuli.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-            sikuli.hover(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+            sikuli.openHistoryPage();
+            sikuli.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
 
             getBalanceInfo();
 
@@ -86,7 +84,7 @@ class AccountInfoManager {
         sikuli.type(Key.DOWN, KeyModifier.SHIFT);
         sikuli.type("c", KeyModifier.CTRL);
         String balanceInfo = sikuli.getClipboard();
-        logger.info("found balanceInfo = " + balanceInfo);
+        logger.info("found balanceInfo = {}", balanceInfo);
 
         String price = searchRegEx(balanceInfo, balanceRegEx);
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
@@ -198,7 +196,7 @@ class AccountInfoManager {
 
             String matchInfo = sikuli.getClipboard();
             if (!matchInfo.contains(historyMatchInfoLinkRegEx)) {
-                logger.info("end of matchInfo, last is : " + matchInfo, sikuli.getCenter());
+                logger.info("end of matchInfo, last is : {}", matchInfo);
                 accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                 accountConfig.saveConfig();
                 return true;
@@ -212,19 +210,25 @@ class AccountInfoManager {
             sikuli.type("c", KeyModifier.CTRL);
 
             matchInfo = sikuli.getClipboard();
-            logger.trace("found matchInfo string = " + matchInfo);
+            logger.trace("found matchInfo string = {} ", matchInfo);
 
             sikuli.type(Key.ENTER);
 
             try {
                 MatchInfo info = parseMatchInfo(matchInfo);
-                logger.info("found MatchInfo = " + info);
+                logger.info("found MatchInfo = {} ", info);
+                logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
+                logger.info("matchInfo contains in pending matches {} ", accountInfo.getMatchInfoPending().contains(info));
                 if (MatchState.pending.equals(info.getState())
                         && !accountInfo.getMatchInfoPending().contains(info)) {
+
+                    logger.info("adding info to pending and removing it from finished");
                     accountInfo.getMatchInfoPending().add(info);
                     accountInfo.getMatchInfoFinished().remove(info);
                 } else if (!MatchState.pending.equals(info.getState())
                         && !accountInfo.getMatchInfoFinished().contains(info)) {
+
+                    logger.info("adding info to finished and removing it from pending");
                     accountInfo.getMatchInfoFinished().add(info);
                     accountInfo.getMatchInfoPending().remove(info);
                 } else {
@@ -233,7 +237,7 @@ class AccountInfoManager {
                     return true;
                 }
             } catch (Exception e) {
-                logger.info("can't parse info: " + e.getLocalizedMessage(), logger);
+                logger.info("can't parse info: {}", e.getLocalizedMessage());
                 return false;
             }
         }

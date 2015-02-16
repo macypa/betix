@@ -13,7 +13,6 @@ public enum ConfigKey {
     username,
     password,
     teamNameSeparator,
-    messageBoxOpacity,
     messageBoxColor,
     minBetStake,
     balanceRegEx,
@@ -29,6 +28,9 @@ public enum ConfigKey {
     useFibonacciForStakes,
     cronExpression,
     dateFormat,
+    siteHistoryUrl,
+    imgTimeout,
+    waitTimeBeforeAction,
     accountInfo
 
 }

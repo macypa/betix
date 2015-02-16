@@ -28,7 +28,7 @@ public abstract class BettingMachine {
             RetakeImageCapture.main(args);
         }
 
-        logger.error("locking program instance...");
+        logger.debug("locking program instance...");
         lockInstance(config.getConfigAsString(ConfigKey.lockFile));
 
         try {
@@ -41,7 +41,7 @@ public abstract class BettingMachine {
     }
 
     public static synchronized void startBetProcess() {
-        logger.error("starting the betting process");
+        logger.debug("starting the betting process");
         new Bet365().placeBets();
     }
 
