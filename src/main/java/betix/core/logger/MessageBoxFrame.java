@@ -1,4 +1,4 @@
-package betix.core;
+package betix.core.logger;
 
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
 
 import static java.awt.GraphicsDevice.WindowTranslucency.TRANSLUCENT;
 
-public class MessageBoxFrame extends JFrame implements MouseListener {
+class MessageBoxFrame extends JFrame implements MouseListener {
 
     public static final MessageBoxFrame msgBox = new MessageBoxFrame();
 
@@ -83,5 +83,6 @@ public class MessageBoxFrame extends JFrame implements MouseListener {
     public void mouseExited(MouseEvent e) {
         setVisible(false);
     }
+
 
 }

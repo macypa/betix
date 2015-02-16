@@ -1,14 +1,15 @@
 package betix.core.logger;
 
-import betix.core.MessageBoxFrame;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.spi.AppenderAttachable;
+import org.sikuli.script.Location;
 import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
 
+import java.awt.*;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -451,5 +452,13 @@ public class Logger
 
     public void log(Marker marker, String fqcn, int levelInt, String message, Throwable t, Object... argArray) {
         wrappedLogger.log(marker, fqcn, levelInt, message, argArray, t);
+    }
+
+    public void hideMessageBox() {
+        messageBox.setVisible(false);
+    }
+
+    public void showMessage(String click, Location target, Color color) {
+        messageBox.showMessage(click, target, color);
     }
 }

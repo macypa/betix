@@ -1,7 +1,6 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
-import betix.core.MessageBoxFrame;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
@@ -64,7 +63,7 @@ class AccountInfoManager {
         } catch (FindFailed e) {
             logger.error("can't open history page");
         } finally {
-            MessageBoxFrame.getMessageBox().setVisible(false);
+            logger.hideMessageBox();
             try {
                 sikuli.mouseMove(sikuli.getCenter());
                 sikuli.click();

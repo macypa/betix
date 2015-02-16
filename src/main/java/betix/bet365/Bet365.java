@@ -1,7 +1,6 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
-import betix.core.MessageBoxFrame;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
@@ -89,7 +88,7 @@ public class Bet365 extends BettingMachine {
                 continue;
             }
             try {
-                MessageBoxFrame.getMessageBox().setVisible(false);
+                logger.hideMessageBox();
                 sikuli.click(team.getPattern());
 
                 placeBet(team);
@@ -112,7 +111,7 @@ public class Bet365 extends BettingMachine {
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
             sikuli.click(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
         } else {
-            MessageBoxFrame.getMessageBox().showMessage("click", sikuli.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget(), Color.green);
+            logger.showMessage("click", sikuli.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern).getTarget(), Color.green);
         }
     }
 
