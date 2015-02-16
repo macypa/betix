@@ -50,10 +50,13 @@ public class Bet365 extends BettingMachine {
         }
 
         try {
+            logger.error("opening football page");
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
             stopTV();
 
+            logger.error("opening football teams page");
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
+            logger.error("opening football my teams page");
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
@@ -62,8 +65,10 @@ public class Bet365 extends BettingMachine {
 
     public void stopTV() {
         try {
+            logger.error("searching tv region");
             Region region = sikuli.find(ImagePattern.PATTERN_LIVE_TV_TITLE.pattern).below(200);
             region.hover();
+            logger.error("try stopping tv");
             sikuli.click(region, ImagePattern.PATTERN_LIVE_TV_STOP_BUTTON.pattern);
 
         } catch (FindFailed e) {
@@ -95,14 +100,19 @@ public class Bet365 extends BettingMachine {
 
             } catch (FindFailed e) {
                 logger.error("error selecting team {} in placeBets() for image {}", team.getName(), file.getName());
+                logger.error("trying open again the my teams page");
+                openMyTeamsPage();
             }
         }
     }
 
     private void placeBet(Team team) throws FindFailed {
+
+        logger.error("try clicking on the draw link button to place the bet");
         sikuli.click(sikuli.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern),
                 ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
 
+        logger.error("finding the field to set the stake");
         sikuli.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
         new Screen().type(String.valueOf(calculateStake(team)));

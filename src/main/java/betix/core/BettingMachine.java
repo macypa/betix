@@ -28,6 +28,7 @@ public abstract class BettingMachine {
             RetakeImageCapture.main(args);
         }
 
+        logger.error("locking program instance...");
         lockInstance(config.getConfigAsString(ConfigKey.lockFile));
 
         try {
@@ -40,6 +41,7 @@ public abstract class BettingMachine {
     }
 
     public static synchronized void startBetProcess() {
+        logger.error("starting the betting process");
         new Bet365().placeBets();
     }
 
@@ -47,15 +49,16 @@ public abstract class BettingMachine {
         sikuli.focusBrowser();
 
         try {
-            logger.info("searching for <br>site logo ...");
+            logger.info("searching for site logo in tab ...");
             sikuli.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             logger.info("site already opened");
 
         } catch (FindFailed e) {
+            logger.info("browser not opened, opening ...");
             sikuli.openBrowser();
 
             try {
-                logger.info("searching for <br>site logo ...");
+                logger.info("searching for site logo in tab ...");
                 sikuli.click(ImagePattern.PATTERN_LOGO_IN_TAB.pattern);
             } catch (FindFailed ee) {
                 logger.error("can't find logo, probably site didn't open", ee);

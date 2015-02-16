@@ -29,17 +29,21 @@ public class Scheduler {
                     .build();
 
             //Pass JobDetail and trigger dependencies to schedular
+            logger.error("scheduling the betting process...");
             scheduler.scheduleJob(jobDetail, trigger);
+            logger.error("the betting process is scheduled ");
         } catch (SchedulerException e) {
             logger.error("can't schedule the betting process!", e);
         }
     }
 
     public static void startSchedule() throws SchedulerException {
+        logger.error("starting down the scheduled betting process ");
         scheduler.start();
     }
 
     public static void stopSchedule() throws SchedulerException {
+        logger.error("shutting down the scheduled betting process ");
         scheduler.shutdown();
     }
 

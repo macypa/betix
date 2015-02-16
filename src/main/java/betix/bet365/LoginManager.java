@@ -31,39 +31,18 @@ class LoginManager {
         }
 
         try {
-            logger.info("searching for <br>site logo ...");
             logger.info("Trying to log in ...");
-
             sikuli.click(ImagePattern.PATTERN_LOGIN_FIELD.pattern);
-            boolean updateUserPass = false;
-            String username = accountConfig.getConfigAsString(ConfigKey.username);
-            if (username == null || username.trim().isEmpty()) {
-                username = sikuli.input("Type your username");
-                updateUserPass = true;
-            }
 
-            sikuli.click();
-            sikuli.click();
-            sikuli.type(username);
-            sikuli.type("\t");
-
-            String plainText = decodePass(accountConfig.getConfigAsString(ConfigKey.password));
-            if (plainText == null || plainText.trim().isEmpty()) {
-                plainText = sikuli.input("enter pass to encript and store");
-                updateUserPass = true;
-
-                sikuli.click(ImagePattern.PATTERN_PASSWORD_FIELD.pattern);
-                sikuli.click();
-            }
-
-            sikuli.enableSikuliLog(false);
-            sikuli.type(plainText);
-            sikuli.enableSikuliLog(true);
-            sikuli.type(Key.ENTER);
+            String username = typeInUsername();
+            String plainText = typeInPassword();
 
             if (checkLogin()) {
-                if (updateUserPass) {
+                if (username != null && !username.isEmpty()) {
                     accountConfig.addConfig(ConfigKey.username, username);
+                    accountConfig.saveConfig();
+                }
+                if (plainText != null && !plainText.isEmpty()) {
                     accountConfig.addConfig(ConfigKey.password, encodePass(plainText));
                     accountConfig.saveConfig();
                 }
@@ -75,6 +54,41 @@ class LoginManager {
             return false;
         }
         return true;
+    }
+
+    private String typeInUsername() {
+        String updateUser = "";
+        String username = accountConfig.getConfigAsString(ConfigKey.username);
+        if (username == null || username.trim().isEmpty()) {
+            username = sikuli.input("Type your username");
+            updateUser = username;
+        }
+
+        sikuli.click();
+        sikuli.click();
+        sikuli.type(username);
+        sikuli.type("\t");
+
+        return updateUser;
+    }
+
+    private String typeInPassword() throws FindFailed {
+        String updatePass = "";
+        String plainText = decodePass(accountConfig.getConfigAsString(ConfigKey.password));
+        if (plainText == null || plainText.trim().isEmpty()) {
+            plainText = sikuli.input("enter pass to encript and store");
+            updatePass = plainText;
+
+            sikuli.click(ImagePattern.PATTERN_PASSWORD_FIELD.pattern);
+            sikuli.click();
+        }
+
+        sikuli.enableSikuliLog(false);
+        sikuli.type(plainText);
+        sikuli.enableSikuliLog(true);
+        sikuli.type(Key.ENTER);
+
+        return updatePass;
     }
 
     private String encodePass(String clearText) {
@@ -90,6 +104,7 @@ class LoginManager {
 
     private boolean checkLogin() {
         try {
+            logger.info("checking login");
             betingMachine.openSite();
             sikuli.wait(ImagePattern.PATTERN_HISTORY_LINK.pattern, 5);
             logger.info("You're logged in.");

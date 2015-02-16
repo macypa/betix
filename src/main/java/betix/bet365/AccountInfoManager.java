@@ -17,6 +17,8 @@ import org.sikuli.script.KeyModifier;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 
 class AccountInfoManager {
@@ -101,11 +103,45 @@ class AccountInfoManager {
         sikuli.type(Key.RIGHT);
 
         sikuli.type(Key.TAB);
-        sikuli.type(accountInfo.getFromDate(new SimpleDateFormat(dateFormat)));
+        sikuli.type(getFromDate(new SimpleDateFormat(dateFormat)));
 
         sikuli.type(Key.TAB);
-        sikuli.type(accountInfo.getToDate(new SimpleDateFormat(dateFormat)));
+        sikuli.type(getToDate(new SimpleDateFormat(dateFormat)));
 
+    }
+
+    public String getFromDate(SimpleDateFormat format) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        Date fromDate = calendar.getTime();
+
+        for (MatchInfo info : accountInfo.getMatchInfoPending()) {
+            try {
+                Date date = format.parse(info.getDate());
+                if (date.before(fromDate)) {
+                    fromDate = date;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
+            try {
+                Date date = format.parse(info.getDate());
+                if (date.before(fromDate)) {
+                    fromDate = date;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return format.format(fromDate);
+    }
+
+    public String getToDate(SimpleDateFormat format) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return format.format(calendar.getTime());
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed {

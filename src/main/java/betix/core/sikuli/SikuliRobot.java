@@ -67,6 +67,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int mouseMove(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            logger.debug("mouseMove on target {}", target);
             return super.mouseMove(target);
         } catch (FindFailed findFailed) {
             logger.error("error in mouseMove on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
@@ -76,6 +77,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternOrString> Match wait(PatternOrString target) throws FindFailed {
         try {
+            logger.debug("waiting target {}", target);
             return super.wait(target, getAutoWaitTimeout());
         } catch (FindFailed findFailed) {
             logger.error("error in wait on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
@@ -85,6 +87,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternOrString> Match wait(PatternOrString target, double timeout) throws FindFailed {
         try {
+            logger.debug("waitng target {} with timeout 5", target);
             return super.wait(target, 5);
         } catch (FindFailed findFailed) {
             logger.error("error in wait on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
@@ -94,6 +97,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternOrString> Match find(PatternOrString target) throws FindFailed {
         try {
+            logger.debug("find target {}", target);
             super.wait(target, 5);
             return super.find(target);
         } catch (FindFailed findFailed) {
@@ -104,6 +108,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternOrString> boolean isPresent(PatternOrString target) throws FindFailed {
         try {
+            logger.debug("isPresent target {}", target);
             super.wait(target, 5);
             super.find(target);
             return true;
@@ -114,6 +119,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int hover(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            logger.debug("hover target {}", target);
             super.wait(target, 5);
             return super.hover(target);
         } catch (FindFailed findFailed) {
@@ -124,6 +130,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int hover(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            logger.debug("hover target {} on region {}", target, region);
             region.wait(target, 5);
             return region.hover(target);
         } catch (FindFailed findFailed) {
@@ -134,6 +141,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int click(PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            logger.debug("click target {}", target);
             super.wait(target, 5);
             return super.click(target);
         } catch (FindFailed findFailed) {
@@ -144,6 +152,7 @@ public class SikuliRobot extends Screen {
 
     public <PatternFilenameRegionMatchLocation> int click(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
         try {
+            logger.debug("click target {} on region {}", target, region);
             region.wait(target, 5);
             return region.click(target);
         } catch (FindFailed findFailed) {
@@ -154,6 +163,7 @@ public class SikuliRobot extends Screen {
 
     public int doubleClick(Pattern target) throws FindFailed {
         try {
+            logger.debug("doubleClick target {}", target);
             super.wait(target, 5);
             return super.doubleClick(target);
         } catch (FindFailed findFailed) {
