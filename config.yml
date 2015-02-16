@@ -1,6 +1,6 @@
 ---
 lockFile: betix.lock
-placeBet: false
+placeBet: true
 cronExpression: 0 0 19 * * ?
 useFibonacciForStakes: true
 imageDir: img

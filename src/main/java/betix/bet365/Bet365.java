@@ -100,7 +100,7 @@ public class Bet365 extends BettingMachine {
 
             } catch (FindFailed e) {
                 logger.error("error selecting team {} in placeBets() for image {}", team.getName(), file.getName());
-                logger.error("trying open again the my teams page");
+                logger.info("trying open again the my teams page");
                 openMyTeamsPage();
             }
         }
@@ -110,11 +110,11 @@ public class Bet365 extends BettingMachine {
 
     private void placeBet(Team team) throws FindFailed {
 
-        logger.error("try clicking on the draw link button to place the bet");
+        logger.info("try clicking on the draw link button to place the bet");
         sikuli.click(sikuli.find(ImagePattern.PATTERN_FOOTBALL_END_RESULT_COLUMN.pattern),
                 ImagePattern.PATTERN_FOOTBALL_DRAW_BET_LINK.pattern);
 
-        logger.error("finding the field to set the stake");
+        logger.info("finding the field to set the stake");
         sikuli.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
         new Screen().type(String.valueOf(calculateStake(team)));

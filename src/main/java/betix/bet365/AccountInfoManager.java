@@ -67,12 +67,6 @@ class AccountInfoManager {
             logger.error("can't open history page");
         } finally {
             logger.hideMessageBox();
-            try {
-                sikuli.mouseMove(sikuli.getCenter());
-                sikuli.click();
-            } catch (FindFailed f) {
-                logger.error("can't move mouse to center of the screen...probably can't close the history page");
-            }
             sikuli.type(Key.F4, KeyModifier.CTRL);
         }
     }
