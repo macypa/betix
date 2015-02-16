@@ -38,6 +38,11 @@ class MessageBoxFrame extends JFrame implements MouseListener {
         panel.setBackground(Color.orange);
         add(panel);
 
+        setFocusable(false);
+        setFocusableWindowState(false);
+        toBack();
+
+        setAlwaysOnTop(true);
         pack();
         setVisible(true);
     }

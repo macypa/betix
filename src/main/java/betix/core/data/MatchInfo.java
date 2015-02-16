@@ -3,8 +3,6 @@ package betix.core.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
-
 @Data
 @EqualsAndHashCode(exclude = {"date", "state", "coefficient", "stake", "wining"})
 public class MatchInfo implements Comparable {
@@ -13,7 +11,7 @@ public class MatchInfo implements Comparable {
     private double coefficient;
     private double stake;
     private double wining;
-    private Date date;
+    private String date;
     private Event event;
 
     @Override

@@ -31,7 +31,7 @@
 
     <logger name="betix.core" additivity="true" level="debug"/>
 
-    <root level="error">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="betix"/>
     </root>

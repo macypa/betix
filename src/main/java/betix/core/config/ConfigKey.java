@@ -28,6 +28,7 @@ public enum ConfigKey {
     matchInfoDateRegEx,
     useFibonacciForStakes,
     cronExpression,
+    dateFormat,
     accountInfo
 
 }

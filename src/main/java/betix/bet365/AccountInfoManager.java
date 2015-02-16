@@ -15,13 +15,15 @@ import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
 
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 
 class AccountInfoManager {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
 
+    private static final String dateFormat = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.dateFormat);
 
     private static final String balanceRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.balanceRegEx);
     private static final String historyMatchInfoLinkRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.historyMatchInfoLinkRegEx);
@@ -57,6 +59,7 @@ class AccountInfoManager {
 
             getBalanceInfo();
 
+            setDatesInSearchForm();
             collectFinishedMatchesInfo();
             collectPendingMatchesInfo();
 
@@ -87,6 +90,24 @@ class AccountInfoManager {
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
     }
 
+    private void setDatesInSearchForm() throws FindFailed {
+
+        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
+
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.RIGHT);
+        sikuli.type(Key.RIGHT);
+
+        sikuli.type(Key.TAB);
+        sikuli.type(accountInfo.getFromDate(new SimpleDateFormat(dateFormat)));
+
+        sikuli.type(Key.TAB);
+        sikuli.type(accountInfo.getToDate(new SimpleDateFormat(dateFormat)));
+
+    }
+
     private void collectFinishedMatchesInfo() throws FindFailed {
 
         sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
@@ -95,17 +116,14 @@ class AccountInfoManager {
 
         sikuli.type(Key.DOWN);
         sikuli.type(Key.TAB);
-        sikuli.type(Key.RIGHT);
-//        sikuli.type(Key.RIGHT);
-        sikuli.wait(1);
 
         sikuli.type(Key.ENTER);
         sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
 
-//        sikuli.type(Key.TAB);
-//        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
@@ -121,16 +139,14 @@ class AccountInfoManager {
 
         sikuli.type(Key.UP);
         sikuli.type(Key.TAB);
-        //sikuli.type(Key.RIGHT);
-        //sikuli.wait(1);
 
         sikuli.type(Key.ENTER);
         sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
 
-//        sikuli.type(Key.TAB);
-//        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
+        sikuli.type(Key.TAB);
 
         sikuli.type(Key.TAB);
         sikuli.type(Key.TAB);
@@ -167,10 +183,12 @@ class AccountInfoManager {
             try {
                 MatchInfo info = parseMatchInfo(matchInfo);
                 logger.info("found MatchInfo = " + info);
-                if (MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoPending().contains(info)) {
+                if (MatchState.pending.equals(info.getState())
+                        && !accountInfo.getMatchInfoPending().contains(info)) {
                     accountInfo.getMatchInfoPending().add(info);
                     accountInfo.getMatchInfoFinished().remove(info);
-                } else if (!MatchState.pending.equals(info.getState()) && !accountInfo.getMatchInfoFinished().contains(info)) {
+                } else if (!MatchState.pending.equals(info.getState())
+                        && !accountInfo.getMatchInfoFinished().contains(info)) {
                     accountInfo.getMatchInfoFinished().add(info);
                     accountInfo.getMatchInfoPending().remove(info);
                 } else {
@@ -185,7 +203,7 @@ class AccountInfoManager {
         }
     }
 
-    private MatchInfo parseMatchInfo(String matchInfoString) {
+    private MatchInfo parseMatchInfo(String matchInfoString) throws ParseException {
         MatchInfo matchInfo = new MatchInfo();
 
         if (matchInfoString.contains(matchInfoPendingState)) {
@@ -201,7 +219,10 @@ class AccountInfoManager {
         matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, matchInfoWiningRegEx).replaceAll(",", ".")));
 
         matchInfo.setEvent(new Event(searchRegEx(matchInfoString, matchInfoEventRegEx)));
-        matchInfo.setDate(new Date(searchRegEx(matchInfoString, matchInfoDateRegEx)));
+
+        String dateString = searchRegEx(matchInfoString, matchInfoDateRegEx);
+        logger.debug("found date {}", dateString);
+        matchInfo.setDate(dateString);
 
         return matchInfo;
     }

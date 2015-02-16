@@ -1,6 +1,6 @@
 ---
 lockFile: betix.lock
-placeBet: true
+placeBet: false
 cronExpression: 0 0 19 * * ?
 useFibonacciForStakes: true
 imageDir: img
@@ -14,6 +14,7 @@ messageBoxOpacity: 0.3
 sikuliMinSimilarity: 0.5
 messageBoxColor: Color.ORANGE
 minBetStake: 0.5
+dateFormat: dd/MM/yyyy
 balanceRegEx: "\\s*(.*?)\\s*BGN"
 historyMatchInfoLinkRegEx: "Равен @ "
 matchInfoPendingState: "Текущ"

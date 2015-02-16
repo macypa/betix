@@ -108,24 +108,27 @@ public class Logger
     }
 
     public void trace(String msg) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.trace(msg);
     }
 
     public void trace(String format, Object arg) {
+        showMessage(format, arg);
         wrappedLogger.trace(format, arg);
     }
 
     public void trace(String format, Object arg1, Object arg2) {
+        showMessage(format, arg1, arg2);
         wrappedLogger.trace(format, arg1, arg2);
     }
 
     public void trace(String format, Object... argArray) {
+        showMessage(format, argArray);
         wrappedLogger.trace(format, argArray);
     }
 
     public void trace(String msg, Throwable t) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.trace(msg, t);
     }
 
@@ -168,24 +171,27 @@ public class Logger
     }
 
     public void debug(String msg) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.debug(msg);
     }
 
     public void debug(String format, Object arg) {
+        showMessage(format, arg);
         wrappedLogger.debug(format, arg);
     }
 
     public void debug(String format, Object arg1, Object arg2) {
+        showMessage(format, arg1, arg2);
         wrappedLogger.debug(format, arg1, arg2);
     }
 
     public void debug(String format, Object... argArray) {
+        showMessage(format, argArray);
         wrappedLogger.debug(format, argArray);
     }
 
     public void debug(String msg, Throwable t) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.debug(msg, t);
     }
 
@@ -220,7 +226,7 @@ public class Logger
     }
 
     public void error(String msg) {
-        messageBox.showErrorMessage(msg);
+        showErrorMessage(msg);
         wrappedLogger.error(msg);
     }
 
@@ -230,27 +236,28 @@ public class Logger
             return;
         }
 
-        messageBox.showMessage(format.replace("{}", arg.toString()));
+        showErrorMessage(format, arg);
         wrappedLogger.error(format, arg);
     }
 
     public void error(String format, Object arg1, Object arg2) {
         if (arg2 instanceof Throwable) {
             String msg = format.replace("{}", arg1.toString());
-            messageBox.showErrorMessage(msg);
             error(msg, (Throwable) arg2);
             return;
         }
 
+        showErrorMessage(format, arg1, arg2);
         wrappedLogger.error(format, arg1, arg2);
     }
 
     public void error(String format, Object... argArray) {
+        showErrorMessage(format, argArray);
         wrappedLogger.error(format, argArray);
     }
 
     public void error(String msg, Throwable t) {
-        messageBox.showErrorMessage(msg);
+        showErrorMessage(msg);
         wrappedLogger.error(msg, t);
     }
 
@@ -293,24 +300,27 @@ public class Logger
     }
 
     public void info(String msg) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.info(msg);
     }
 
     public void info(String format, Object arg) {
+        showMessage(format, arg);
         wrappedLogger.info(format, arg);
     }
 
     public void info(String format, Object arg1, Object arg2) {
+        showMessage(format, arg1, arg2);
         wrappedLogger.info(format, arg1, arg2);
     }
 
     public void info(String format, Object... argArray) {
+        showMessage(format, argArray);
         wrappedLogger.info(format, argArray);
     }
 
     public void info(String msg, Throwable t) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.info(msg, t);
     }
 
@@ -377,24 +387,27 @@ public class Logger
     }
 
     public void warn(String msg) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.warn(msg);
     }
 
     public void warn(String msg, Throwable t) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.warn(msg, t);
     }
 
     public void warn(String format, Object arg) {
+        showMessage(format, arg);
         wrappedLogger.warn(format, arg);
     }
 
     public void warn(String format, Object arg1, Object arg2) {
+        showMessage(format, arg1, arg2);
         wrappedLogger.warn(format, arg1, arg2);
     }
 
     public void warn(String format, Object... argArray) {
+        showMessage(format, argArray);
         wrappedLogger.warn(format, argArray);
     }
 
@@ -409,7 +422,7 @@ public class Logger
     }
 
     public void warn(Marker marker, String msg) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.warn(marker, msg);
     }
 
@@ -426,7 +439,7 @@ public class Logger
     }
 
     public void warn(Marker marker, String msg, Throwable t) {
-        messageBox.showMessage(msg);
+        showMessage(msg);
         wrappedLogger.warn(marker, msg, t);
     }
 
@@ -461,4 +474,19 @@ public class Logger
     public void showMessage(String click, Location target, Color color) {
         messageBox.showMessage(click, target, color);
     }
+
+    private void showMessage(String format, Object... argArray) {
+        for (int i = 0; i < argArray.length; i++) {
+            format = format.replaceFirst("\\{\\}", argArray[i].toString());
+        }
+        messageBox.showMessage(format);
+    }
+
+    private void showErrorMessage(String format, Object... argArray) {
+        for (int i = 0; i < argArray.length; i++) {
+            format = format.replaceFirst("\\{\\}", argArray[i].toString());
+        }
+        messageBox.showErrorMessage(format);
+    }
+
 }
