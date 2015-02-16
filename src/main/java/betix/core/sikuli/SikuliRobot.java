@@ -94,12 +94,20 @@ public class SikuliRobot extends Screen {
     }
 
     public <PatternOrString> Match find(PatternOrString target) throws FindFailed {
+        return find(target, true);
+    }
+
+    public <PatternOrString> Match find(PatternOrString target, boolean takeSnapshot) throws FindFailed {
         try {
             logger.debug("find target {}", target);
             super.wait(target, imageTimeout);
             return super.find(target);
         } catch (FindFailed findFailed) {
-            logger.error("error in find on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
+            if (takeSnapshot) {
+                logger.warn("error in find on target {} ", target);
+            } else {
+                logger.error("error in find on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
+            }
             throw findFailed;
         }
     }
@@ -152,13 +160,21 @@ public class SikuliRobot extends Screen {
     }
 
     public <PatternFilenameRegionMatchLocation> int click(Region region, PatternFilenameRegionMatchLocation target) throws FindFailed {
+        return click(region, target, true);
+    }
+
+    public <PatternFilenameRegionMatchLocation> int click(Region region, PatternFilenameRegionMatchLocation target, boolean takeSnapshot) throws FindFailed {
         try {
             waitMilisec(waitTimeBeforeAction);
             logger.debug("click target {} on region {}", target, region);
             region.wait(target, imageTimeout);
             return region.click(target);
         } catch (FindFailed findFailed) {
-            logger.error("error in click on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), findFailed);
+            if (takeSnapshot) {
+                logger.warn("error in click on target {} ", target);
+            } else {
+                logger.error("error in click on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), findFailed);
+            }
             throw findFailed;
         }
     }

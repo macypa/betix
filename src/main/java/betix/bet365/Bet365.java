@@ -50,13 +50,13 @@ public class Bet365 extends BettingMachine {
         }
 
         try {
-            logger.error("opening football page");
+            logger.info("opening football page");
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
             stopTV();
 
-            logger.error("opening football teams page");
+            logger.info("opening football teams page");
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_TEAM_LINK.pattern);
-            logger.error("opening football my teams page");
+            logger.info("opening football my teams page");
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
@@ -65,14 +65,14 @@ public class Bet365 extends BettingMachine {
 
     public void stopTV() {
         try {
-            logger.error("searching tv region");
-            Region region = sikuli.find(ImagePattern.PATTERN_LIVE_TV_TITLE.pattern).below(200);
+            logger.info("searching tv region");
+            Region region = sikuli.find(ImagePattern.PATTERN_LIVE_TV_TITLE.pattern, false).below(200);
             region.hover();
-            logger.error("try stopping tv");
-            sikuli.click(region, ImagePattern.PATTERN_LIVE_TV_STOP_BUTTON.pattern);
+            logger.info("try stopping tv");
+            sikuli.click(region, ImagePattern.PATTERN_LIVE_TV_STOP_BUTTON.pattern, false);
 
         } catch (FindFailed e) {
-            logger.error("error in stopTV() ", e);
+            logger.warn("error in stopTV() ");
         }
     }
 
@@ -104,6 +104,8 @@ public class Bet365 extends BettingMachine {
                 openMyTeamsPage();
             }
         }
+
+        logger.hideMessageBox();
     }
 
     private void placeBet(Team team) throws FindFailed {
