@@ -33,6 +33,9 @@ public enum ConfigKey {
     siteHistoryUrl,
     imgTimeout,
     waitTimeBeforeAction,
+    showMessageBox,
+    messageBoxY,
+    messageBoxX,
     accountInfo
 
 }

@@ -1,5 +1,7 @@
 package betix.core.logger;
 
+import betix.core.config.ConfigKey;
+import betix.core.config.Configuration;
 import org.sikuli.script.Location;
 
 import javax.swing.*;
@@ -12,6 +14,8 @@ class MessageBoxFrame extends JFrame implements MouseListener {
     public static final MessageBoxFrame msgBox = new MessageBoxFrame();
 
     private final JPanel panel = new JPanel();
+    private final Location location = new Location(Configuration.getDefaultConfig().getConfigAsInteger(ConfigKey.messageBoxX),
+            Configuration.getDefaultConfig().getConfigAsInteger(ConfigKey.messageBoxY));
 
     public static MessageBoxFrame getMessageBox() {
         return msgBox;
@@ -33,15 +37,15 @@ class MessageBoxFrame extends JFrame implements MouseListener {
 
         setAlwaysOnTop(true);
         pack();
-        setVisible(true);
+        showMessageBox();
     }
 
     public void showErrorMessage(String string) {
-        showMessage(string, new Location(0, 0), Color.magenta);
+        showMessage(string, location, Color.magenta);
     }
 
     public void showMessage(String string) {
-        showMessage(string, new Location(0, 0), Color.orange);
+        showMessage(string, location, Color.orange);
     }
 
     public void showMessage(String string, Location location, Color color) {
@@ -50,7 +54,13 @@ class MessageBoxFrame extends JFrame implements MouseListener {
         panel.removeAll();
         panel.add(new JLabel("<html>" + string + "</html>"));
         pack();
-        setVisible(true);
+        showMessageBox();
+    }
+
+    private void showMessageBox() {
+        if (Configuration.getDefaultConfig().getConfigAsBoolean(ConfigKey.showMessageBox)) {
+            setVisible(true);
+        }
     }
 
     @Override
