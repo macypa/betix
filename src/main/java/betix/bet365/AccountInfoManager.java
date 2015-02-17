@@ -110,13 +110,13 @@ class AccountInfoManager extends RetryTask {
 
     public String getFromDate(SimpleDateFormat format) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        calendar.add(Calendar.DAY_OF_MONTH, -14);
         Date fromDate = calendar.getTime();
 
         for (MatchInfo info : accountInfo.getMatchInfoPending()) {
             try {
-                Date date = format.parse(info.getDate());
-                if (date.before(fromDate)) {
+                Date date = format.parse(info.getDateOfBet());
+                if (fromDate.before(date)) {
                     fromDate = date;
                 }
             } catch (ParseException e) {
@@ -125,8 +125,8 @@ class AccountInfoManager extends RetryTask {
         }
         for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
             try {
-                Date date = format.parse(info.getDate());
-                if (date.before(fromDate)) {
+                Date date = format.parse(info.getDateOfBet());
+                if (fromDate.before(date)) {
                     fromDate = date;
                 }
             } catch (ParseException e) {

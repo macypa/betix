@@ -29,6 +29,15 @@ class LoginManager extends RetryTask {
         accountConfig = bet365.getAccountConfig();
     }
 
+    public void logout() {
+        logger.info("Trying to log in ...");
+        try {
+            sikuli.click(ImagePattern.PATTERN_LOGOUT_LINK.pattern);
+        } catch (FindFailed findFailed) {
+            logger.error("can't logout", findFailed);
+        }
+    }
+
     public boolean login() throws Exception {
 
         loggedIn = false;

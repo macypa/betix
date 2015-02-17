@@ -52,8 +52,7 @@ public class Bet365 extends BettingMachine {
         }
 
         try {
-            logger.info("opening football page");
-            sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+            openFootballPage();
             stopTV();
 
             logger.info("opening football teams page");
@@ -62,6 +61,25 @@ public class Bet365 extends BettingMachine {
             sikuli.click(ImagePattern.PATTERN_FOOTBALL_MY_TEAMS_LINK.pattern);
         } catch (FindFailed e) {
             logger.error("error in openMyTeamsPage() ", e);
+        }
+    }
+
+    public void openFootballPage() {
+        for (int i = 0; i < 5; i++) {
+            try {
+                logger.info("opening football page");
+                sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
+                return;
+            } catch (FindFailed e) {
+                logger.warn("error in openMyTeamsPage() ");
+                logger.info("scrolling down and try to find the link again...");
+                try {
+                    sikuli.mouseMove(sikuli.getCenter());
+                } catch (FindFailed findFailed) {
+                    logger.warn("can't move mouse to center");
+                }
+                sikuli.wheel(1, 1);
+            }
         }
     }
 
@@ -108,6 +126,8 @@ public class Bet365 extends BettingMachine {
         }
         betPlaced = true;
         logger.hideMessageBox();
+
+        new LoginManager(this).logout();
     }
 
     private void placeBet(Team team) throws FindFailed {
