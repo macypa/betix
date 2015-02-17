@@ -22,6 +22,10 @@ public abstract class BettingMachine extends RetryTask {
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     protected static final Configuration config = Configuration.getDefaultConfig();
 
+    private static RandomAccessFile randomAccessFile;
+    private static FileLock fileLock;
+    private static File lockedfile;
+
     public final SikuliRobot sikuli = new SikuliRobot();
 
     public static void main(String[] args) {
@@ -75,29 +79,18 @@ public abstract class BettingMachine extends RetryTask {
 
     private static boolean lockInstance(final String lockFile) {
         try {
-            final File file = new File(lockFile);
-            if (file.exists()) {
+            lockedfile = new File(lockFile);
+            if (lockedfile.exists()) {
                 logger.error("Lock file exists: " + lockFile + " Other instance is running or program was shutdown without deleting file.");
                 shutdown(0);
                 return false;
             }
-            final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-            final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+            randomAccessFile = new RandomAccessFile(lockedfile, "rw");
+            fileLock = randomAccessFile.getChannel().tryLock();
             if (fileLock != null) {
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     public void run() {
-                        try {
-                            fileLock.release();
-                            randomAccessFile.close();
-                        } catch (Exception e) {
-                            logger.error("Unable to remove lock file: " + lockFile, e);
-                        }
-
-                        try {
-                            file.delete();
-                        } catch (Exception e) {
-                            logger.error("Unable to delete lock file: " + file, e);
-                        }
+                        unlockInstance();
                     }
                 });
                 return true;
@@ -108,14 +101,29 @@ public abstract class BettingMachine extends RetryTask {
         return false;
     }
 
-    public static void shutdown(int status) {
-        File file = new File(config.getConfigAsString(ConfigKey.lockFile));
-        if (file.exists()) {
-            file.delete();
+    private static void unlockInstance() {
+
+        try {
+            if (fileLock != null) fileLock.release();
+            if (randomAccessFile != null) randomAccessFile.close();
+        } catch (Exception e) {
+            logger.error("Unable to remove lock on file: " + lockedfile, e);
         }
 
+        try {
+            if (lockedfile != null) lockedfile.delete();
+        } catch (Exception e) {
+            logger.error("Unable to delete lock file: " + lockedfile, e);
+        }
+
+    }
+
+    public static void shutdown(int status) {
         System.exit(status);
         Runtime.getRuntime().exit(status);
+
+        unlockInstance();
+
         Runtime.getRuntime().halt(status);
     }
 
