@@ -6,9 +6,9 @@ import java.io.File;
 import java.util.regex.Matcher;
 
 public enum ImagePattern {
-    PATTERN_FOOTBALL_LINK("football"),
     PATTERN_FOOTBALL_DRAW_BET_LINK("footballDrawBetLink"),
     PATTERN_FOOTBALL_END_RESULT_COLUMN("footballEndResultColumn"),
+    PATTERN_FOOTBALL_LINK("footballLink"),
     PATTERN_FOOTBALL_MY_TEAMS_LINK("footballMyTeams"),
     PATTERN_FOOTBALL_STAKE_FIELD("footballStakeField"),
     PATTERN_FOOTBALL_TEAM_LINK("footballTeamLink"),

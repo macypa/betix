@@ -15,7 +15,7 @@ browser: firefox
 siteName: bet365.com
 minBetStake: 0.5
 sikuliMinSimilarity: 0.5
-showMessageBox: false
+showMessageBox: true
 messageBoxX: 0
 messageBoxY: 0
 messageBoxColor: Color.ORANGE
