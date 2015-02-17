@@ -154,7 +154,7 @@ class LoginManager extends RetryTask {
     }
 
     @Override
-    public void exeuteTask() throws Exception {
+    public void executeTask() throws Exception {
         login();
     }
 

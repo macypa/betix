@@ -38,11 +38,11 @@ public class Bet365 extends BettingMachine {
     private boolean betPlaced;
 
     public boolean login() {
-        return new LoginManager(this).exeuteWithRetry();
+        return new LoginManager(this).executeWithRetry();
     }
 
     public boolean collectInfo() {
-        return new AccountInfoManager(this).exeuteWithRetry();
+        return new AccountInfoManager(this).executeWithRetry();
     }
 
     public void openMyTeamsPage() {
@@ -191,7 +191,7 @@ public class Bet365 extends BettingMachine {
     }
 
     @Override
-    public void exeuteTask() {
+    public void executeTask() {
         placeBets();
     }
 

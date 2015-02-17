@@ -32,13 +32,20 @@ public abstract class BettingMachine extends RetryTask {
         logger.debug("locking program instance...");
         lockInstance(config.getConfigAsString(ConfigKey.lockFile));
 
-        try {
-            Scheduler.startSchedule();
-        } catch (SchedulerException e) {
-            logger.error("Scheduler not started!");
+        if (config.getConfigAsBoolean(ConfigKey.asDaemon)) {
+            try {
+                Scheduler.startSchedule();
+            } catch (SchedulerException e) {
+                logger.error("Scheduler not started!");
+            }
         }
 
         startBetProcess();
+
+        if (!config.getConfigAsBoolean(ConfigKey.asDaemon)) {
+            System.exit(0);
+            Runtime.getRuntime().halt(0);
+        }
     }
 
     public static synchronized void startBetProcess() {

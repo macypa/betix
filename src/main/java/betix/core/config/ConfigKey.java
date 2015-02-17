@@ -1,6 +1,7 @@
 package betix.core.config;
 
 public enum ConfigKey {
+    asDaemon,
     lockFile,
     browser,
     placeBet,

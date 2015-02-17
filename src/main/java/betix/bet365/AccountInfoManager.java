@@ -281,7 +281,7 @@ class AccountInfoManager extends RetryTask {
     }
 
     @Override
-    public void exeuteTask() {
+    public void executeTask() {
         collectInfo();
     }
 

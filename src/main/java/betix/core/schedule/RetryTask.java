@@ -15,11 +15,11 @@ public abstract class RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(RetryTask.class);
 
-    public abstract void exeuteTask() throws Exception;
+    public abstract void executeTask() throws Exception;
 
     public abstract boolean isFinishedWithoutErrors();
 
-    public boolean exeuteWithRetry() {
+    public boolean executeWithRetry() {
 
         final RetryTask task = this;
 
@@ -35,7 +35,7 @@ public abstract class RetryTask {
         ListenableFuture<Void> future = executor.doWithRetry(new RetryRunnable() {
             @Override
             public void run(RetryContext context) throws Exception {
-                task.exeuteTask();
+                task.executeTask();
             }
         });
 
