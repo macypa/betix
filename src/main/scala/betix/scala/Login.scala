@@ -1,5 +1,6 @@
 package betix.scala
 
+import betix.core.BettingMachine
 import betix.core.config.{ConfigKey, Configuration}
 import org.sikuli.basics.SikuliScript
 import org.sikuli.script.{App, FindFailed, Pattern, Screen}
@@ -38,8 +39,7 @@ class Login {
       case e: FindFailed =>
         SikuliScript.popup("You're NOT logged in.")
         logger.error("Not logged in!")
-        System.exit(1)
-        Runtime.getRuntime.halt(1)
+        BettingMachine.shutdown(1);
     }
   }
 }

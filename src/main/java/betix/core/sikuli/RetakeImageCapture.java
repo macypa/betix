@@ -1,5 +1,6 @@
 package betix.core.sikuli;
 
+import betix.core.BettingMachine;
 import org.sikuli.basics.SikuliScript;
 import org.sikuli.script.Screen;
 
@@ -26,8 +27,7 @@ public class RetakeImageCapture {
             e.printStackTrace();
         }
 
-        System.exit(0);
-        Runtime.getRuntime().halt(0);
+        BettingMachine.shutdown(0);
     }
 
 }

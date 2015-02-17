@@ -43,8 +43,7 @@ public abstract class BettingMachine extends RetryTask {
         startBetProcess();
 
         if (!config.getConfigAsBoolean(ConfigKey.asDaemon)) {
-            System.exit(0);
-            Runtime.getRuntime().halt(0);
+            shutdown(0);
         }
     }
 
@@ -79,7 +78,7 @@ public abstract class BettingMachine extends RetryTask {
             final File file = new File(lockFile);
             if (file.exists()) {
                 logger.error("Lock file exists: " + lockFile + " Other instance is running or program was shutdown without deleting file.");
-                Runtime.getRuntime().halt(1);
+                shutdown(0);
                 return false;
             }
             final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
@@ -90,9 +89,14 @@ public abstract class BettingMachine extends RetryTask {
                         try {
                             fileLock.release();
                             randomAccessFile.close();
-                            file.delete();
                         } catch (Exception e) {
                             logger.error("Unable to remove lock file: " + lockFile, e);
+                        }
+
+                        try {
+                            file.delete();
+                        } catch (Exception e) {
+                            logger.error("Unable to delete lock file: " + file, e);
                         }
                     }
                 });
@@ -102,6 +106,17 @@ public abstract class BettingMachine extends RetryTask {
             logger.error("Unable to create and/or lock file: " + lockFile, e);
         }
         return false;
+    }
+
+    public static void shutdown(int status) {
+        File file = new File(config.getConfigAsString(ConfigKey.lockFile));
+        if (file.exists()) {
+            file.delete();
+        }
+
+        System.exit(status);
+        Runtime.getRuntime().exit(status);
+        Runtime.getRuntime().halt(status);
     }
 
     public abstract boolean login();

@@ -1,5 +1,6 @@
 package betix.core.sikuli;
 
+import betix.core.BettingMachine;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.logger.Logger;
@@ -41,8 +42,7 @@ public class SikuliRobot extends Screen {
                 } catch (SchedulerException e1) {
                     logger.error("can't stop cron scheduled job", e);
                 }
-                System.exit(0);
-                Runtime.getRuntime().halt(0);
+                BettingMachine.shutdown(0);
             }
         };
 
