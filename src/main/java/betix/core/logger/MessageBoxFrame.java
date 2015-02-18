@@ -49,10 +49,10 @@ class MessageBoxFrame extends JFrame implements MouseListener {
     }
 
     public void showMessage(String string, Location location, Color color) {
-        setLocation(location.getX(), location.getY());
-        panel.setBackground(color);
         panel.removeAll();
         panel.add(new JLabel("<html>" + string + "</html>"));
+        panel.setBackground(color);
+        setLocation(location.getX(), location.getY());
         pack();
         showMessageBox();
     }
