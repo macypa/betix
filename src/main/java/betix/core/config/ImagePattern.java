@@ -14,6 +14,7 @@ public enum ImagePattern {
     PATTERN_FOOTBALL_TEAM_LINK("footballTeamLink"),
     PATTERN_HISTORY_LINK("historyLink"),
     PATTERN_HISTORY_TITLE("historyTitle"),
+    PATTERN_ICONIFY_MENU_LINKS("iconifyMenuLinks"),
     PATTERN_LIVE_TV_TITLE("liveTVTitle"),
     PATTERN_LIVE_TV_STOP_BUTTON("liveTVStopButton"),
     PATTERN_LOGIN_FIELD("loginField"),

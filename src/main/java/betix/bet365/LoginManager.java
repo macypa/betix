@@ -13,6 +13,8 @@ import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
 
+import javax.swing.*;
+
 class LoginManager extends RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
@@ -79,7 +81,7 @@ class LoginManager extends RetryTask {
         String updateUser = "";
         String username = accountConfig.getConfigAsString(ConfigKey.username);
         if (username == null || username.trim().isEmpty()) {
-            username = sikuli.input("Type your username");
+            username = input(false);
             updateUser = username;
         }
 
@@ -95,7 +97,9 @@ class LoginManager extends RetryTask {
         String updatePass = "";
         String plainText = decodePass(accountConfig.getConfigAsString(ConfigKey.password));
         if (plainText == null || plainText.trim().isEmpty()) {
-            plainText = sikuli.input("enter pass to encript and store");
+//            plainText = sikuli.input("enter pass to encript and store");
+            plainText = input(true);
+
             updatePass = plainText;
 
             sikuli.click(ImagePattern.PATTERN_PASSWORD_FIELD.pattern);
@@ -107,6 +111,28 @@ class LoginManager extends RetryTask {
         sikuli.enableSikuliLog(true);
 
         return updatePass;
+    }
+
+    public static String input(boolean isPassword) {
+        JPanel panel = new JPanel();
+        final JTextField field;
+        if (isPassword) {
+            panel.add(new JLabel("Password: "));
+            field = new JPasswordField(15);
+        } else {
+            panel.add(new JLabel("Username: "));
+            field = new JTextField(15);
+        }
+
+        panel.add(field);
+        JOptionPane pane = new JOptionPane(panel, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new String[]{"OK"}) {
+            @Override
+            public void selectInitialValue() {
+                field.requestFocusInWindow();
+            }
+        };
+        pane.createDialog(null, "Enter password: ").setVisible(true);
+        return field.getText();
     }
 
     private String encodePass(String clearText) {

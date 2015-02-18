@@ -72,6 +72,13 @@ public class Bet365 extends BettingMachine {
         for (int i = 0; i < 5; i++) {
             try {
                 logger.info("opening football page");
+                sikuli.click(ImagePattern.PATTERN_ICONIFY_MENU_LINKS.pattern);
+            } catch (FindFailed e) {
+
+            }
+
+            try {
+                logger.info("opening football page");
                 sikuli.click(ImagePattern.PATTERN_FOOTBALL_LINK.pattern);
                 return;
             } catch (FindFailed e) {
