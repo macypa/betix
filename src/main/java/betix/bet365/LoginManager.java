@@ -148,6 +148,7 @@ class LoginManager extends RetryTask {
 
     private void checkNewMessages() {
         try {
+            sikuli.find(ImagePattern.PATTERN_NEW_MESSAGE_CLOSE_BUTTON.pattern, false);
             sikuli.click(ImagePattern.PATTERN_NEW_MESSAGE_CLOSE_BUTTON.pattern);
         } catch (FindFailed findFailed) {
             logger.info("new message... closing message window.");

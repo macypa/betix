@@ -77,9 +77,9 @@ public class SikuliRobot extends Screen {
             waitMilisec(waitTimeBeforeAction);
             logger.debug("mouseMove on target {}", target);
             return super.mouseMove(target);
-        } catch (FindFailed findFailed) {
-            logger.error("error in mouseMove on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
-            throw findFailed;
+        } catch (Exception e) {
+            logger.error("error in mouseMove on target {} - Screenshot filename {}", target, takeSnapshot(), e);
+            throw e;
         }
     }
 
@@ -87,9 +87,9 @@ public class SikuliRobot extends Screen {
         try {
             logger.debug("waiting target {}", target);
             return super.wait(target, imageTimeout);
-        } catch (FindFailed findFailed) {
-            logger.error("error in wait on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
-            throw findFailed;
+        } catch (Exception e) {
+            logger.error("error in wait on target {} - Screenshot filename {}", target, takeSnapshot(), e);
+            throw e;
         }
     }
 
@@ -102,13 +102,13 @@ public class SikuliRobot extends Screen {
             logger.debug("find target {}", target);
             super.wait(target, imageTimeout);
             return super.find(target);
-        } catch (FindFailed findFailed) {
+        } catch (Exception e) {
             if (takeSnapshot) {
-                logger.warn("error in find on target {} ", target);
+                logger.error("error in find on target {} - Screenshot filename {}", target, takeSnapshot(), e);
             } else {
-                logger.error("error in find on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
+                logger.warn("error in find on target {} ", target);
             }
-            throw findFailed;
+            throw e;
         }
     }
 
@@ -118,7 +118,7 @@ public class SikuliRobot extends Screen {
             super.wait(target, imageTimeout);
             super.find(target);
             return true;
-        } catch (FindFailed findFailed) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -129,9 +129,9 @@ public class SikuliRobot extends Screen {
             logger.debug("hover target {}", target);
             super.wait(target, imageTimeout);
             return super.hover(target);
-        } catch (FindFailed findFailed) {
-            logger.error("error in hover on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
-            throw findFailed;
+        } catch (Exception e) {
+            logger.error("error in hover on target {} - Screenshot filename {}", target, takeSnapshot(), e);
+            throw e;
         }
     }
 
@@ -141,9 +141,9 @@ public class SikuliRobot extends Screen {
             logger.debug("hover target {} on region {}", target, region);
             region.wait(target, imageTimeout);
             return region.hover(target);
-        } catch (FindFailed findFailed) {
-            logger.error("error in hover on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), findFailed);
-            throw findFailed;
+        } catch (Exception e) {
+            logger.error("error in hover on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), e);
+            throw e;
         }
     }
 
@@ -153,9 +153,9 @@ public class SikuliRobot extends Screen {
             logger.debug("click target {}", target);
             super.wait(target, imageTimeout);
             return super.click(target);
-        } catch (FindFailed findFailed) {
-            logger.error("error in click on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
-            throw findFailed;
+        } catch (Exception e) {
+            logger.error("error in click on target {} - Screenshot filename {}", target, takeSnapshot(), e);
+            throw e;
         }
     }
 
@@ -169,13 +169,13 @@ public class SikuliRobot extends Screen {
             logger.debug("click target {} on region {}", target, region);
             region.wait(target, imageTimeout);
             return region.click(target);
-        } catch (FindFailed findFailed) {
+        } catch (Exception e) {
             if (takeSnapshot) {
-                logger.warn("error in click on target {} ", target);
+                logger.error("error in click on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), e);
             } else {
-                logger.error("error in click on target {} - Screenshot filename {}, region filename {}", target, takeSnapshot(), takeSnapshot(region), findFailed);
+                logger.warn("error in click on target {} ", target);
             }
-            throw findFailed;
+            throw e;
         }
     }
 
@@ -185,9 +185,9 @@ public class SikuliRobot extends Screen {
             logger.debug("doubleClick target {}", target);
             super.wait(target, imageTimeout);
             return super.doubleClick(target);
-        } catch (FindFailed findFailed) {
-            logger.error("error in doubleClick on target {} - Screenshot filename {}", target, takeSnapshot(), findFailed);
-            throw findFailed;
+        } catch (Exception e) {
+            logger.error("error in doubleClick on target {} - Screenshot filename {}", target, takeSnapshot(), e);
+            throw e;
         }
     }
 
