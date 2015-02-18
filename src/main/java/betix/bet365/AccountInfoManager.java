@@ -48,15 +48,20 @@ class AccountInfoManager extends RetryTask {
 
     private boolean dataIsCollected;
 
-    AccountInfoManager(Bet365 bet365) {
-        betingMachine = bet365;
-        sikuli = bet365.sikuli;
-        accountConfig = bet365.getAccountConfig();
+    AccountInfoManager(BettingMachine bettingMachine) {
+        betingMachine = bettingMachine;
+        sikuli = bettingMachine.sikuli;
+        accountConfig = bettingMachine.getAccountConfig();
         accountInfo = accountConfig.getAccountInfo();
     }
 
     public void collectInfo() {
         dataIsCollected = false;
+
+        if (!betingMachine.login()) {
+            throw new RuntimeException("not logged in");
+        }
+
         try {
             sikuli.openHistoryPage();
             sikuli.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
@@ -106,39 +111,6 @@ class AccountInfoManager extends RetryTask {
         sikuli.type(Key.TAB);
         sikuli.type(getToDate(new SimpleDateFormat(dateFormat)));
 
-    }
-
-    public String getFromDate(SimpleDateFormat format) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -14);
-        Date fromDate = calendar.getTime();
-
-        for (MatchInfo info : accountInfo.getMatchInfoPending()) {
-            try {
-                Date date = format.parse(info.getDateOfBet());
-                if (fromDate.before(date)) {
-                    fromDate = date;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
-            try {
-                Date date = format.parse(info.getDateOfBet());
-                if (fromDate.before(date)) {
-                    fromDate = date;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        return format.format(fromDate);
-    }
-
-    public String getToDate(SimpleDateFormat format) {
-        Calendar calendar = Calendar.getInstance();
-        return format.format(calendar.getTime());
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed, ParseException {
@@ -263,6 +235,39 @@ class AccountInfoManager extends RetryTask {
         matchInfo.setDateOfBet(dateTimeString);
 
         return matchInfo;
+    }
+
+    private String getFromDate(SimpleDateFormat format) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -14);
+        Date fromDate = calendar.getTime();
+
+        for (MatchInfo info : accountInfo.getMatchInfoPending()) {
+            try {
+                Date date = format.parse(info.getDateOfBet());
+                if (fromDate.before(date)) {
+                    fromDate = date;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
+            try {
+                Date date = format.parse(info.getDateOfBet());
+                if (fromDate.before(date)) {
+                    fromDate = date;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return format.format(fromDate);
+    }
+
+    private String getToDate(SimpleDateFormat format) {
+        Calendar calendar = Calendar.getInstance();
+        return format.format(calendar.getTime());
     }
 
     private String searchRegEx(String balanceInfo, String regex) {

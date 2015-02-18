@@ -127,6 +127,10 @@ public abstract class BettingMachine extends RetryTask {
         Runtime.getRuntime().halt(status);
     }
 
+    public static Configuration getConfig() {
+        return config;
+    }
+
     public abstract boolean login();
 
     public abstract boolean collectInfo();

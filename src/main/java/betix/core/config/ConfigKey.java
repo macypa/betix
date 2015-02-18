@@ -36,6 +36,7 @@ public enum ConfigKey {
     showMessageBox,
     messageBoxY,
     messageBoxX,
+    logout,
     accountInfo
 
 }

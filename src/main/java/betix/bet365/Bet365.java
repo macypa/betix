@@ -127,7 +127,9 @@ public class Bet365 extends BettingMachine {
         betPlaced = true;
         logger.hideMessageBox();
 
-        new LoginManager(this).logout();
+        if (config.getConfigAsBoolean(ConfigKey.logout)) {
+            new LoginManager(this).logout();
+        }
     }
 
     private void placeBet(Team team) throws FindFailed {

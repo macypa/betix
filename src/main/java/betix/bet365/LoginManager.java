@@ -23,19 +23,10 @@ class LoginManager extends RetryTask {
 
     private boolean loggedIn = false;
 
-    LoginManager(Bet365 bet365) {
-        betingMachine = bet365;
-        sikuli = bet365.sikuli;
-        accountConfig = bet365.getAccountConfig();
-    }
-
-    public void logout() {
-        logger.info("Trying to log in ...");
-        try {
-            sikuli.click(ImagePattern.PATTERN_LOGOUT_LINK.pattern);
-        } catch (FindFailed findFailed) {
-            logger.error("can't logout", findFailed);
-        }
+    LoginManager(BettingMachine bettingMachine) {
+        betingMachine = bettingMachine;
+        sikuli = bettingMachine.sikuli;
+        accountConfig = bettingMachine.getAccountConfig();
     }
 
     public boolean login() throws Exception {
@@ -143,6 +134,16 @@ class LoginManager extends RetryTask {
             logger.error("Not logged in!");
         }
         return false;
+    }
+
+    public void logout() {
+        logger.info("Trying to log in ...");
+
+        try {
+            sikuli.click(ImagePattern.PATTERN_LOGOUT_LINK.pattern);
+        } catch (FindFailed findFailed) {
+            logger.error("can't logout", findFailed);
+        }
     }
 
     private void checkNewMessages() {
