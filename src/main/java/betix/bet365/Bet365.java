@@ -8,10 +8,7 @@ import betix.core.data.MatchInfo;
 import betix.core.data.Team;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.Match;
-import org.sikuli.script.Region;
-import org.sikuli.script.Screen;
+import org.sikuli.script.*;
 
 import java.awt.*;
 import java.io.File;
@@ -148,6 +145,10 @@ public class Bet365 extends BettingMachine {
         logger.info("finding the field to set the stake");
         sikuli.click(ImagePattern.PATTERN_FOOTBALL_STAKE_FIELD.pattern);
 
+        new Screen().type(Key.BACKSPACE);
+        new Screen().type(Key.BACKSPACE);
+        new Screen().type(Key.BACKSPACE);
+        new Screen().type(Key.BACKSPACE);
         new Screen().type(String.valueOf(calculateStake(team)));
 
         logger.info("placing the bet");
@@ -156,6 +157,7 @@ public class Bet365 extends BettingMachine {
         } else {
             Match button = sikuli.find(ImagePattern.PATTERN_PLACE_BET_BUTTON.pattern);
             logger.showMessage("click", button.getTarget(), Color.green);
+            sikuli.wait(1);
         }
     }
 

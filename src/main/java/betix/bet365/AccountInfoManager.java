@@ -127,6 +127,9 @@ class AccountInfoManager extends RetryTask {
         String balanceInfo = copyAllText();
         String price = searchRegEx(balanceInfo, balanceRegEx);
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
+
+        accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+        accountConfig.saveConfig();
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed, ParseException {
