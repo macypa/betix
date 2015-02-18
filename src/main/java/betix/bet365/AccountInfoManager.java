@@ -39,6 +39,7 @@ class AccountInfoManager extends RetryTask {
     private static final String matchInfoEventRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoEventRegEx);
     private static final String matchInfoDateRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateRegEx);
     private static final String matchInfoDateTimeRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateTimeRegEx);
+    private static final String matchInfoIsNotLastRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoIsNotLastRegEx);
 
     private final AccountInfo accountInfo;
     private final Configuration accountConfig;
@@ -66,11 +67,13 @@ class AccountInfoManager extends RetryTask {
             sikuli.openHistoryPage();
             sikuli.wait(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
 
-            getBalanceInfo();
-
-            setDatesInSearchForm();
             collectFinishedMatchesInfo();
+
+            refreshHistoryPage();
+
             collectPendingMatchesInfo();
+
+            getBalanceInfo();
 
             dataIsCollected = true;
         } catch (Exception e) {
@@ -82,108 +85,90 @@ class AccountInfoManager extends RetryTask {
         }
     }
 
-    private void getBalanceInfo() {
-
-        sikuli.type(Key.TAB, KeyModifier.SHIFT);
-
-        sikuli.type(Key.DOWN, KeyModifier.SHIFT);
-        sikuli.type("c", KeyModifier.CTRL);
-        String balanceInfo = sikuli.getClipboard();
-        logger.info("found balanceInfo = {}", balanceInfo);
-
-        String price = searchRegEx(balanceInfo, balanceRegEx);
-        accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
+    private void refreshHistoryPage() throws FindFailed {
+        logger.info("refresh history page");
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        for (int i = 0; i < 7; i++) {
+            sikuli.type(Key.TAB);
+        }
+        sikuli.type(Key.ENTER);
     }
 
-    private void setDatesInSearchForm() throws FindFailed {
+    private void setDatesInSearchForm(boolean selectFinishedMatches) throws FindFailed {
+        logger.info("setting dates in search form");
 
-        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        sikuli.type(Key.TAB, KeyModifier.SHIFT);
+        sikuli.type(Key.TAB, KeyModifier.SHIFT);
+
+        sikuli.type(Key.TAB, KeyModifier.SHIFT);
+        if (selectFinishedMatches) {
+            sikuli.type(Key.UP);
+            sikuli.type(Key.DOWN);
+        } else {
+            sikuli.type(Key.UP);
+        }
 
         sikuli.type(Key.TAB);
         sikuli.type(Key.RIGHT);
         sikuli.type(Key.RIGHT);
 
         sikuli.type(Key.TAB);
-        sikuli.type(getFromDate(new SimpleDateFormat(dateFormat)));
+        sikuli.type(getFromDate(new SimpleDateFormat(dateFormat), selectFinishedMatches));
 
         sikuli.type(Key.TAB);
         sikuli.type(getToDate(new SimpleDateFormat(dateFormat)));
 
     }
 
+    private void getBalanceInfo() throws FindFailed {
+        logger.info("getting balance info");
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        String balanceInfo = copyAllText();
+        String price = searchRegEx(balanceInfo, balanceRegEx);
+        accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
+    }
+
     private void collectFinishedMatchesInfo() throws FindFailed, ParseException {
+        logger.info("collect finished matches info");
 
-        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.DOWN);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.ENTER);
-        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
+        setDatesInSearchForm(true);
         getMatchInfo();
     }
 
     private void collectPendingMatchesInfo() throws FindFailed, ParseException {
+        logger.info("collect pending matches info");
 
-        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.UP);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.ENTER);
-        sikuli.doubleClick(ImagePattern.PATTERN_HISTORY_TITLE.pattern);
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
-        sikuli.type(Key.TAB);
-        sikuli.type(Key.TAB);
-
+        setDatesInSearchForm(false);
         getMatchInfo();
     }
 
-    private boolean getMatchInfo() throws ParseException {
-        while (true) {
-            sikuli.type(Key.TAB);
-            sikuli.type(Key.DOWN, KeyModifier.SHIFT);
-            sikuli.type("c", KeyModifier.CTRL);
+    private void getMatchInfo() throws ParseException, FindFailed {
+        logger.info("getting match infos");
+        sikuli.type(Key.ENTER);
 
-            String matchInfo = sikuli.getClipboard();
-            if (!matchInfo.contains(historyMatchInfoLinkRegEx)) {
-                logger.info("end of matchInfo, last is : {}", matchInfo);
-                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-                accountConfig.saveConfig();
-                return true;
-            }
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        String allText = copyAllText();
+        if (!allText.contains(historyMatchInfoLinkRegEx)) {
+            logger.info("no matches info found");
+            return;
+        }
+
+        logger.info("navigate to first match info");
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        for (int i = 0; i < 19; i++) {
+            sikuli.type(Key.TAB);
+        }
+
+        while (true) {
 
             sikuli.type(Key.ENTER);
             sikuli.waitMilisec(500);
 
-            sikuli.type(Key.DOWN, KeyModifier.SHIFT);
-            sikuli.type(Key.UP, KeyModifier.SHIFT);
-            sikuli.type("c", KeyModifier.CTRL);
-
-            matchInfo = sikuli.getClipboard();
-            logger.trace("found matchInfo string = {} ", matchInfo);
+            String matchInfo = copyAllText();
 
             sikuli.type(Key.ENTER);
+            sikuli.type(Key.TAB);
 
             MatchInfo info = parseMatchInfo(matchInfo);
             logger.info("found MatchInfo = {} ", info);
@@ -202,9 +187,17 @@ class AccountInfoManager extends RetryTask {
                 accountInfo.getMatchInfoFinished().add(info);
                 accountInfo.getMatchInfoPending().remove(info);
             } else {
+                logger.info("next info should be already saved");
                 accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
                 accountConfig.saveConfig();
-                return true;
+                return;
+            }
+
+            if (!findRegEx(matchInfo, matchInfoIsNotLastRegEx)) {
+                logger.info("end of matchInfo");
+                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+                accountConfig.saveConfig();
+                return;
             }
         }
     }
@@ -237,37 +230,48 @@ class AccountInfoManager extends RetryTask {
         return matchInfo;
     }
 
-    private String getFromDate(SimpleDateFormat format) {
+    private String getFromDate(SimpleDateFormat format, boolean selectFinishedMatches) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -14);
         Date fromDate = calendar.getTime();
 
-        for (MatchInfo info : accountInfo.getMatchInfoPending()) {
-            try {
-                Date date = format.parse(info.getDateOfBet());
-                if (fromDate.before(date)) {
-                    fromDate = date;
+        if (selectFinishedMatches) {
+            for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
+                try {
+                    Date date = format.parse(info.getDateOfBet());
+                    if (fromDate.before(date)) {
+                        fromDate = date;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            }
+        } else {
+            for (MatchInfo info : accountInfo.getMatchInfoPending()) {
+                try {
+                    Date date = format.parse(info.getDateOfBet());
+                    if (fromDate.before(date)) {
+                        fromDate = date;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
-            try {
-                Date date = format.parse(info.getDateOfBet());
-                if (fromDate.before(date)) {
-                    fromDate = date;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
+
         return format.format(fromDate);
     }
 
     private String getToDate(SimpleDateFormat format) {
         Calendar calendar = Calendar.getInstance();
         return format.format(calendar.getTime());
+    }
+
+    private String copyAllText() {
+        sikuli.type("a", KeyModifier.CTRL);
+        sikuli.type("c", KeyModifier.CTRL);
+        String text = sikuli.getClipboard();
+        return text;
     }
 
     private String searchRegEx(String balanceInfo, String regex) {
@@ -283,6 +287,12 @@ class AccountInfoManager extends RetryTask {
             logger.error("can't get regex {} from info {}", regex, info);
         }
         return "";
+    }
+
+    private boolean findRegEx(String info, String regex) {
+        java.util.regex.Pattern MY_PATTERN = java.util.regex.Pattern.compile(regex);
+        Matcher m = MY_PATTERN.matcher(info);
+        return m.find();
     }
 
     @Override

@@ -37,6 +37,7 @@ public enum ConfigKey {
     messageBoxY,
     messageBoxX,
     logout,
+    matchInfoIsNotLastRegEx,
     accountInfo
 
 }

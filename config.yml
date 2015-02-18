@@ -2,7 +2,7 @@
 asDaemon: false
 lockFile: betix.lock
 logout: false
-placeBet: true
+placeBet: false
 cronExpression: 0 0 19 * * ?
 useFibonacciForStakes: true
 imageDir: img
@@ -23,7 +23,7 @@ messageBoxColor: Color.ORANGE
 dateFormat: dd/MM/yyyy
 dateTimeFormat: "dd/MM/yyyy HH:mm:ss"
 teamNameSeparator: " v "
-balanceRegEx: "\\s*(.*?)\\s*BGN"
+balanceRegEx: "Спорт\\s*История\\s*\\(BGN\\)\\s*(.*?)\\s*BGN"
 historyMatchInfoLinkRegEx: "Равен @ "
 matchInfoPendingState: "Текущ"
 matchInfoLoseState: "Загубен"
@@ -34,3 +34,4 @@ matchInfoWiningRegEx: "Залог:\\s*.*?\\sПеч.*?:\\s*(.*?)\\s"
 matchInfoEventRegEx: "Равен\\s*(.*?)\\s*\\(Краен Резултат"
 matchInfoDateRegEx: "Краен Резултат\\)\\s*(.*?)\\s*Никой"
 matchInfoDateTimeRegEx: "Час на залога:\\s*(.*?)\\s*Принтирай"
+matchInfoIsNotLastRegEx: "в нашите правила.\\s*Равен\\s*@"
