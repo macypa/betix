@@ -16,6 +16,7 @@ public class Configuration {
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
     private final static File CONFIG_FILE = new File("config.yml");
     public final static File CONFIG_ACCOUNT_SPECIFIC_FILE = new File("config_account_specific.yml");
+    public final static File STAKES_FILE = new File("stakes.yml");
 
     private final Map<String, Object> config;
     private final File file;
@@ -92,7 +93,11 @@ public class Configuration {
     }
 
     public Double getConfigAsDouble(ConfigKey key) {
-        return (Double) config.get(key.name());
+        Object value = config.get(key.name());
+        if (value instanceof Double) {
+            return (Double) config.get(key.name());
+        }
+        return Double.valueOf(value.toString());
     }
 
     public Boolean getConfigAsBoolean(ConfigKey key) {

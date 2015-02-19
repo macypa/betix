@@ -1,8 +1,6 @@
 package betix.bet365;
 
 import betix.core.BettingMachine;
-import betix.core.config.ConfigKey;
-import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
@@ -18,17 +16,17 @@ import javax.swing.*;
 class LoginManager extends RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
-    private final Configuration accountConfig;
+    private final AccountInfoManager accountInfoManager;
 
     private final BettingMachine betingMachine;
     private final SikuliRobot sikuli;
 
     private boolean loggedIn = false;
 
-    LoginManager(BettingMachine bettingMachine) {
+    LoginManager(BettingMachine bettingMachine, AccountInfoManager accountInfoManager) {
         betingMachine = bettingMachine;
         sikuli = bettingMachine.sikuli;
-        accountConfig = bettingMachine.getAccountConfig();
+        this.accountInfoManager = accountInfoManager;
     }
 
     public boolean login() throws Exception {
@@ -60,12 +58,12 @@ class LoginManager extends RetryTask {
 
             if (checkLogin()) {
                 if (username != null && !username.isEmpty()) {
-                    accountConfig.addConfig(ConfigKey.username, username);
-                    accountConfig.saveConfig();
+                    accountInfoManager.getAccountInfo().setUsername(username);
+                    accountInfoManager.saveAccountInfo();
                 }
                 if (plainText != null && !plainText.isEmpty()) {
-                    accountConfig.addConfig(ConfigKey.password, encodePass(plainText));
-                    accountConfig.saveConfig();
+                    accountInfoManager.getAccountInfo().setPassword(encodePass(plainText));
+                    accountInfoManager.saveAccountInfo();
                 }
                 return true;
             } else {
@@ -79,7 +77,7 @@ class LoginManager extends RetryTask {
 
     private String typeInUsername() {
         String updateUser = "";
-        String username = accountConfig.getConfigAsString(ConfigKey.username);
+        String username = accountInfoManager.getAccountInfo().getUsername();
         if (username == null || username.trim().isEmpty()) {
             username = input(false);
             updateUser = username;
@@ -95,7 +93,7 @@ class LoginManager extends RetryTask {
 
     private String typeInPassword() throws FindFailed {
         String updatePass = "";
-        String plainText = decodePass(accountConfig.getConfigAsString(ConfigKey.password));
+        String plainText = decodePass(accountInfoManager.getAccountInfo().getPassword());
         if (plainText == null || plainText.trim().isEmpty()) {
 //            plainText = sikuli.input("enter pass to encript and store");
             plainText = input(true);

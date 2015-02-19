@@ -1,10 +1,12 @@
 package betix.core.data;
 
+import betix.core.config.Stake;
+
 public class MatchInfo implements Comparable {
 
     private MatchState state = MatchState.pending;
     private double coefficient;
-    private double stake;
+    private Stake stake;
     private double wining;
     private String date;
     private String dateOfBet;
@@ -34,7 +36,7 @@ public class MatchInfo implements Comparable {
         return this.coefficient;
     }
 
-    public double getStake() {
+    public Stake getStake() {
         return this.stake;
     }
 
@@ -62,7 +64,7 @@ public class MatchInfo implements Comparable {
         this.coefficient = coefficient;
     }
 
-    public void setStake(double stake) {
+    public void setStake(Stake stake) {
         this.stake = stake;
     }
 
@@ -90,7 +92,7 @@ public class MatchInfo implements Comparable {
         if (o == this) return true;
         if (!(o instanceof MatchInfo)) return false;
         final MatchInfo other = (MatchInfo) o;
-        if (!other.canEqual((Object) this)) return false;
+        if (!other.canEqual(this)) return false;
         final Object this$dateOfBet = this.getDateOfBet();
         final Object other$dateOfBet = other.getDateOfBet();
         if (this$dateOfBet == null ? other$dateOfBet != null : !this$dateOfBet.equals(other$dateOfBet)) return false;

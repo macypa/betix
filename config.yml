@@ -4,7 +4,6 @@ lockFile: betix.lock
 logout: false
 placeBet: false
 cronExpression: 0 0 19 * * ?
-useFibonacciForStakes: true
 imageDir: img
 imgTimeout: 5
 waitTimeBeforeAction: 500
@@ -14,7 +13,6 @@ siteHistoryUrl: "https://members.788-sb.com/MEMBERS/Authenticated/History/Sports
 imageExt: .png
 browser: firefox
 siteName: bet365.com
-minBetStake: 0.5
 sikuliMinSimilarity: 0.5
 showMessageBox: true
 messageBoxX: 0

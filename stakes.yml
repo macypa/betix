@@ -1,0 +1,13 @@
+---
+useFibonacciForStakes: true
+useMartingaleForStakes: false
+minBetStake: 0.5
+stake1: 0.5d
+stake2: 1
+stake3: 2
+stake4: 3
+stake5: 5
+stake6: 10
+stake7: 15
+stake8: 20
+stake9: 30

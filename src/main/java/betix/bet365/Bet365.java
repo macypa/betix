@@ -2,7 +2,6 @@ package betix.bet365;
 
 import betix.core.BettingMachine;
 import betix.core.config.ConfigKey;
-import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.data.MatchInfo;
 import betix.core.data.Team;
@@ -11,7 +10,6 @@ import betix.core.logger.LoggerFactory;
 import org.sikuli.script.*;
 
 import java.awt.*;
-import java.io.File;
 
 /**
  * login page https://members.788-sb.com/MEMBERS/Login/
@@ -30,17 +28,16 @@ import java.io.File;
 public class Bet365 extends BettingMachine {
 
     private final Logger logger = LoggerFactory.getLogger(Bet365.class);
-    private final Configuration
-            accountConfig = new Configuration(Configuration.CONFIG_ACCOUNT_SPECIFIC_FILE);
 
+    private AccountInfoManager accountInfoManager = new AccountInfoManager(this);
     private boolean betPlaced;
 
     public boolean login() {
-        return new LoginManager(this).executeWithRetry();
+        return new LoginManager(this, accountInfoManager).executeWithRetry();
     }
 
     public boolean collectInfo() {
-        return new AccountInfoManager(this).executeWithRetry();
+        return accountInfoManager.executeWithRetry();
     }
 
     public void openMyTeamsPage() {
@@ -115,12 +112,7 @@ public class Bet365 extends BettingMachine {
             throw new RuntimeException("can't get history info");
         }
 
-        File teamDir = new File(ImagePattern.TEAM_DIR_NAME);
-        for (File file : teamDir.listFiles()) {
-            if (file.isDirectory())
-                continue;
-
-            Team team = new Team(file.getName());
+        for (Team team : accountInfoManager.getAccountInfo().getTeams()) {
             if (isAlreadyPlaced(team)) {
                 logger.info("bet already placed for {}", team);
                 continue;
@@ -132,14 +124,14 @@ public class Bet365 extends BettingMachine {
                 placeBet(team);
 
             } catch (FindFailed e) {
-                logger.error("error selecting team {} in placeBets() for image {}", team.getName(), file.getName());
+                logger.error("error selecting team {} in placeBets() ", team.getName());
             }
         }
         betPlaced = true;
         logger.hideMessageBox();
 
         if (config.getConfigAsBoolean(ConfigKey.logout)) {
-            new LoginManager(this).logout();
+            new LoginManager(this, accountInfoManager).logout();
         }
     }
 
@@ -156,7 +148,7 @@ public class Bet365 extends BettingMachine {
         new Screen().type(Key.BACKSPACE);
         new Screen().type(Key.BACKSPACE);
         new Screen().type(Key.BACKSPACE);
-        new Screen().type(String.valueOf(calculateStake(team)));
+        new Screen().type(team.getStake().next().toString());
 
         logger.info("placing the bet");
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
@@ -168,45 +160,13 @@ public class Bet365 extends BettingMachine {
         }
     }
 
-    private Double calculateStake(Team team) {
-        for (MatchInfo matchInfo : accountConfig.getAccountInfo().getMatchInfoFinished()) {
-            if (matchInfo.getEvent().isParticipant(team.getName())) {
-                return getNextStake(matchInfo.getStake());
-            }
-        }
-
-        return Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.minBetStake);
-    }
-
-    private Double getNextStake(double stake) {
-        if (!Configuration.getDefaultConfig().getConfigAsBoolean(ConfigKey.useFibonacciForStakes)) {
-            return stake * 2;
-        }
-
-        double minBetStake = Configuration.getDefaultConfig().getConfigAsDouble(ConfigKey.minBetStake);
-        double secondBetStake = minBetStake * 2;
-        if (stake == minBetStake) return secondBetStake;
-
-        double fibo1 = minBetStake, fibo2 = secondBetStake, nextStake = secondBetStake;
-        while (stake >= nextStake) {
-            nextStake = fibo1 + fibo2;
-            fibo1 = fibo2;
-            fibo2 = nextStake;
-        }
-        return nextStake;
-    }
-
     private boolean isAlreadyPlaced(Team team) {
-        for (MatchInfo matchInfo : accountConfig.getAccountInfo().getMatchInfoPending()) {
+        for (MatchInfo matchInfo : accountInfoManager.getAccountInfo().getMatchInfoPending()) {
             if (matchInfo.getEvent().isParticipant(team.getName())) {
                 return true;
             }
         }
         return false;
-    }
-
-    public Configuration getAccountConfig() {
-        return accountConfig;
     }
 
     @Override

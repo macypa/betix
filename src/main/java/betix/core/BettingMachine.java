@@ -135,8 +135,6 @@ public abstract class BettingMachine extends RetryTask {
 
     public abstract boolean collectInfo();
 
-    public abstract Configuration getAccountConfig();
-
     public abstract void openMyTeamsPage();
 
     public abstract void placeBets();

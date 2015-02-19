@@ -4,10 +4,8 @@ import betix.core.BettingMachine;
 import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
-import betix.core.data.AccountInfo;
-import betix.core.data.Event;
-import betix.core.data.MatchInfo;
-import betix.core.data.MatchState;
+import betix.core.config.Stake;
+import betix.core.data.*;
 import betix.core.logger.Logger;
 import betix.core.logger.LoggerFactory;
 import betix.core.schedule.RetryTask;
@@ -16,6 +14,7 @@ import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,6 +25,7 @@ class AccountInfoManager extends RetryTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
 
+    private final Configuration accountConfig = new Configuration(Configuration.CONFIG_ACCOUNT_SPECIFIC_FILE);
     private static final String dateFormat = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.dateFormat);
 
     private static final String balanceRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.balanceRegEx);
@@ -42,7 +42,6 @@ class AccountInfoManager extends RetryTask {
     private static final String matchInfoIsNotLastRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoIsNotLastRegEx);
 
     private final AccountInfo accountInfo;
-    private final Configuration accountConfig;
 
     private final BettingMachine betingMachine;
     private final SikuliRobot sikuli;
@@ -52,8 +51,24 @@ class AccountInfoManager extends RetryTask {
     AccountInfoManager(BettingMachine bettingMachine) {
         betingMachine = bettingMachine;
         sikuli = bettingMachine.sikuli;
-        accountConfig = bettingMachine.getAccountConfig();
         accountInfo = accountConfig.getAccountInfo();
+
+        refreshTeams();
+    }
+
+    public AccountInfo getAccountInfo() {
+        return accountInfo;
+    }
+
+    private void refreshTeams() {
+        File teamDir = new File(ImagePattern.TEAM_DIR_NAME);
+        for (File file : teamDir.listFiles()) {
+            if (file.isDirectory())
+                continue;
+
+            Team team = accountInfo.getTeam(file.getName());
+            accountInfo.getTeams().add(team);
+        }
     }
 
     public void collectInfo() {
@@ -128,8 +143,7 @@ class AccountInfoManager extends RetryTask {
         String price = searchRegEx(balanceInfo, balanceRegEx);
         accountInfo.setBalance(Double.valueOf(price.replaceAll(",", ".")));
 
-        accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-        accountConfig.saveConfig();
+        saveAccountInfo();
     }
 
     private void collectFinishedMatchesInfo() throws FindFailed, ParseException {
@@ -181,28 +195,29 @@ class AccountInfoManager extends RetryTask {
                     && !accountInfo.getMatchInfoPending().contains(info)) {
 
                 logger.info("adding info to pending and removing it from finished");
-                accountInfo.getMatchInfoPending().add(info);
-                accountInfo.getMatchInfoFinished().remove(info);
+                accountInfo.addPending(info);
             } else if (!MatchState.pending.equals(info.getState())
                     && !accountInfo.getMatchInfoFinished().contains(info)) {
 
                 logger.info("adding info to finished and removing it from pending");
-                accountInfo.getMatchInfoFinished().add(info);
-                accountInfo.getMatchInfoPending().remove(info);
+                accountInfo.addFinished(info);
             } else {
                 logger.info("next info should be already saved");
-                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-                accountConfig.saveConfig();
+                saveAccountInfo();
                 return;
             }
 
             if (!findRegEx(matchInfo, matchInfoIsNotLastRegEx)) {
                 logger.info("end of matchInfo");
-                accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
-                accountConfig.saveConfig();
+                saveAccountInfo();
                 return;
             }
         }
+    }
+
+    public void saveAccountInfo() {
+        accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
+        accountConfig.saveConfig();
     }
 
     private MatchInfo parseMatchInfo(String matchInfoString) throws ParseException {
@@ -216,11 +231,21 @@ class AccountInfoManager extends RetryTask {
             matchInfo.setState(MatchState.winning);
         }
 
-        matchInfo.setStake(Double.valueOf(searchRegEx(matchInfoString, matchInfoStakeRegEx).replaceAll(",", ".")));
+        matchInfo.setStake(Stake.get(searchRegEx(matchInfoString, matchInfoStakeRegEx).replaceAll(",", ".")));
         matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, matchInfoCoefficientRegEx).replaceAll(",", ".")));
         matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, matchInfoWiningRegEx).replaceAll(",", ".")));
 
         matchInfo.setEvent(new Event(searchRegEx(matchInfoString, matchInfoEventRegEx)));
+
+        if (accountInfo.contains(matchInfo.getEvent().getFirstTeam().getName())) {
+            Team team = accountInfo.getTeam(matchInfo.getEvent().getFirstTeam().getName());
+            team.setStake(matchInfo.getStake());
+        }
+
+        if (accountInfo.contains(matchInfo.getEvent().getSecondTeam().getName())) {
+            Team team = accountInfo.getTeam(matchInfo.getEvent().getSecondTeam().getName());
+            team.setStake(matchInfo.getStake());
+        }
 
         String dateString = searchRegEx(matchInfoString, matchInfoDateRegEx);
         logger.debug("found date {}", dateString);
