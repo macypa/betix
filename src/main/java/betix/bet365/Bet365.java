@@ -3,6 +3,7 @@ package betix.bet365;
 import betix.core.BettingMachine;
 import betix.core.config.ConfigKey;
 import betix.core.config.ImagePattern;
+import betix.core.config.Stake;
 import betix.core.data.MatchInfo;
 import betix.core.data.Team;
 import betix.core.logger.Logger;
@@ -109,6 +110,7 @@ public class Bet365 extends BettingMachine {
     }
 
     public void placeBets() {
+        accountInfoManager.getAccountInfo();
         betPlaced = false;
         openMyTeamsPage();
 
@@ -152,7 +154,7 @@ public class Bet365 extends BettingMachine {
         new Screen().type(Key.BACKSPACE);
         new Screen().type(Key.BACKSPACE);
         new Screen().type(Key.BACKSPACE);
-        new Screen().type(team.getNextStake().toString());
+        new Screen().type(Stake.get(team.getNextStake()).toString());
 
         logger.info("placing the bet");
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {

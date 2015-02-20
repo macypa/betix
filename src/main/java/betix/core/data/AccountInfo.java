@@ -39,14 +39,14 @@ public class AccountInfo {
         setStake(matchInfo.getEvent().getSecondTeam(), matchInfo.getStake());
     }
 
-    private void setStake(Team team, Stake stake) {
+    private void setStake(Team team, double stake) {
         if (this.contains(team.getName())) {
             team = getTeam(team.getName());
 
             for (MatchInfo info : matchInfoFinished) {
                 if (info.getEvent().isParticipant(team.getName())) {
                     if (MatchState.losing.equals(info.getState())) {
-                        team.calculateStakes(stake);
+                        team.calculateStakes(Stake.get(stake));
                     }
                     break;
                 }

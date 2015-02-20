@@ -16,9 +16,8 @@ public class Team implements Comparable {
 
     private String name;
     private File image;
-    private Pattern pattern;
-    private Stake stake;
-    private Stake nextStake;
+    private double stake;
+    private double nextStake;
 
     public Team() {
     }
@@ -34,9 +33,8 @@ public class Team implements Comparable {
         }
 
         this.image = new File(ImagePattern.TEAM_DIR_NAME, this.name + imageExt);
-        this.pattern = new Pattern(image.getPath());
-        this.stake = Stake.stake1;
-        this.stake = Stake.stake2;
+        this.stake = Stake.stake1.value;
+        this.nextStake = Stake.stake2.value;
     }
 
     public boolean isParticipant(String participant) {
@@ -45,8 +43,12 @@ public class Team implements Comparable {
     }
 
     void calculateStakes(Stake stake) {
-        this.stake = stake;
-        this.nextStake = stake.next();
+        this.stake = stake.value;
+        this.nextStake = stake.next().value;
+    }
+
+    public Pattern getPattern() {
+        return new Pattern(image.getPath());
     }
 
     @Override

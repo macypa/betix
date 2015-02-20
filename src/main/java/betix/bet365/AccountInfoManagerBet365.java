@@ -196,15 +196,15 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
             if (MatchState.pending.equals(info.getState())
                     && !accountInfo.getMatchInfoPending().contains(info)) {
 
-                logger.info("adding info to pending and removing it from finished");
+                logger.info("adding info to pending and removing it from finished {} ", info);
                 accountInfo.addPending(info);
             } else if (!MatchState.pending.equals(info.getState())
                     && !accountInfo.getMatchInfoFinished().contains(info)) {
 
-                logger.info("adding info to finished and removing it from pending");
+                logger.info("adding info to finished and removing it from pending {} ", info);
                 accountInfo.addFinished(info);
             } else {
-                logger.info("next info should be already saved");
+                logger.info("next info should be already saved {}", info);
                 saveAccountInfo();
                 return;
             }
@@ -234,7 +234,9 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
             matchInfo.setState(MatchState.winning);
         }
 
-        matchInfo.setStake(Stake.get(searchRegEx(matchInfoString, matchInfoStakeRegEx).replaceAll(",", ".")));
+        String stakeString = searchRegEx(matchInfoString, matchInfoStakeRegEx).replaceAll(",", ".");
+        logger.debug("found stakeString {}", stakeString);
+        matchInfo.setStake(Stake.get(stakeString).value);
         matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, matchInfoCoefficientRegEx).replaceAll(",", ".")));
         matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, matchInfoWiningRegEx).replaceAll(",", ".")));
 
