@@ -4,8 +4,10 @@ import betix.core.config.ConfigKey;
 import betix.core.config.Configuration;
 import betix.core.config.ImagePattern;
 import betix.core.config.Stake;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import org.sikuli.script.Pattern;
 
 import java.io.File;
@@ -18,6 +20,8 @@ public class Team implements Comparable {
     private File image;
     private Pattern pattern;
     private Stake stake;
+
+    @Setter(AccessLevel.NONE)
     private Stake nextStake;
 
     public Team() {
@@ -44,7 +48,7 @@ public class Team implements Comparable {
         return name.toLowerCase().replaceAll("_| ", "").equals(participant.toLowerCase().replaceAll("_| ", ""));
     }
 
-    public void setStake(Stake stake) {
+    void calculateStakes(Stake stake) {
         this.stake = stake;
         this.nextStake = stake.next();
     }

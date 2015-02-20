@@ -1,5 +1,6 @@
 package betix.core.data;
 
+import betix.core.config.Stake;
 import lombok.Data;
 
 import java.util.Set;
@@ -29,6 +30,29 @@ public class AccountInfo {
 
         info.getEvent().getFirstTeam().setStake(info.getStake());
         info.getEvent().getSecondTeam().setStake(info.getStake());
+
+        setStakes(info);
+    }
+
+    private void setStakes(MatchInfo matchInfo) {
+        setStake(matchInfo.getEvent().getFirstTeam(), matchInfo.getStake());
+        setStake(matchInfo.getEvent().getSecondTeam(), matchInfo.getStake());
+    }
+
+    private void setStake(Team team, Stake stake) {
+        if (this.contains(team.getName())) {
+            team = getTeam(team.getName());
+
+            for (MatchInfo info : matchInfoFinished) {
+                if (info.getEvent().isParticipant(team.getName())) {
+                    if (MatchState.losing.equals(info.getState())) {
+                        team.calculateStakes(stake);
+                    }
+                    break;
+                }
+            }
+            team.calculateStakes(Stake.noStake);
+        }
     }
 
     public Team getTeam(String name) {

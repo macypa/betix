@@ -1,7 +1,13 @@
 ---
-useFibonacciForStakes: true
+# doubles every next bet not used if useFibonacciForStakes is true
 useMartingaleForStakes: false
-minBetStake: 0.5
+
+# uses the fibonacci sequence every bet is the sum of the previous two (1 2 3 5 8 ... )
+useFibonacciForStakes: true
+
+# last stake count number to call it a loss. (example: lastStakeCount=9 => on the 10-th bet the stake will be )
+lastStakeCount: 9
+
 stake1: 0.5d
 stake2: 1
 stake3: 2
@@ -11,3 +17,6 @@ stake6: 10
 stake7: 15
 stake8: 20
 stake9: 30
+stake10: 60
+stake11: 120
+stake12: 250

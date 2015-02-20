@@ -237,16 +237,6 @@ class AccountInfoManager extends RetryTask {
 
         matchInfo.setEvent(new Event(searchRegEx(matchInfoString, matchInfoEventRegEx)));
 
-        if (accountInfo.contains(matchInfo.getEvent().getFirstTeam().getName())) {
-            Team team = accountInfo.getTeam(matchInfo.getEvent().getFirstTeam().getName());
-            team.setStake(matchInfo.getStake());
-        }
-
-        if (accountInfo.contains(matchInfo.getEvent().getSecondTeam().getName())) {
-            Team team = accountInfo.getTeam(matchInfo.getEvent().getSecondTeam().getName());
-            team.setStake(matchInfo.getStake());
-        }
-
         String dateString = searchRegEx(matchInfoString, matchInfoDateRegEx);
         logger.debug("found date {}", dateString);
         matchInfo.setDate(dateString);

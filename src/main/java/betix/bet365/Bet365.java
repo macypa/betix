@@ -148,7 +148,7 @@ public class Bet365 extends BettingMachine {
         new Screen().type(Key.BACKSPACE);
         new Screen().type(Key.BACKSPACE);
         new Screen().type(Key.BACKSPACE);
-        new Screen().type(team.getStake().next().toString());
+        new Screen().type(team.getNextStake().toString());
 
         logger.info("placing the bet");
         if (config.getConfigAsBoolean(ConfigKey.placeBet)) {
