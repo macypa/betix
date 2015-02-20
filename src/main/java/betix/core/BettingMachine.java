@@ -26,6 +26,9 @@ public abstract class BettingMachine extends RetryTask {
     private static FileLock fileLock;
     private static File lockedfile;
 
+    protected LoginManager loginManager;
+    protected AccountInfoManager accountInfoManager;
+
     public final SikuliRobot sikuli = new SikuliRobot();
 
     public static void main(String[] args) {
@@ -125,6 +128,14 @@ public abstract class BettingMachine extends RetryTask {
         unlockInstance();
 
         Runtime.getRuntime().halt(status);
+    }
+
+    public LoginManager getLoginManager() {
+        return loginManager;
+    }
+
+    public AccountInfoManager getAccountInfoManager() {
+        return accountInfoManager;
     }
 
     public static Configuration getConfig() {

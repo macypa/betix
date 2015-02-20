@@ -11,13 +11,9 @@ import com.nurkiewicz.asyncretry.function.RetryRunnable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public abstract class RetryTask {
+public abstract class RetryTask implements RetryTaskInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(RetryTask.class);
-
-    public abstract void executeTask() throws Exception;
-
-    public abstract boolean isFinishedWithoutErrors();
 
     public boolean executeWithRetry() {
 

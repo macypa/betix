@@ -51,7 +51,7 @@ public class AccountInfo {
                     break;
                 }
             }
-            team.calculateStakes(Stake.noStake);
+            team.calculateStakes(Stake.stake1);
         }
     }
 

@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 
-class AccountInfoManager extends RetryTask {
+class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountInfoManager {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
 
@@ -48,7 +48,7 @@ class AccountInfoManager extends RetryTask {
 
     private boolean dataIsCollected;
 
-    AccountInfoManager(BettingMachine bettingMachine) {
+    AccountInfoManagerBet365(BettingMachine bettingMachine) {
         betingMachine = bettingMachine;
         sikuli = bettingMachine.sikuli;
         accountInfo = accountConfig.getAccountInfo();
@@ -56,6 +56,7 @@ class AccountInfoManager extends RetryTask {
         refreshTeams();
     }
 
+    @Override
     public AccountInfo getAccountInfo() {
         return accountInfo;
     }
@@ -71,6 +72,7 @@ class AccountInfoManager extends RetryTask {
         }
     }
 
+    @Override
     public void collectInfo() {
         dataIsCollected = false;
 
@@ -215,6 +217,7 @@ class AccountInfoManager extends RetryTask {
         }
     }
 
+    @Override
     public void saveAccountInfo() {
         accountConfig.addConfig(ConfigKey.accountInfo, accountInfo);
         accountConfig.saveConfig();

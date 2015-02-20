@@ -1,5 +1,6 @@
 package betix.bet365;
 
+import betix.core.AccountInfoManager;
 import betix.core.BettingMachine;
 import betix.core.config.ImagePattern;
 import betix.core.logger.Logger;
@@ -13,7 +14,7 @@ import org.sikuli.script.KeyModifier;
 
 import javax.swing.*;
 
-class LoginManager extends RetryTask {
+class LoginManagerBet365 extends RetryTask implements betix.core.LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(BettingMachine.class);
     private final AccountInfoManager accountInfoManager;
@@ -23,12 +24,13 @@ class LoginManager extends RetryTask {
 
     private boolean loggedIn = false;
 
-    LoginManager(BettingMachine bettingMachine, AccountInfoManager accountInfoManager) {
+    LoginManagerBet365(BettingMachine bettingMachine) {
         betingMachine = bettingMachine;
         sikuli = bettingMachine.sikuli;
-        this.accountInfoManager = accountInfoManager;
+        this.accountInfoManager = bettingMachine.getAccountInfoManager();
     }
 
+    @Override
     public boolean login() throws Exception {
 
         loggedIn = false;
@@ -160,6 +162,7 @@ class LoginManager extends RetryTask {
         return false;
     }
 
+    @Override
     public void logout() {
         logger.info("Trying to log in ...");
 

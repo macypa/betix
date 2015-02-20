@@ -29,11 +29,15 @@ public class Bet365 extends BettingMachine {
 
     private final Logger logger = LoggerFactory.getLogger(Bet365.class);
 
-    private AccountInfoManager accountInfoManager = new AccountInfoManager(this);
     private boolean betPlaced;
 
+    public Bet365() {
+        accountInfoManager = new AccountInfoManagerBet365(this);
+        loginManager = new LoginManagerBet365(this);
+    }
+
     public boolean login() {
-        return new LoginManager(this, accountInfoManager).executeWithRetry();
+        return loginManager.executeWithRetry();
     }
 
     public boolean collectInfo() {
@@ -131,7 +135,7 @@ public class Bet365 extends BettingMachine {
         logger.hideMessageBox();
 
         if (config.getConfigAsBoolean(ConfigKey.logout)) {
-            new LoginManager(this, accountInfoManager).logout();
+            loginManager.logout();
         }
     }
 
