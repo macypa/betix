@@ -189,6 +189,11 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
             sikuli.type(Key.ENTER);
             sikuli.type(Key.TAB);
 
+            if (!findRegEx(matchInfo, matchInfoEventRegEx)) {
+                logger.info("matchInfo is not for football draw bet");
+                continue;
+            }
+
             MatchInfo info = parseMatchInfo(matchInfo);
             logger.info("found MatchInfo = {} ", info);
             logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
