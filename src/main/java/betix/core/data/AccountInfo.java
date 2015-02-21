@@ -47,11 +47,12 @@ public class AccountInfo {
                 if (info.getEvent().isParticipant(team.getName())) {
                     if (MatchState.losing.equals(info.getState())) {
                         team.calculateStakes(Stake.get(stake));
+                    } else {
+                        team.calculateStakes(Stake.noStake);
                     }
                     break;
                 }
             }
-            team.calculateStakes(Stake.stake1);
         }
     }
 

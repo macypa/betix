@@ -43,6 +43,10 @@ public class Team implements Comparable {
     }
 
     void calculateStakes(Stake stake) {
+        if (!stake.equals(Stake.noStake) &&
+                stake.value != nextStake) {
+            return;
+        }
         this.stake = stake.value;
         this.nextStake = stake.next().value;
     }
