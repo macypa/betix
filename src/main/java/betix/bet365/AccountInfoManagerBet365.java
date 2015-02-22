@@ -195,6 +195,9 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
             }
 
             MatchInfo info = parseMatchInfo(matchInfo);
+            if (matchInfo.contains("Тотнъм v Уест Хям")) {
+                System.out.println("matchInfo = " + matchInfo);
+            }
             logger.info("found MatchInfo = {} ", info);
             logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
             logger.info("matchInfo contains in pending matches {} ", accountInfo.getMatchInfoPending().contains(info));
@@ -260,14 +263,14 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
 
     private String getFromDate(SimpleDateFormat format, boolean selectFinishedMatches) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -14);
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
         Date fromDate = calendar.getTime();
 
         if (selectFinishedMatches) {
             for (MatchInfo info : accountInfo.getMatchInfoFinished()) {
                 try {
                     Date date = format.parse(info.getDateOfBet());
-                    if (fromDate.before(date)) {
+                    if (fromDate.after(date)) {
                         fromDate = date;
                     }
                 } catch (ParseException e) {
@@ -278,7 +281,7 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
             for (MatchInfo info : accountInfo.getMatchInfoPending()) {
                 try {
                     Date date = format.parse(info.getDateOfBet());
-                    if (fromDate.before(date)) {
+                    if (fromDate.after(date)) {
                         fromDate = date;
                     }
                 } catch (ParseException e) {

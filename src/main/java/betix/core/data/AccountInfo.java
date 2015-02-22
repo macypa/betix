@@ -35,18 +35,18 @@ public class AccountInfo {
     }
 
     private void setStakes(MatchInfo matchInfo) {
-        setStake(matchInfo.getEvent().getFirstTeam(), matchInfo.getStake());
-        setStake(matchInfo.getEvent().getSecondTeam(), matchInfo.getStake());
+        setStake(matchInfo, matchInfo.getEvent().getFirstTeam());
+        setStake(matchInfo, matchInfo.getEvent().getSecondTeam());
     }
 
-    private void setStake(Team team, double stake) {
+    private void setStake(MatchInfo matchInfo, Team team) {
         if (this.contains(team.getName())) {
             team = getTeam(team.getName());
 
             for (MatchInfo info : matchInfoFinished) {
                 if (info.getEvent().isParticipant(team.getName())) {
-                    if (MatchState.losing.equals(info.getState())) {
-                        team.calculateStakes(Stake.get(stake));
+                    if (MatchState.losing.equals(matchInfo.getState())) {
+                        team.calculateStakes(Stake.get(matchInfo.getStake()));
                     } else {
                         team.calculateStakes(Stake.noStake);
                     }
@@ -67,9 +67,8 @@ public class AccountInfo {
     }
 
     public boolean contains(String name) {
-        Team team = new Team(name);
         for (Team t : teams) {
-            if (t.equals(team)) {
+            if (t.isSame(name)) {
                 return true;
             }
         }

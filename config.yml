@@ -2,7 +2,7 @@
 asDaemon: false
 lockFile: betix.lock
 logout: false
-placeBet: false
+placeBet: true
 cronExpression: 0 0 19 * * ?
 imageDir: img
 imgTimeout: 5

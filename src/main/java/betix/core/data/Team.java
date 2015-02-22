@@ -33,11 +33,12 @@ public class Team implements Comparable {
         }
 
         this.image = new File(ImagePattern.TEAM_DIR_NAME, this.name + imageExt);
-        this.stake = Stake.stake1.value;
-        this.nextStake = Stake.stake2.value;
+        this.stake = Stake.noStake.value;
+        this.nextStake = Stake.stake1.value;
+        this.name = this.name.toLowerCase().replaceAll("_| ", "");
     }
 
-    public boolean isParticipant(String participant) {
+    public boolean isSame(String participant) {
         if (participant == null || participant.isEmpty() || name == null || name.isEmpty()) return false;
         return name.toLowerCase().replaceAll("_| ", "").equals(participant.toLowerCase().replaceAll("_| ", ""));
     }
@@ -65,4 +66,5 @@ public class Team implements Comparable {
         }
         return 0;
     }
+
 }

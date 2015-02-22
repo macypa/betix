@@ -24,6 +24,6 @@ public class Event {
     }
 
     public boolean isParticipant(String participant) {
-        return firstTeam.isParticipant(participant) || secondTeam.isParticipant(participant);
+        return firstTeam.isSame(participant) || secondTeam.isSame(participant);
     }
 }
