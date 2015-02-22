@@ -76,18 +76,13 @@ public enum Stake {
         return fibonacci(number - 1) + fibonacci(number - 2);
     }
 
+    public static Stake get(String stake) {
+        return get(Double.valueOf(stake));
+    }
+
     public static Stake get(double stake) {
         for (Stake s : Stake.values()) {
             if (s.value == stake) {
-                return s;
-            }
-        }
-        return noStake;
-    }
-
-    public static Stake get(String stake) {
-        for (Stake s : Stake.values()) {
-            if (s.toString().equals(stake)) {
                 return s;
             }
         }
