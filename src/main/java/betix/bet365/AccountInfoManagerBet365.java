@@ -40,6 +40,7 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
     private static final String matchInfoDateRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateRegEx);
     private static final String matchInfoDateTimeRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateTimeRegEx);
     private static final String matchInfoIsNotLastRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoIsNotLastRegEx);
+    private static final String matchInfoPagingRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoPagingRegEx);
 
     private final AccountInfo accountInfo;
 
@@ -164,31 +165,13 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
 
     private void getMatchInfo() throws ParseException, FindFailed {
         logger.info("getting match infos");
-        sikuli.type(Key.ENTER);
-
-        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
-        String allText = copyAllText();
-        if (!allText.contains(historyMatchInfoLinkRegEx)) {
-            logger.info("no matches info found");
+        if (navigateToFirst()) {
             return;
-        }
-
-        logger.info("navigate to first match info");
-        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
-        for (int i = 0; i < 19; i++) {
-            sikuli.type(Key.TAB);
         }
 
         while (true) {
 
-            sikuli.type(Key.ENTER);
-            sikuli.waitMilisec(500);
-
-            String matchInfo = copyAllText();
-
-            sikuli.type(Key.ENTER);
-            sikuli.type(Key.TAB);
-
+            String matchInfo = copyNextInfo();
             if (!findRegEx(matchInfo, matchInfoEventRegEx)) {
                 logger.info("matchInfo is not for football draw bet");
                 continue;
@@ -196,21 +179,19 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
 
             MatchInfo info = parseMatchInfo(matchInfo);
             logger.info("found MatchInfo = {} ", info);
-            logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
-            logger.info("matchInfo contains in pending matches {} ", accountInfo.getMatchInfoPending().contains(info));
-            if (MatchState.pending.equals(info.getState())
-                    && !accountInfo.getMatchInfoPending().contains(info)) {
-
-                logger.info("adding info to pending and removing it from finished {} ", info);
-                accountInfo.addPending(info);
-            } else if (!MatchState.pending.equals(info.getState())
-                    && !accountInfo.getMatchInfoFinished().contains(info)) {
-
-                logger.info("adding info to finished and removing it from pending {} ", info);
-                accountInfo.addFinished(info);
-            } else {
+            if (accountInfo.saveInfo(info)) {
                 logger.info("next info should be already saved {}", info);
                 saveAccountInfo();
+                return;
+            }
+
+            if (findRegEx(matchInfo, matchInfoPagingRegEx)) {
+                logger.info("found multiple pages of matchInfo");
+                sikuli.type(Key.HOME);
+                sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+                sikuli.type(Key.TAB, KeyModifier.SHIFT);
+
+                getMatchInfo();
                 return;
             }
 
@@ -220,6 +201,35 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
                 return;
             }
         }
+    }
+
+    private String copyNextInfo() {
+        sikuli.type(Key.ENTER);
+        sikuli.waitMilisec(500);
+
+        String matchInfo = copyAllText();
+
+        sikuli.type(Key.ENTER);
+        sikuli.type(Key.TAB);
+        return matchInfo;
+    }
+
+    private boolean navigateToFirst() throws FindFailed {
+        sikuli.type(Key.ENTER);
+
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        String allText = copyAllText();
+        if (!allText.contains(historyMatchInfoLinkRegEx)) {
+            logger.info("no matches info found");
+            return true;
+        }
+
+        logger.info("navigate to first match info");
+        sikuli.doubleClick(ImagePattern.PATTERN_LOGO.pattern);
+        for (int i = 0; i < 19; i++) {
+            sikuli.type(Key.TAB);
+        }
+        return false;
     }
 
     @Override
@@ -260,7 +270,7 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
 
     private String getFromDate(SimpleDateFormat format, boolean selectFinishedMatches) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        calendar.add(Calendar.DAY_OF_MONTH, -21);
         Date fromDate = calendar.getTime();
 
         if (selectFinishedMatches) {

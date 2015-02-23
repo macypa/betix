@@ -39,16 +39,18 @@ public enum ConfigKey {
     teamNameSeparator,
     messageBoxColor,
     balanceRegEx,
-    historyMatchInfoLinkRegEx,
     matchInfoPendingState,
     matchInfoLoseState,
     matchInfoWinState,
+    historyMatchInfoLinkRegEx,
     matchInfoStakeRegEx,
     matchInfoCoefficientRegEx,
     matchInfoWiningRegEx,
     matchInfoEventRegEx,
     matchInfoDateRegEx,
     matchInfoDateTimeRegEx,
+    matchInfoIsNotLastRegEx,
+    matchInfoPagingRegEx,
     cronExpression,
     dateFormat,
     siteHistoryUrl,
@@ -58,7 +60,6 @@ public enum ConfigKey {
     messageBoxY,
     messageBoxX,
     logout,
-    matchInfoIsNotLastRegEx,
     accountInfo
 
 }

@@ -16,24 +16,6 @@ public class AccountInfo {
     private Set<MatchInfo> matchInfoFinished = new TreeSet<>();
     private Set<Team> teams = new TreeSet<>();
 
-    public void addPending(MatchInfo info) {
-        matchInfoPending.add(info);
-        matchInfoFinished.remove(info);
-
-        info.getEvent().getFirstTeam().setStake(info.getStake());
-        info.getEvent().getSecondTeam().setStake(info.getStake());
-    }
-
-    public void addFinished(MatchInfo info) {
-        matchInfoFinished.add(info);
-        matchInfoPending.remove(info);
-
-        info.getEvent().getFirstTeam().setStake(info.getStake());
-        info.getEvent().getSecondTeam().setStake(info.getStake());
-
-        setStakes(info);
-    }
-
     private void setStakes(MatchInfo matchInfo) {
         setStake(matchInfo, matchInfo.getEvent().getFirstTeam());
         setStake(matchInfo, matchInfo.getEvent().getSecondTeam());
@@ -54,6 +36,39 @@ public class AccountInfo {
                 }
             }
         }
+    }
+
+    public boolean saveInfo(MatchInfo info) {
+        if (MatchState.pending.equals(info.getState())
+                && !matchInfoPending.contains(info)) {
+
+            addPending(info);
+        } else if (!MatchState.pending.equals(info.getState())
+                && !matchInfoFinished.contains(info)) {
+
+            addFinished(info);
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    private void addPending(MatchInfo info) {
+        matchInfoPending.add(info);
+        matchInfoFinished.remove(info);
+
+        info.getEvent().getFirstTeam().setStake(info.getStake());
+        info.getEvent().getSecondTeam().setStake(info.getStake());
+    }
+
+    private void addFinished(MatchInfo info) {
+        matchInfoFinished.add(info);
+        matchInfoPending.remove(info);
+
+        info.getEvent().getFirstTeam().setStake(info.getStake());
+        info.getEvent().getSecondTeam().setStake(info.getStake());
+
+        setStakes(info);
     }
 
     public Team getTeam(String name) {
