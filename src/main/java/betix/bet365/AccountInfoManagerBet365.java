@@ -195,9 +195,6 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
             }
 
             MatchInfo info = parseMatchInfo(matchInfo);
-            if (matchInfo.contains("Тотнъм v Уест Хям")) {
-                System.out.println("matchInfo = " + matchInfo);
-            }
             logger.info("found MatchInfo = {} ", info);
             logger.info("matchInfo contains in finished matches {} ", accountInfo.getMatchInfoFinished().contains(info));
             logger.info("matchInfo contains in pending matches {} ", accountInfo.getMatchInfoPending().contains(info));
