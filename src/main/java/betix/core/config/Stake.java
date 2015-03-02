@@ -82,7 +82,7 @@ public enum Stake {
 
     public static Stake get(double stake) {
         for (Stake s : Stake.values()) {
-            if (s.value == stake) {
+            if (s.value >= stake) {
                 return s;
             }
         }

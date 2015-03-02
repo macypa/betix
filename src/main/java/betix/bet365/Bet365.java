@@ -167,11 +167,20 @@ public class Bet365 extends BettingMachine {
     }
 
     private boolean isAlreadyPlaced(Team team) {
+        int betCount = 0;
         for (MatchInfo matchInfo : accountInfoManager.getAccountInfo().getMatchInfoPending()) {
             if (matchInfo.getEvent().isParticipant(team.getName())) {
-                return true;
+                if (!accountInfoManager.getAccountInfo().getTeams().contains(matchInfo.getEvent().getOpponent(team.getName()))) {
+                    return true;
+                }
+                betCount++;
             }
         }
+
+        if (betCount >= 2) {
+            return true;
+        }
+
         return false;
     }
 
