@@ -177,12 +177,17 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
                 continue;
             }
 
-            MatchInfo info = parseMatchInfo(matchInfo);
-            logger.info("found MatchInfo = {} ", info);
-            if (accountInfo.saveInfo(info)) {
-                logger.info("next info should be already saved {}", info);
-                saveAccountInfo();
-                return;
+            try {
+                MatchInfo info = parseMatchInfo(matchInfo);
+                logger.info("found MatchInfo = {} ", info);
+                if (accountInfo.saveInfo(info)) {
+                    logger.info("next info should be already saved {}", info);
+                    saveAccountInfo();
+                    return;
+                }
+            } catch (Exception e) {
+                logger.warn("can't parse info", e);
+                continue;
             }
 
             if (findRegEx(matchInfo, matchInfoPagingRegEx)) {
@@ -253,7 +258,9 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
         logger.debug("found stakeString {}", stakeString);
         matchInfo.setStake(Stake.get(stakeString).value);
         matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, matchInfoCoefficientRegEx).replaceAll(",", ".")));
-        matchInfo.setWining(Double.valueOf(searchRegEx(matchInfoString, matchInfoWiningRegEx).replaceAll(",", ".")));
+
+        String winningString = searchRegEx(matchInfoString, matchInfoWiningRegEx);
+        matchInfo.setWining(Double.valueOf(winningString.replaceAll(",", ".")));
 
         matchInfo.setEvent(new Event(searchRegEx(matchInfoString, matchInfoEventRegEx)));
 
