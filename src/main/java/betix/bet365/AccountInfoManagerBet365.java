@@ -41,6 +41,7 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
     private static final String matchInfoDateTimeRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoDateTimeRegEx);
     private static final String matchInfoIsNotLastRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoIsNotLastRegEx);
     private static final String matchInfoPagingRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoPagingRegEx);
+    private static final String matchInfoClosedRegEx = Configuration.getDefaultConfig().getConfigAsString(ConfigKey.matchInfoClosedRegEx);
 
     private final AccountInfo accountInfo;
 
@@ -176,6 +177,10 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
                 logger.info("matchInfo is not for football draw bet");
                 continue;
             }
+            if (findRegEx(matchInfo, matchInfoClosedRegEx)) {
+                logger.info("matchInfo is closed");
+                continue;
+            }
 
             try {
                 MatchInfo info = parseMatchInfo(matchInfo);
@@ -259,8 +264,8 @@ class AccountInfoManagerBet365 extends RetryTask implements betix.core.AccountIn
         matchInfo.setStake(Stake.get(stakeString).value);
         matchInfo.setCoefficient(Double.valueOf(searchRegEx(matchInfoString, matchInfoCoefficientRegEx).replaceAll(",", ".")));
 
-        String winningString = searchRegEx(matchInfoString, matchInfoWiningRegEx);
-        matchInfo.setWining(Double.valueOf(winningString.replaceAll(",", ".")));
+        //String winningString = searchRegEx(matchInfoString, matchInfoWiningRegEx);
+        //matchInfo.setWining(Double.valueOf(winningString.replaceAll(",", ".")));
 
         matchInfo.setEvent(new Event(searchRegEx(matchInfoString, matchInfoEventRegEx)));
 

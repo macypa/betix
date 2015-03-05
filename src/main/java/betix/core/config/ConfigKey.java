@@ -51,6 +51,7 @@ public enum ConfigKey {
     matchInfoDateTimeRegEx,
     matchInfoIsNotLastRegEx,
     matchInfoPagingRegEx,
+    matchInfoClosedRegEx,
     cronExpression,
     dateFormat,
     siteHistoryUrl,
